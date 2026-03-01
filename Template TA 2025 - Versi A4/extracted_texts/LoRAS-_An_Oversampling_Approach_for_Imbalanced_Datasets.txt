@@ -1,0 +1,1804 @@
+LoRAS: An oversampling approach for imbalanced datasets
+Saptarshi Bej1, Narek Davtyan1,2,3, Markus Wolen1, Mariam Nassar1, and Olaf Wolkenhauer1,4
+1Department of Systems Biology and Bioinformatics, University of Rostock, Germany
+2Department of Computer Science and Applied Mathematics, Grenoble Alps University, France
+3School of Computer Science and Applied Mathematics, Grenoble Institute of Technology, France
+4Stellenbosch Institute for Advanced Study (STIAS), Wallenberg Research Centre at Stellenbosch University,
+Stellenbosch, South Africa
+Abstract
+The Synthetic Minority Oversampling TEchnique (SMOTE) is widely-used for
+the analysis of imbalanced datasets. It is known that SMOTE frequently over-
+generalizes the minority class, leading to misclassications for the majority class,
+and eecting the overall balance of the model. In this article, we present an ap-
+proach that overcomes this limitation of SMOTE, employing Localized Random
+Ane Shadowsampling (LoRAS) to oversample from an approximated data mani-
+fold of the minority class. We benchmarked our algorithm with 14 publicly available
+imbalanced datasets using three dierent Machine Learning (ML) algorithms and
+compared the performance of LoRAS, SMOTE and several SMOTE extensions that
+share the concept of using convex combinations of minority class data points for
+oversampling with LoRAS. We observed that LoRAS, on average generates better
+ML models in terms of F1-Score and Balanced accuracy. Another key observation is
+that while most of the extensions of SMOTE we have tested, improve the F1-Score
+with respect to SMOTE on an average, they compromise on the Balanced accuracy
+of a classication model. LoRAS on the contrary, improves both F1 Score and the
+Balanced accuracy thus produces better classication models. Moreover, to explain
+the success of the algorithm, we have constructed a mathematical framework to
+prove that LoRAS oversampling technique provides a better estimate for the mean
+of the underlying local data distribution of the minority class data space.
+Index terms| Imbalanced datasets, Oversampling, Synthetic sample generation, Data
+augmentation, Manifold learning
+1 Introduction
+Imbalanced datasets are frequent occurrences in a large spectrum of elds, where Ma-
+chine Learning (ML) has found its applications, including business, nance and banking
+as well as bio-medical science. Oversampling approaches are a popular choice to deal
+Corresponding author: Prof. Olaf Wolkenhauer, Department of Systems Biology & Bioinformatics,
+University of Rostock, Universit atsplatz 1, 18051 Rostock, Germany. E-mail: olaf.wolkenhauer@uni-
+rostock.de. Website: sbi.uni-rostock.de.
+1arXiv:1908.08346v4  [cs.LG]  15 Aug 2020
+with imbalanced datasets (Barua et al., 2014, Bunkhumpornpat et al., 2009, Chawla
+et al., 2002, Haibo et al., 2008, Han et al., 2005). We here present Localized Random-
+ized Ane Shadowsampling (LoRAS), which produces better ML models for imbalanced
+datasets, compared to state-of-the art oversampling techniques such as SMOTE and
+several of its extensions. We use computational analyses and a mathematical proof to
+demonstrate that drawing samples from a locally approximated data manifold of the
+minority class can produce balanced classication ML models. We validated the ap-
+proach with 12 publicly available imbalanced datasets, comparing the performances of
+several state-of-the-art convex-combination based oversampling techniques with LoRAS.
+The average performance of LoRAS on all these datasets is better than other oversam-
+pling techniques that we investigated. In addition, we have constructed a mathematical
+framework to prove that LoRAS is a more eective oversampling technique since it
+provides a better estimate for local mean of the underlying data distribution, in some
+neighbourhood of the minority class data space.
+For imbalanced datasets, the number of instances in one (or more) class(es) is very
+high (or very low) compared to the other class(es). A class having a large number of
+instances is called a majority class and one having far fewer instances is called a minority
+class. This makes it dicult to learn from such datasets using standard ML approaches.
+Oversampling approaches are often used to counter this problem by generating synthetic
+samples for the minority class to balance the number of data points for each class.
+SMOTE is a widely used oversampling technique, which has received various extensions
+since it was published by Chawla et al. (2002). The key idea behind SMOTE is to
+randomly sample articial minority class data points along line segments joining the
+minority class data points among kof the minority class nearest neighbors of some
+arbitrary minority class data point. In other words, SMOTE produces oversamples by
+generating random convex combinations of two close enough data points.
+The SMOTE algorithm, however has several limitations for example: it does not con-
+sider the distribution of minority classes and latent noise in a data set (Hu et al.,
+2009). It is known that SMOTE frequently over-generalizes the minority class, lead-
+ing to misclassications for the majority class, and eecting the overall balance of the
+model (Puntumapon and Waiyamai, 2012). Several other limitations of SMOTE are
+mentioned in Blagus and Lusa (2013). To overcome such limitations, several algorithms
+have been proposed as extensions of SMOTE. Some are focusing on improving the gen-
+eration of synthetic data by combining SMOTE with other oversampling techniques,
+including the combination of SMOTE with Tomek-links (Elhassan et al., 2016), particle
+swarm optimization (Gao et al., 2011, Wang et al., 2014), rough set theory (Ramentol
+et al., 2012), kernel based approaches (Mathew et al., 2015), Boosting (Chawla et al.,
+2003), and Bagging (Hanifah et al., 2015). Other approaches choose subsets of the mi-
+nority class data to generate SMOTE samples or cleverly limit the number of synthetic
+data generated (Santoso et al., 2017). Some examples are Borderline1/2 SMOTE (Han
+et al., 2005), ADAptive SYNthetic (ADASYN) (Haibo et al., 2008), Safe Level SMOTE
+(Bunkhumpornpat et al., 2009), Majority Weighted Minority Oversampling TEchnique
+2
+(MWMOTE) (Barua et al., 2014), Modied SMOTE (MSMOTE), and Support Vector
+Machine-SMOTE (SVM-SMOTE) (Suh et al., 2017) (see Table 1) (Hu et al., 2009).
+Another recent method, G-SMOTE, generates synthetic samples in a geometric region
+of the input space, around each selected minority instance (Douzas and Bacao, 2019).
+Voronoi diagrams have also been used in recent research for improving classication
+tasks for imbalanced datasets. Because of properties inherent to Voronoi diagrams, a
+newly proposed algorithm V-synth identies exclusive regions of feature space where it
+is ideal to create synthetic minority samples (Carvalho and Prati, 2018, Young et al.,
+2015).
+Related research and novelty: A more recent trend in the research on imbalanced
+datasets is to generate synthetic samples, aiming to approximate the latent data manifold
+of the minority class data space. In Bellinger et al. (2018), a general framework for
+manifold-based oversampling, especially for high dimensional datasets, is proposed for
+synthetic oversampling. The method has been successfully applied in Bellinger et al.
+(2016) to deal with gamma-ray spectra classication. It produces a synthetic set Sof
+ninstances in the manifold-space by randomly sampling ninstances from the PCA-
+transformed reduced data space. In order to produce unique samples on the manifold,
+they apply i.i.d. additive Gaussian noise to each sampled instance prior to adding it
+to the synthetic set S, controlling the distribution of the noise through the Gaussian
+distribution parameters. The synthetic Gaussian instances are then mapped back to the
+feature space to produce the nal synthetic samples (Bellinger et al., 2018). Another
+scheme, using auto-encoders to oversample from an approximated manifold, has also
+been discussed in Bellinger et al. (2018). This approach selects random minority class
+samples by adding Gaussian noise to them, and using the auto-encoder framework rst
+maps them non-orthogonally o the manifold and then maps them back orthogonally
+on the manifold Bellinger et al. (2018). It remains unclear from this research how the
+approach would perform in terms of improving F1-Scores of imbalanced classication
+models as it focuses on relative improvement in the Area Under the (ROC) Curve (AUC)
+as a performance measure. According to Saito and Rehmsmeier (2015), AUC of the
+Receiver Operating Characteristic Curve (ROC) curve might not be informative enough
+for imbalanced datasets. This issue has also been addressed in Davis and Goadrich
+(2006). Unlike the work of Bellinger et al. (2018) LoRAS relies on locally approximating
+the manifold by generating random convex combination of noisy minority class data
+points. Our oversampling strategy LoRAS, rather aims at improving the precision-
+recall balance (F1-Score) and class wise average accuracy (Balanced accuracy) of the
+ML models used. The F1-Score can measure how well the classication model handled
+the minority class classication, whereas Balanced accuracy provides us with a measure
+of how both majority and minority classes were handled by the classication model.
+Thus, these two measures together can give us a holistic understanding of a classier
+performance on a dataset.
+Notably, in the pre-SMOTE era of research, related to oversampling there has been
+works aiming to enrich minority classes of imbalanced datasets by adding Gaussian
+3
+noise Lee (2000) and using the noisy data itself, as oversampled data. The strategy of
+generating oversamples with convex combinations of minority class samples is also well
+known, SMOTE itself being an example of such a strategy. Our oversampling strategy
+LoRAS leverages from a combination of these two strategies. Unlike Lee (2000), we
+generate Gaussian noise in small neighbourhoods around the minority class samples and
+create our nal synthetic data with convex combinations of multiple noisy data points
+(shadowsamples) as opposed to SMOTE based strategies, that consider combination
+of only two minority class data points. Adding the shadowsamples allows LoRAS to
+produce a better estimate for local mean of the latent minority class data distribution.
+We also provide a mathematical framework to show that convex combinations of multiple
+shadowsamples can provide a proper estimate for the local mean of a neighbourhood
+in the minority class data space. To be specic, an LoRAS oversample is an unbiased
+estimator of the mean of the underlying local probability distribution, followed by a
+minority class sample (assuming that it is some random variable) such that the variance
+of this estimator is signicantly less than that of a SMOTE generated oversample, which
+is also an unbiased estimator of the mean of the underlying local probability distribution,
+followed by a minority class sample. In addition to this, LoRAS provides an option of
+choosing the neighbourhood of a minority class data point by performing prior manifold
+learning over the minority class using t-Stochastic Neighbourhood Embedding (t-SNE)
+(van der Maaten and Hinton, 2008). t-SNE is a state-of the art algorithm used for
+dimension reduction maintaining the underlying manifold structure in a sense that, in
+a lower dimension t-SNE can cluster points, that are close enough in the latent high
+dimensional manifold. It uses a symmetric version of the cost function used for it's
+predecessor technique Stochastic Neighbourhood Embedding (SNE) and uses a Student-
+t distribution rather than a Gaussian to compute the similarity between two points
+in the low-dimensional space. t-SNE employs a heavy-tailed distribution in the low-
+dimensional space to alleviate both the crowding problem and the optimization problems
+of SNE (Hinton and Roweis, 2003, van der Maaten and Hinton, 2008).
+Till date there are at least eighty ve extension models built on SMOTE (Kovcs, 2019).
+Considering a large number of benchmark datasets explored in our study, it was nec-
+essary to shortlist certain oversampling algorithms for a comparative study. We found
+quite a few studies that have applied or explored SMOTE and extension of SMOTE
+such as Borderline1/2 SMOTE models, ADASYN, and SVM-SMOTE (Aditsania et al.,
+2017, Ah-Pine et al., 2016, Chiamanusorn and Sinapiromsaran, 2017, Le et al., 2019,
+Suh et al., 2017, Wang et al., 2014). Moreover all these oversampling strategies are
+focused on oversampling from the convex hull of small neighbourhoods in the minority
+class data space, a similarity that they share with our proposed approach. Considering
+these factors, we choose to focus on these ve oversampling strategies for a comparative
+study with our oversampling technique LoRAS.
+Table 1: Popular algorithms built on SMOTE.
+4
+Extension Description
+Borderline1/2 SMOTE (Han et al., 2005) Identies borderline samples and applies SMOTE on them
+ADASYN (Haibo et al., 2008) Adaptively changes the weights of dierent minority samples
+SVM-SMOTE (Suh et al., 2017) Generates new minority samples near borderlines with SVM
+Safe-Level-SMOTE (Bunkhumpornpat et al., 2009) Generates data in areas that are completely safe
+MWMOTE (Barua et al., 2014) Identies and weighs ambiguous minority class samples
+2 LoRAS: Localized Randomized Ane Shadowsampling
+In this section we discuss our strategy to approximate the data manifold, given a
+dataset. A typical dataset for a supervised ML problem consists of a set of features
+F=ff1;f2;:::g, that are used to characterize patterns in the data and a set of labels
+or ground truth. Ideally, the number of instances or samples should be signicantly
+greater than the number of features. In order to maintain the mathematical rigor of our
+strategy we propose the following denition for a small dataset .
+Denition 1. Consider a class or the whole dataset with nsamples andjFjfeatures.
+Iflog10(n
+jFj)<1, then we call the dataset, a small dataset.
+The LoRAS algorithm is designed to learn from a dataset by approximating the under-
+lying data manifold. Assuming that Fis the best possible set of features to represent
+the data and all features are equally important, we can think of a data oversampling
+model to be a function g:Ql
+i=1RjFj!RjFj, that is,guseslparent data points (each
+withjFjfeatures) to produce an oversampled data point in RjFj.
+Denition 2. We dene a random ane combination of some arbitrary vectors as
+the ane linear combination of those vectors, such that the coecients of the linear
+combination are chosen randomly. Formally, a vector v,v=1u1++num, is
+a random ane combination of vectors u1;:::;um, (uj2RjFj) if1++m= 1,
+j2R+and1;:::;mare the coecients of the ane combination chosen randomly
+from a Dirichlet distribution.
+The simplest way of augmenting a data point would be to take the average (or random
+ane combination with positive coecients as dened in Denition 2) of two data points
+as an augmented data point. But, when we have jFjfeatures, we can assume that the
+hypothetical manifold on which our data lies is jFj-dimensional. An jFj-dimensional
+manifold can be locally approximated by a collection of ( jFj 1)-dimensional planes.
+GivenjFjsample points we could exactly derive the equation of an unique ( jFj 1)-
+dimensional plane containing these jFjsample points. Note that, a small neighbourhood
+of a dataset can itself be considered as a small dataset. A small neighbourhood of k
+points around a data point in a dataset, given suciently small k, satises Denition 1,
+that iskandjFjsatises, log10(k
+jFj)<1. Thus, considering kto be suciently small
+we can assume that this small neighbourhood is a small dataset. To enrich this small
+dataset, we create shadow data points orshadowsamples from ourkparent data points
+in the minority class data point neighbourhood. Each shadow data point is generated
+5
+by adding noise from a normal distribution, N(0;h(f)) for all features f2F, where
+h(f) is some function of the sample variance ffor the feature f. For each of the k
+data points we can generate mshadow data points such that, kmjFj. Now it is
+possible for us to choose jFjshadow data points from the kmshadow data points even
+ifk<jFj. We choosejFjshadow data points as follows: we rst choose a random parent
+data pointpand then restrict the domain of choice to the shadowsamples generated by
+the parent data points in Np
+k.
+For high dimensional datasets, choosing k-nearest neighbours of data point using simple
+Euclidean, Manhattan or general Minkowski distance measures can be misleading in
+terms of approximating the latent data manifold. To avoid this, we propose to adopt
+a manifold learning based strategy. Before choosing the k-nearest neighbours of a data
+point, we perform a dimension reduction on the data points of the minority class using
+the well-known dimension reduction and manifold learning technique t-SNE (van der
+Maaten and Hinton, 2008). Once we have a two dimensional t-embedding of the minority
+class data, we choose the k-nearest neighbours of a particular data point consistent to
+its k-nearest neighbours (measured as per usual distance metrics) in the 2-dimensional
+t-SNE embedding of the minority class.
+Once we choose our neighbourhood and generate the shadowsamples, we take a random
+ane combination with positive co-ecients (Convex combination) of the jFjchosen
+shadowsamples to create one augmented Localized Random Ane Shadowsample or a
+LoRAS sample as dened in Denition 2. Considering the arbitrary low variance that
+we can choose for the Normal distribution from which we draw our shadowsamples, we
+assume that our shadowsamples lie in the latent data manifold itself. It is a practical as-
+sumption, considering the stochastic factors leading to small measurement errors. Now,
+there exists an unique ( jFj 1)-dimensional plane, that contains the jFjshadowsam-
+ples, which we assume to be an approximation of the latent data manifold in that small
+neighbourhood. Thus, a LoRAS sample is an articially generated sample drawn from
+an (jFj 1)-dimensional plane, which locally approximates the underlying hypothetical
+jFj-dimensional data manifold. It is worth mentioning here, that the eective number
+of features in a dataset is often less than jFj. In high dimensional data there are often
+correlated features or features with low variance. Thus, for practical use of LoRAS one
+might consider generating convex combinations of eective number of features which
+might be less than jFj.
+In this article, all imbalanced classication problems that we deal with are binary clas-
+sication problems. For such a problem, there is a minority class Cmincontaining a
+relatively less number of samples compared to a majority class Cmaj. We can thus con-
+sider the minority class as a small dataset and use the LoRAS algorithm to oversample.
+For every data point pwe can denote a set of shadowsamples generated from pasSp.
+In practice, one can also choose 2 NajFjshadowsamples for an ane combi-
+nation and choose a desired number of oversampled points Ngento be generated using
+the algorithm. We can look at LoRAS as an oversampling algorithm as described in
+6
+Algorithm 1: Localized Random Ane Shadowsample (LoRAS) Oversampling
+Inputs:
+Cmaj: Majority class parent data points
+Cmin: Minority class parent data points
+Parameters:
+k:Number of nearest neighbors to be considered per parent data point
+(default value : 30 if jCminj>= 100, 5 otherwise)
+|Sp|:Number of generated shadowsamples per parent data point
+default value : maxl
+2jFj
+km
+;40
+Ls:List of standard deviations for normal distributions for adding noise to each feature
+(default value : [0 :005; : : : ; 0:005])
+Naff:Number of shadow points to be chosen for a random ane combination
+(default value :jFj)
+Ngen:Number of generated LoRAS points for each nearest neighbors group
+default value :jCmajj jCminj
+jCminj
+embedding :Type of Embedding used to choose minority class neighbourhood (regular or t-
+embedding)
+(default value : `regular' )
+perplexity :Perplexity of t-embedding (applicable only if embedding =`t-embedding')
+(default value : 30)
+Constraint:
+Naff< k|Sp|
+Initialize loras setas an empty list
+Foreach minority class parent data point pinCmindo
+neighborhood  calculate k-nearest neighbors of p, as per selected Embedding parameter and
+append p
+Initialize neighborhood shadow sample as an empty list
+Foreach parent data point qinneighborhood do
+shadow points  draw |Sp|shadowsamples for qdrawing noises from normal distributions
+with corresponding standard deviations Lscontaining elements for every feature
+Append shadow points toneighborhood shadow sample
+Repeat
+selected points  select Naffrandom shadow points from neighborhood shadow sample
+affine weights  create and normalize random weights for selected points
+generated LoRAS sample point  selected pointsaffine weights
+Append generated LoRAS sample point toloras set
+Until Ngenresulting points are created;
+Return resulting set of generated LoRAS data points as loras set
+Algorithm 1.
+The LoRAS algorithm thus described, can be used for oversampling of minority classes
+in case of highly imbalanced datasets. Note that the input variables for our algorithm
+are: number of nearest neighbors per sample k, number of generated shadow points
+per parent data point |Sp|, list of standard deviations for normal distributions for
+adding noise to every feature and thus generating the shadowsamples Ls, number of
+shadowsamples to be chosen for ane combinations Naff, number of generated points
+for each nearest neighbors group Ngenand embedding strategy embedding . There is
+a conditional input variable perplexity which takes a positive numerical value if one
+chooses a t-embedding. The perplexity parameter of the t-SNE algorithm is quite cru-
+7
+cial. The perplexity parameter can inuence the t-Embedding calculated by the t-SNE
+algorithm. There have been several studies that address the issue on nding a right
+perplexity parameter for a given problem (Kobak and Berens, 2019). That is why, we
+recommend careful choice of this parameter in order to leverage more from our algo-
+rithm. Another important parameter of our algorithm is the Naff. For this parameters
+an ideal choice would be the number of eective features in a dataset since this number
+would be a reasonable approximation to the dimension of the underlying data manifold.
+One could employ a feature selection technique to nd out a good estimate for this.
+A simple random grid search is also very helpful to get reasonably good estimates of
+these parameters. We have mentioned all the default values of the LoRAS parameters
+in Algorithm 1, showing the pseudocode for the LoRAS algorithm. As an output, our
+algorithm generates a LoRAS dataset for the oversampled minority class, which can be
+subsequently used to train a ML model.
+Figure 1: Visualization of the workow demonstrating a step-by-step explanation for LoRAS
+oversampling. (a) Here, we show the parent data points of the minority class points Cmin. For
+a data point pwe choose three of the closest neighbors (using knn) to build a neighborhood of
+p, depicted as the box. (b) Extracting the four data points in the closest neighborhood of p
+(includingp). (c) Drawing shadow points from a normal distribution, centered at these parent
+data pointn. (d) We randomly choose three shadow points at a time to obtain a random ane
+combination of them (spanning a triangle). We nally generate a novel LoRAS sample point
+from the neighborhood of a single data point p.
+8
+3 Case studies
+For testing the potential of LoRAS as an oversampling approach, we designed bench-
+marking experiments with a total of 14 datasets which are either highly imbalanced,
+high dimensional or with a small number of data points. With this number of diverse
+case studies we should have a comprehensive idea of the advantages of LoRAS over the
+other oversampling algorithms of our interest.
+3.1 Datasets used for validation
+Here we provide a brief description of the datasets and the sources that we have used
+for our studies.
+Scikit-learn imbalanced benchmark datasets: Theimblearn.datasets pack-
+age is complementing the sklearn.datasets package. It provides 27 pre-processed
+datasets, which are imbalanced. The datasets span a large range of real-world problems
+from several elds such as business, computer science, biology, medicine, and technology.
+This collection of datasets was proposed in the imblearn.datasets python library
+by Lema^ tre et al. (2017) and benchmarked by Ding (2011). Many of these datasets
+have been used in various research articles on oversampling approaches (Ding, 2011,
+Saez et al., 2016). A statistically reliable benchmarking analysis of all 27 datasets in
+a stratied cross validation framework involves a lot of computational eort. We thus
+choose 11 datasets out of these two depending on two criteria:
+Highly imbalanced: We choose datasets with imbalance ratio more than 25:1.
+This category includes abalone 19, letter image, mammography, ozone level, web-
+page, wine quality, yeast me2 datasets.
+High dimensional: We choose the datasets with more than 100 features. This
+category includes arrhythmia, isolet, scene, webpage and yeast ml8.
+Note that the webpage dataset is common in both the criteria, giving us a total of 11
+datasets. We choose these two categories because they are of special interest in research
+related to imbalanced datasets and have received extensive attention in this research
+area (Anand et al., 2010, Blagus and Lusa, 2013, Hooda et al., 2018, Jing et al., 2019).
+Credit card fraud detection dataset: We obtain the description of this dataset from
+the website. https://www.kaggle.com/mlg-ulb/creditcardfraud . \The dataset con-
+tains transactions made by credit cards in September 2013 by European cardholders.
+This dataset presents transactions that occurred in two days, where there are 492 frauds
+out of 284,807 transactions. The dataset is highly unbalanced, the positive class (frauds)
+account for 0.00172 percent of all transactions. The dataset contains only numerical in-
+put variables, which are the result of a PCA transformation. Feature variables f1;:::;f 28
+are the principal components obtained with PCA, the only features that have not been
+transformed with PCA are the `Time' and `Amount'. The feature `Time' contains the
+9
+seconds elapsed between each transaction and the rst transaction in the dataset. The
+feature `Amount' consists of the transaction amount. The labels are encoded in the
+`Class' variable, which is the response variable and takes value 1 in case of fraud and 0
+otherwise" (Dal Pozzolo et al., 2017).
+Small datasets: We were also interested to check the performance of LoRAS on small
+datasets. We obtained two such datasets: ar1, ar3. Both of these datasets have very
+few data points and less than 10 points in the minority class.
+Thus, in total we benchmark our oversampling algorithms against the existing algorithms
+on a total of 14 datasets. We provide relevant statistics on these datasets in Table 2
+Dataset Imbalance ratio Number of samples Number of features
+abalone 19 130:1 4177 10
+arrythmia 17:1 452 278
+isolet 12:1 7797 617
+letter-img 26:1 20000 16
+mammography 42:1 11183 6
+scene 13:1 2407 294
+ozone level 34:1 2536 72
+webpage 33:1 34780 300
+wine-quality 26:1 4898 11
+yeast-me2 28:1 1484 8
+yeast-ml8 13:1 2417 103
+credit fraud 577:1 284807 28
+ar1 12.44:1 121 30
+ar3 6.8:1 63 30
+Table 2: Table showing some statistics for the datasets we study in this article. For each dataset,
+we mark in bold the feature of the dataset that led us to its choice for our study.
+3.2 Methodology
+For every dataset we have analyzed, we used a consistent workow. Given a dataset,
+for every machine learning model, we judge the model performances based on a 5 10-
+fold stratied cross validation framework. However, for the two small datasets ar1 and
+ar3 we use a 53-fold stratied cross validation framework, since there are less than 10
+samples in the minority class. First we randomly scue the dataset. For a given dataset,
+we rst split the dataset into 10 folds, each one distinct from the other maintaining the
+imbalance ratio for every fold. We then train the machine learning models on the dataset
+without any oversampling with 10-fold cross validation. This means that we train and
+test the model 10 times, each time considering a fold as a test fold and rest 9 folds
+as training folds. However, while training the ML models with oversampled data, we
+oversample only on the training folds and leave the test fold as they are for each training
+session. For each dataset we repeat the whole process ve times to avoid the stochastic
+eects as much as possible.
+10
+For the oversampling algorithms, for a given dataset, we chose the same neighbourhood
+size for every oversampling model. If there were less than 100 data points in the minority
+class the neighbourhood size was chosen to be 5. Otherwise we chose a neighbourhood
+size of 30. Given a large number of datasets we are analyzing, we did not customize
+this for every dataset and rather chose to stick to the above mentioned general rule. For
+LoRAS oversampling however, we performed a preliminary study to nd out customized
+parameter values for every dataset, since the LoRAS algorithm is highly parametrized in
+nature. We tried several combinations of parameters Naff,embedding andperplexity
+employing random grid search. For our initial study involving the parameter optimiza-
+tion of LoRAS, given a dataset, we performed a simple train-test split of the dataset
+(1:1 train-test split ratio), and then applied LoRAS with parameter grids on the training
+data to oversample and test the classier performances on the test data. The training set
+is kept relatively small, so that the classier does not gain much experience on the data
+while parameter estimation and gets prone to overtting. This study was kept com-
+pletely independent from our main cross-validation based results so that the samples
+from the test sets of our cross validation have minimum eect on parameter tuning. For
+parameter Naffthe grid interval is [2 ;jFj],jFjbeing the number of features. We choose
+ve numbers while forming a search grid from this interval. Three of them are randomly
+chosen and the numbers 2 and jFjare always included in this set of 5 numbers. For
+parameter embedding we the grid values are the two possible entries that the parameter
+adopts. For the perplexity parameter, we used grid values [0 :01;0:1;1;10;30;100].
+We emphasize here, that for all the algorithms including LoRAS, for a given dataset,
+we keep the neighbourhood size for every oversampling model xed. For every oversam-
+pling model that we considered, the neighbourhood size for the oversampling model is
+the parameter that the model is highly sensitive to, since it contributes the most in de-
+termining the distribution of the oversampled minority class. For LoRAS, there are three
+(out of seven parameters in total) parameters designed to better model/approximate the
+minority class data manifold (for example: the ones involving the t-SNE on the minority
+class), which are tuned to show the applicability of manifold approximation to improve
+convex combination based oversampling. However, as suggested, we keep all parameters
+related to the original distribution of the minority class, for all oversampling models
+xed for all comparisons.
+However, considering the philosophy of LoRAS and a comparatively large number of
+parameters it use, we take liberty to tune the other parameters for LoRAS, since the
+other parameters are the key to a proper approximation or modelling of the minority
+class data manifold, which we argue to be the key factor behind the success of LoRAS.
+For LoRAS oversampling every dataset we use an unique value for Naffas presented in
+Table 3. For individual ML models we use dierent settings for the LoRAS parameters
+embedding andperplexity which we mention explicitly in our supplementary materials
+while presenting the results for each ML model for each dataset. To ensure fairness of
+comparison, we oversampled such that the total number of augmented samples generated
+11
+from the minority class was as close as possible to the number of samples in the majority
+class as allowed by each oversampling algorithm. Speaking of other parameters of the
+LoRAS algorithm, for Ls, we chose a list consisting of a constant value of :005 for each
+dataset and for the parameter Ngenwe chose the value as:jCmajj jCminj
+jCminj. We provide a
+detailed list of parameter settings used by us for the oversampling algorithms in Table
+3
+Table 3: In this table we present the details of parameter settings for the oversampling algorithms
+used by us for our experiment. The second column is the size of the oversampling neighbourhood
+and we have chosen the same size for all the oversampling models for each dataset in our analysis.
+The last three columns are specic to LoRAS parameters.
+Dataset Minority samples Oversampling nbd LoRAS Naff
+abalone19 32 5 10
+arrythmia 25 5 100
+isolet 600 30 179
+letter-img 734 30 16
+mammography 260 30 6
+scene 177 30 2
+ozone level 73 5 10
+webpage 981 30 94
+wine-quality 183 30 2
+yeast-me2 51 5 2
+yeast-ml8 178 30 3
+credit fraud 492 30 30
+ar1 9 3 30
+ar3 8 3 10
+To choose ML models for our study we rst did a pilot study with ML classiers such
+as k-nearest neighbors (knn), Support Vector Machine (svm) (linear kernel), Logistic
+regression (lr), Random forest (rf), and Adaboost (ab). As inferred in (Blagus and
+Lusa, 2013) we found that knn was quite eective for the datasets we used. We also
+noticed that lr and svm performed better compared to rf and ab in most cases. We thus
+chose knn, svm and lr for our nal studies. We used lbfgs solver for our logistic regression
+model and a linear kernel for our svm models. For our knn models, we choose 10 nearest
+neighbours for our prediction if there are less than 100 samples in the minority class and
+30 nearest neighbours otherwise. For `arrhythmia', `abalone-19', `ar1' and `ar3' however
+we use only 5 nearest neighbours for the knn model since it has only 25, 32, 9 and 8
+minority class samples respectively. We choose this parameter to be consistent to the
+neighbourhood size of the oversampling models, since the neighbourhood size directly
+inuences the distribution of the training data and hence the model performance.
+In our analysis we take special notice of the credit card fraud detection dataset. This
+dataset is not included in the imblearn.datasets Python library. However, the main
+reason why we want to pay a special attention to this dataset is that, it is by far the most
+imbalanced publicly available dataset that we have come across. The extreme imbalance
+12
+ratio of 577:1 is incomparable to any of the datasets in imblearn.datasets . Also,
+this dataset has received special attention of researchers attempting to use ML in Credit
+fraud detection (Varmedja et al., 2019). In this article we see that lr and rf have good
+prediction accuracies on the dataset. Thus we chose these two ML models for the credit
+fraud dataset. Varmedja et al. (2019) has also not provided cross validated analysis of
+their models, while our models have been trained and tested with the usual 10-fold cross
+validation framework as discussed before. Also, for two small datasets with a critically
+small minority class, we used only knn and lr classiers, with parameter settings as
+specied before. The reason is, for all the 12 other datasets, svm did not stand out to
+be the best performer in terms of F1-Score in any of them.
+For computational coding, we used the scikit-learn (V 0.21.2) ,numpy (V
+1.16.4) ,pandas (V 0.24.2) , and matplotlib (V 3.1.0) libraries in Python
+(V 3.7.4) .
+4 Results
+For imbalanced datasets there are more meaningful performance measures than Accu-
+racy, including Sensitivity orRecall ,Precision , and F1-Score (F-Measure ), and Balanced
+accuracy that can all be derived from the Confusion Matrix , generated while testing the
+model. For a given class, the dierent combinations of recall and precision have the
+following meanings:
+High Precision & High Recall: The model handled the classication task properly
+High Precision & Low Recall: The model cannot classify the data points of the
+particular class properly, but is highly reliable when it does so
+Low Precision & High Recall: The model classies the data points of the particular
+class well, but misclassies high number of data points from other classes as the
+class in consideration
+Low Precision & Low Recall: The model handled the classication task poorly
+F1-Score, calculated as the harmonic mean of precision and recall and, therefore, bal-
+ances a model in terms of precision and recall. These measures have been dened and
+discussed thoroughly by M. Abd Elrahman and Abraham (2013). Balanced accuracy is
+the mean of the individual class accuracies and in this context, it is more informative
+than the usual accuracy score. High Balanced accuracy ensures that the ML algorithm
+learns adequately for each individual class.
+In our experiments we have noticed an interesting behaviour of oversampling models in
+terms of their average F1-Score and Balanced accuracy. Once we present our experiment
+results, we will discuss why considering F1-Score and Balanced accuracy can give us a
+clearer idea about model performances. We will use the above mentioned performance
+measures wherever applicable in this article.
+13
+Selected model performances for all datasets: We provide the detailed results
+of our experiments for all machine learning models as supplementary material. To be
+precise, for every combination of datasets, ML models and oversampling strategies we
+provide the mean and variance of the 10-fold cross validation process over 5 repetitions.
+For judging the performance of the oversampling models we follow the following scheme:
+- First, for a given dataset, we choose the ML model trained on that dataset that
+provides the highest average F1-Score over all the oversampling models and train-
+ing without oversampling. The F1-Score reects the balance between precision
+and recall and considered as a reliable metric for imbalanced classication task.
+- We then consider the Balanced accuracy and F1- score of the chosen model as an
+evaluation of how well the oversampling model performs on the considered dataset.
+Following this evaluation scheme we present our results in Table 4.
+Table 4: Table showing Balanced accuracy/F1-Score for several oversampling strategies (Base-
+line, SMOTE, SVM-SMOTE, Borderline1 SMOTE, Borderline2 SMOTE, ADASYN and LoRAS
+column-wise respectively) for all 14 datasets of interest for ML learning models producing best
+average F1 score over all oversampling strategies and baseline training for respective datasets.
+Dataset ML Baseline SMOTE Bl-1 Bl-2 SVM ADASYN LoRAS
+abalone19 knn .534/.000 .644/.054 .552/.044 .552/.044 .556/.045 .571/.055 .675/.059
+arrythmia lr .679/.37 .666/.345 .672/.352 .709/.307 .679/.350 .667/.362 .694/.380
+isolet lr.900/.826 .898/.806 .899/.802 .906/.693 .911/.799 .898/.806 .904/.809
+letter-img knn .927/.915 .988/.781 .984/.768 .977/.687 .986/.724 .985/.732 .989/.833
+mammography knn .703/.549 .911/.413 .909/.414 .899/.326 .909/.467 .905/.353 .896/.511
+scene lr.551/.168 .616/.222 .619/.230 .620/.223 .616/.235 .620/.224 .616/.226
+ozone level lr.517/.062 .800/.190 .777/.212 .781/.183 .738/.215 .803/.192 .809/.207
+webpage knn .805/.711 .906/.267 .901/.274 .903/.287 .904/.267 .903/.264 .923/.613
+wine-quality lr.517/.067 .718/.179 .715/.182 .711/.171 .712/.216 .721/.180 .734/.197
+yeast-ml8 knn .500/.000 .558/.152 .561/.153 .563/.153 .572/.158 .558/.151 .559/.152
+yeast-me2 knn .523/.074 .834/.331 .797/.373 .79/.304 .785/.388 .825/.315 .842/.354
+credit fraud rf.669/.775 .922/.359 .919/.645 .919/.556 .913/.741 ..923/.350 .904/.820
+ar1 knn .340/.071 .561/.306 .549/.298 .594/.338 .550/.324 .583/.320 .563/.349
+ar3 rf.634/.259 .810/.531 .809/.584 .819/.582 .755/.479 781/.457 .823/.563
+Average -.636/.338 .775/.352 .764/.380 .771/.346 .759/.386 .777/.340 .783/.433
+Average rank -6.53/4.64 3.57/4.75 4.35/3.46 3.39/5.10 4.07/3.17 3.5/4.71 2.57/2.14
+Calculating average performances over all datasets, LoRAS has the best Balanced ac-
+curacy and F1-Score. As expected, SMOTE improved Balanced accuracy compared
+to model training without any oversampling. Surprisingly, it lags behind in F1-Score,
+for quite a few datasets with high baseline F1-Score such as letter image, isolet, mam-
+mography, webpage and credit fraud. Interestingly, the oversampling approaches SVM-
+SMOTE and Borderline1 SMOTE also improved the average F1-Score compared to
+SMOTE, but compromised for a lower Balanced accuracy. On the other hand, applying
+ADASYN increased the Balanced accuracy compared to SMOTE, but again compro-
+mises on the F1-Score. In contrast, our LoRAS approach produces the best Balanced
+14
+accuracy on average by maintaining the highest average F1-Score among all oversampling
+techniques. We want to emphasize that, even considering stochastic factors, LoRAS can
+improve both the Balanced accuracy and F1-Score of ML models signicantly compared
+to SMOTE, which makes it unique.
+Datasets with high imbalance ratio: To verify the performance of LoRAS on highly
+imbalanced datasets we present average of the selected model performances for the
+datasets with highest imbalance ratios (among the ones we have tested) in Table 5.
+Table 5: Table showing the average Balanced accuracy/F1-Score of the selected models for
+datasets with the highest imbalance ratios and high dimensional datasets separately
+Average Baseline SMOTE Bl-1 Bl-2 SVM ADASYN LoRAS
+Highly imbalanced datasets .662/.381 .840/.321 .819/.364 .817/.319 .814/.382 .841/.305 .846/.449
+High dimensional datasets .687/.415 .728/.358 .730/.362 .740/.332 .736/.361 .729/.361 .739/.436
+From our results we observe that LoRAS oversampling can signicantly improve model
+performances for highly imbalanced datasets. LoRAS provides the highest F1-Score
+and Balanced accuracy among all the oversampling models. The results here show
+similar properties for SMOTE, Borderline-1 SMOTE, SVM SMOTE, ADASYN and
+LoRAS as discussed before. Note that, for the credit fraud dataset, which is the most
+imbalanced among all, LoRAS has signicant success over the other oversampling models
+in terms of Balanced accuracy. For the webpage dataset as well it improves the Balanced
+accuracy signicantly, compromising minimally on the baseline F1-Score. The same
+trend follows for the letter image dataset. Notably, these three datasets have the highest
+number of overall samples as well, implying that with more data LoRAS can signicantly
+outperform compared convex combination based oversampling models.
+High dimensional datasets: It is also of interest to us to check how LoRAS performs
+on high dimensional datasets. We therefore select ve datasets with highest number of
+features among our tested datasets and present the performances of the selected ML
+methods in Table 5 From our results for high dimensional datasets, we observe that Lo-
+RAS produces the best F1-Score and second best Balanced accuracy on average among
+all oversampling models as Borderline-2 SMOTE beats LoRAS marginally. SMOTE
+improves both Balanced accuracy with respect to the baseline score here. Borderline-1
+SMOTE and SVM SMOTE further increases SMOTE's performance both in terms of
+F1-Score and Balanced accuracy. Borderline-2 SMOTE, although improves the Bal-
+anced accuracy of SMOTE compromises on the F1-Score. Note that, even excluding the
+webpage dataset, where LoRAS has an overwhelming success, LoRAS still has the best
+average F1-Score and third highest Balanced accuracy marginally behind SVM-SMOTE
+and Borederline-2 SMOTE. We thus conclude, that for high dimensional datasets Lo-
+RAS can outperform the compared oversampling models in terms of F1-Score, while
+compromising marginally for Balanced accuracy.
+Small datasets: For the two small datasets (with less than 10 samples in minority
+15
+class) we have explored, we observed that LoRAS performs reasonably well. For the
+`ar1', LoRAS produces the best F1-Score and third best Balanced accuracy. For the
+`ar2' dataset LoRAS produces the best Balanced accuracy and the third best F1-Score.
+Note that LoRAS performs quite well for the `abalone' and `arrhythmia' datasets, which
+also have a small number of data points in the minority class.
+Statistical Analysis: Following Tarawneh et al. (2020), we use the Wilcoxon's signed
+rank test to compare LoRAS against the other convex-combination based oversampling
+algorithms, in terms of both the performance measures we have used: F1-Score and
+Balanced accuracy. Tarawneh et al. (2020) chose this test for comparative studies since
+it is safer than parametric tests as it refrains from assuming homogeneity or normal
+distribution of data. Therefore, it can be applied to any classier evaluation measure.
+Tarawneh et al. (2020) further conrms: `The Wilcoxon test aims to nd if a null
+hypothesis is true or not. The null hypothesis H0assumes that there is no signicant
+dierence between the classication results (observations) obtained from two dierent
+methods. We assume that the null hypothesis is rejected if the p-value of the Wilcoxon
+test is less than = 0:05'(Tarawneh et al., 2020).
+Table 6: Table showing p-values for comparison of LoRAS against the other oversampling
+algorithms, in terms of both the performance measures we have used: F1-Score and Balanced
+accuracy.
+Measure Baseline SMOTE Bl-1 Bl-2 SVM ADASYN
+F1-Score 0.0303 0.0009 0.0479 .0035 0.0479 0.0009
+Balanced accuracy 0.0009 0.0354 0.0258 0.5095 0.0382 0.1670
+From Table 6 we observe that the p-values for all the paired tests are less than 0 :05
+for the F1-Score, and therefore, the H0is rejected for all the paired tests in case of the
+F1-Score. Thus, the F1-Scores LoRAS produce have a big enough dierence compared
+to the other compared algorithms, to be statistically signicant. For Balanced accuracy,
+the algorithms Borderline-2 SMOTE and ADASYN do not show signicant statistical
+dierence to LoRAS. However, since F1-Score is a more reliable and widely used met-
+ric for imbalanced datasets, we conclude that overall results generated by LoRAS are
+signicantly dierent from the compared oversampling algorithms.
+Tarawneh et al. (2020) also remarks that the p-value alone is informative enough and
+does not provide information about the relationship strength between variables. The
+p-values do not reveal whether the results are signicantly dierent in favour of LoRAS
+or against LoRAS. For that following Tarawneh et al. (2020) we use the metrics W+,
+W andR. These are calculated using the following stpng:
+For each data pair (involving LoRAS and some other oversampling algorithm)
+of model predictions , the dierence between both predictions is calculated and
+stored in a vector D, excluding the zero dierence values.
+The signs of the dierence is recorded in a sign vector S.
+16
+The entries injDjare ranked, forming a vector R0. In case of tied ranks, an average
+ranking scheme is adopted. This means, after ranking the entries of jDjare ranked
+using integers and then, in case of tied entries the average of the integer ranks are
+considered as the average rank for all the respective tied entries with a specic
+tied value.
+Component-wise product of SandR0provides us with the vector W, the vector
+of the signed ranks. The sum of absolute values of the positive entries in WisW+
+and the sum of absolute values of the negative entries in WisW . After this we
+dene,WR=minfW+;W g
+Then the test statistic Zis calculated by the equation
+Z=WR n(n+1)
+4q
+n(n+1)(2n+1)
+24 t3 t
+48(1)
+wherenis the number of components in Dandtis the number of times some i-th
+entry occurs in R0, summed over all such repeated instances.
+FinallyRis calculated using R=jZjp
+N, whereNis the total number of datasets
+compared, which is 14 in our case.
+Note that a higher value W+for LoRAS indicates towards a superior performance of Lo-
+RAS and the value of Rindicates towards how superior(with a higher W+)/ inferior(with
+a higherW ) the performance of LoRAS is, compared to the other oversampling model
+for the tested datasets. Tarawneh et al. (2020) have considered ranges of R0:1,
+0:1< R0:5 andR > 0:5 to be indicators for small, medium and high degree of
+change (improvement or deterioration) in the predictive performance respectively.
+Table 7: Table showing W+/W /Rfor comparison of LoRAS against the other oversampling
+algorithms, in terms of both the performance measures we have used: F1-Score and Balanced
+accuracy.
+Measure Baseline SMOTE Bl-1 Bl-2 SVM ADASYN
+F1-Score 95/10/.713 105/0/.880 90/15/.629 102/3/.830 80/15/.629 105/0/.880
+Balanced accuracy 105/0/.880 102/3/.830 95/10/.715 69/36/.286 95/10/.722 95/10/.837
+From Table 7 we note that, LoRAS has a higher W+value for both F1 Score and
+Balanced accuracy in comparison to each of the other convex combination based over-
+sampling methods in consideration. Moreover for the F1 Score measure, the Rvalue
+is also more than 0 :5, indicating a high degree of improvement in F1-Score for LoRAS,
+over the considered oversampling models. Similarly, for Balanced accuracy, we nd high
+degree of improvement for LoRAS, over all considered oversampling models except the
+Borderline-2 SMOTE, for which there is a medium degree of improvement. Overall, we
+thus conclude that LoRAS provides a signicant improvement in performance over the
+compared convex combination based oversampling methods.
+17
+5 Discussion
+We have constructed a mathematical framework to prove that LoRAS is a more eective
+oversampling technique since it provides a better estimate for the mean of the underlying
+local data distribution of the minority class data space. Let X= (X1;:::;XjFj)2Cmin
+be an arbitrary minority class sample. Let NX
+kbe the set of the k-nearest neighbors
+ofX, which will consider the neighborhood of X. Both SMOTE and LoRAS focus on
+generating augmented samples within the neighborhood NX
+kat a time. We assume that
+a random variable X2NX
+kfollows a shifted t-distribution with kdegrees of freedom,
+location parameter , and scaling parameter . Note that here is not referring to the
+standard deviation but sets the overall scaling of the distribution (Jackman, 2009), which
+we choose to be the sample variance in the neighborhood of X. A shifted t-distribution
+is used to estimate population parameters, if there are less number of samples (usually,
+30) and/or the population variance is unknown. Since in SMOTE or LoRAS we
+generate samples from a small neighborhood, we can argue in favour of our assumption
+that locally, a minority class sample Xas a random variable, follows a t-distribution.
+Following Blagus and Lusa (2013), we assume that if X;X02NX
+kthenXandX0are
+independent. For X;X02NX
+k, we also assume:
+I E[X] = I E[X0]
+== (1;:::;jFj)
+Var[X] = Var[X0]
+=2k
+k 2
+=02= (02
+1;:::;02
+jFj)(2)
+where, I E[X] and Var[X] denote the expectation and variance of the random variable X
+respectively. However, the mean has to be estimated by an estimator statistic (i.e. a
+function of the samples). Both SMOTE and LoRAS can be considered as an estimator
+statistic for the mean of the t-distribution that X2Cminfollows locally.
+Theorem 1. Both SMOTE and LoRAS are unbiased estimators of the mean of the
+t-distribution that Xfollows locally. However, the variance of the LoRAS estimator is
+less than the variance of SMOTE given that jFj>2.
+Proof. A shadowsample Sis a random variable S=X+BwhereX2NX
+k, the neigh-
+borhood of some arbitrary X2CminandBfollowsN(0;B).
+I E[S] = I E[X] + I E[B]
+=
+Var[S] = Var[X] + Var[B]
+=02+2
+B(3)
+assumingSandBare independent. Now, a LoRAS sample L=1S1++jFjSjFj,
+whereS1;:::;SjFjare shadowsamples generated from the elements of the neighborhood
+18
+ofX,NX
+k, such that 1++jFj= 1. The ane combination coecients 1;:::;jFj
+follow a Dirichlet distribution with all concentration parameters assuming equal values
+of 1 (assuming all features to be equally important). For arbitrary i;j2
+1;:::;jFj	
+,
+I E[i] =1
+jFj
+Var[i] =jFj 1
+jFj2(jFj+ 1)
+Cov(i;j) = 1
+jFj2(jFj+ 1)
+where Cov( A;B) denotes the covariance of two random variables AandB. Assuming
+andSto be independent,
+I E[L] = I E[1]I E[S1] ++ I E[jFj]I E[SjFj] = (4)
+ThusLis an unbiased estimator of . Forj;k;l2
+1;:::;jFj	
+,
+Cov[kSk
+j;lSl
+j] = I E[kSk
+jlSl
+j] I E[kSk
+j]I E[lSl
+j]
+= I E[kl]2
+j 2
+j
+jFj2
+=
+Cov(k;l) +1
+jFj2
+2
+j 2
+j
+jFj2=2
+jCov(k;l)(5)
+sinceklis independent of Sk
+jSl
+j. For an arbitrary j,j-th component of a LoRAS
+sampleLj
+Var(Lj) = Var(1S1
+j++jFjSjFj
+j)
+= Var(1S1
+j) ++ Var(jFjSjFj
+j) + jFj
+k=1jFj
+l=1;l6=kCov(kSk
+j;lSl
+j)
+=2
+j(jFj 1) + 2(02
+j+2
+Bj)jFj
+jFj(jFj+ 1) 2
+j(jFj 1)
+jFj(jFj+ 1)
+=2(02
+j+2
+Bj)
+(jFj+ 1)(6)
+For LoRAS, we take an ane combination of jFjshadowsamples and SMOTE considers
+an ane combination of two minority class samples. Note, that since a SMOTE gener-
+ated oversample can be interpreted as a random ane combination of two minority class
+samples, we can consider, jFj= 2 for SMOTE, independent of the number of features.
+Also, from Equation 4, this implies that SMOTE is an unbiased estimator of the mean
+of the local data distribution. Thus, the variance of a SMOTE generated sample as an
+estimator of would be202
+3(sinceB= 0 for SMOTE). But for LoRAS as an estimator
+of, whenjFj>2, the variance would be less than that of SMOTE.
+This implies that, locally, LoRAS can estimate the mean of the underlying t-distribution
+better than SMOTE. To visualize the key aspects of LoRAS oversampling, we provide
+the PCA plots for oversampled data from the ozone level dataset several oversampling
+methods we have studied in Figure 2. From Figure 2 we can observe that SMOTE
+19
+Figure 2: Figure showing for Principal Component Analysis plot of ozone dataset for baseline
+data and oversampled data with several oversampling strategies for the ozone level dataset. The
+boxed region in each subplot shows a neighbourhood of outliers and how each oversampling
+stategy generates synthetic samples in that neighbourhood.
+and ADASYN oversamples highly on the neighbourhood of the outliers, depicted by a
+blue box in each subplot. While this is somewhat controlled in Borderline1-SMOTE and
+SVM SMOTE, they still generate some synthetic samples in this neighbourhood. LoRAS
+on the other hand refrains, leveraging on its strategy to produce a better estimate for
+local mean of the underlying local data distribution. This enables LoRAS to ignore the
+outliers and to oversample more uniformly resulting in a better approximation of the
+data manifold. Note that, the average F1-Scores of the oversampling models as presented
+in Table 4 has a direct correlation to how the oversampling strategy oversamples in this
+neighbourhood. SMOTE and ADASYN generates the lowest F1-Scores and show a
+tendency of oversampling excessively from this neighbourhood. Borderline-SMOTE and
+SVM improves the F1-Score compared to SMOTE and ADASYN, again, consistent to
+their behaviour of oversampling lesser in this neighbourhood. LoRAS, has the highest
+average F1-Score and oversampling very sparsely from this neighbourhood.
+6 Conclusions
+Oversampling with LoRAS produces comparatively balanced ML model performances
+on average, in terms of Balanced Accuracy and F1-Score among the compared convex-
+20
+combination strategy based oversampling techniques. This is due to the fact that, in
+most cases LoRAS produces lesser mis-classications on the majority class with a rea-
+sonably small compromise for mis-classications on the minority class. From our study
+we infer that for tabular high dimensional and highly imbalanced datasets our LoRAS
+oversampling approach can better estimate the mean of the underlying local distribution
+for a minority class sample (considering it a random variable) and can improve Balanced
+accuracy and F1-Score of ML classication models. However, the scope of such convex
+combination based strategies including LoRAS, might be limited for heterogeneous im-
+age based imbalanced datasets.
+The distribution of both the minority and majority class data points is considered in
+the oversampling techniques such as Borderline1 SMOTE, Borderline2 SMOTE, SVM-
+SMOTE, and ADASYN (Gosain and Sardana, 2017). SMOTE and LoRAS are the only
+two techniques, among the oversampling techniques we explored, that deal with the
+problem of imbalance just by generating new data points, independent of the distribu-
+tion of the majority class data points. Thus, comparing LoRAS and SMOTE gives a
+fair impression about the performance of our novel LoRAS algorithm as an oversam-
+pling technique, without considering any aspect of the distributions of the minority and
+majority class data points and relying just on resampling. Other extensions of SMOTE
+such as Borderline1 SMOTE, Borderline2 SMOTE, SVM-SMOTE, and ADASYN can
+also be built on the principle of LoRAS oversampling strategy. According to our analy-
+ses LoRAS already reveals great potential on a broad variety of applications and evolves
+as a true alternative to SMOTE, while processing highly unbalanced datasets.
+Availability of code: A preliminary implementation of the algorithm in Python
+(V 3.7.4) and an example Jupyter Notebook for the credit card fraud detec-
+tion dataset is provided on the GitHub repository https://github.com/sbi-rostock/
+LoRAS . This version does not yet include the t-embedding parameter. In our computa-
+tional code, |Sp|corresponds to numshadow points ,Lscorresponds to list sigma f,
+Naffcorresponds to numaffcomb ,Ngencorresponds to numgenerated points .
+Acknowledgements: We thank Prof. Ria Baumgrass from Deutsches Rheuma-
+Forschungszentrum (DRFZ), Berlin for enlightening discussions on small datasets oc-
+curing in her research related to cancer therapy, that led us to the current work. We
+thank the German Network for Bioinformatics Infrastructure (de.NBI) and Establish-
+ment of Systems Medicine Consortium in Germany e:Med for their support, as well
+as the German Federal Ministry for Education and Research (BMBF) programs (FKZ
+01ZX1709C) for funding us.
+References
+A. Aditsania, Adiwijaya, and A. L. Saonard. Handling imbalanced data in churn pre-
+diction using adasyn and backpropagation algorithm. In 2017 3rd International Con-
+21
+ference on Science in Information Technology (ICSITech) , pages 533{536, 2017. doi:
+https://doi.org/10.1109/ICSITech.2017.8257170 .
+Julien Ah-Pine, Edmundo-Pavel Soriano-Morales, and Edmundo Pavel Soriano Morales.
+A Study of Synthetic Oversampling for Twitter Imbalanced Sentiment Analysis. In
+Workshop on Interactions between Data Mining and Natural Language Processing
+(DMNLP 2016) , volume 1646, pages 17{24, 2016.
+Ashish Anand, Ganesan Pugalenthi, Gary Fogel, and Ponnuthurai Suganthan. An ap-
+proach for classication of highly imbalanced data using weighting and undersampling.
+Amino acids , 39:1385{91, 11 2010. doi: 10.1007/s00726-010-0595-2.
+Sukarna Barua, Md. Monirul Islam, Xin Yao, and Kazuyuki Murase. Mwmote{majority
+weighted minority oversampling technique for imbalanced data set learning. IEEE
+Transactions on Knowledge and Data Engineering , 26(2):405{425, Feb, 2014. doi:
+https://doi.org/10.1109/TKDE.2012.232 , ISSN: 1041-4347.
+C Bellinger, C Drummond, and N Japkowicz. Manifold-based synthetic oversampling
+with manifold conformance estimation. Machine Learning , 107:605{637, 2018. doi:
+https://doi.org/10.1007/s10994-017-5670-4 .
+Colin Bellinger, Christopher Drummond, and Nathalie Japkowicz. Beyond the bound-
+aries of smote. In Paolo Frasconi, Niels Landwehr, Giuseppe Manco, and Jilles
+Vreeken, editors, Machine Learning and Knowledge Discovery in Databases , pages
+248{263, Cham, 2016. Springer International Publishing.
+Rok Blagus and Lara Lusa. Smote for high-dimensional class-imbalanced data.
+BMC Bioinformatics , 14(1):106, Mar 2013. doi: https://doi.org/10.1186/
+1471-2105-14-106 , ISSN: 1471-2105.
+Chumphol Bunkhumpornpat, Krung Sinapiromsaran, and Chidchanok Lursinsap. Safe-
+level-smote: Safe-level-synthetic minority over-sampling technique for handling the
+class imbalanced problem. In Advances in Knowledge Discovery and Data Mining,
+Lecture notes in Computer Science , volume 5476, pages 475{482. Springer, 2009. doi:
+https://doi.org/10.1007/978-3-642-01307-2_43 , ISBN: 978-3-642-01307-2.
+A. M. Carvalho and R. C. Prati. Improving knn classication under unbalanced data.
+a new geometric oversampling approach. In 2018 International Joint Conference on
+Neural Networks (IJCNN) , pages 1{6, July 2018. doi: 10.1109/IJCNN.2018.8489411.
+N. V. Chawla, K. W. Bowyer, L. O. Hall, and W. P. Kegelmeyer. Smote: Synthetic
+minority over-sampling technique. Journal of Articial Intelligence Research , 16:321{
+335, 2002. doi: https://doi.org/10.1613/jair.953 .
+Nitesh V Chawla, Aleksandar Lazarevic, Lawrence O Hall, and Kevin Bowyer. SMOTE-
+Boost: Improving Prediction of the Minority Class in Boosting. In European Confer-
+ence on Principles of Data Mining and Knowledge Discovery , pages 107{119, 2003.
+doi: https://doi.org/10.1007/978-3-540-39804-2_12 , ISBN: 978-3-540-39804-2.
+22
+C Chiamanusorn and K Sinapiromsaran. Extreme anomalous oversampling technique for
+class imbalance. In Proceedings of the 2017 International Conference on Information
+Technology , ICIT 2017, pages 341{345, New York, NY, USA, 2017. ACM. ISBN 978-
+1-4503-6351-8. doi: 10.1145/3176653.3176671. URL http://doi.acm.org/10.1145/
+3176653.3176671 . doi: https://doi.org/10.1145/3176653.3176671 .
+Andrea Dal Pozzolo, Giacomo Boracchi, Olivier Caelen, Cesare Alippi, and Gianluca
+Bontempi. Credit card fraud detection: A realistic modeling and a novel learning
+strategy. IEEE Transactions on Neural Networks and Learning Systems , 29:1{14, 09
+2017. doi: https://doi.org/10.1109/TNNLS.2017.2736643 .
+Jesse Davis and Mark Goadrich. The relationship between precision-recall and roc
+curves. In Proceedings of the 23rd International Conference on Machine Learning ,
+ICML '06, pages 233{240, New York, NY, USA, 2006. ACM. ISBN 1-59593-383-2. doi:
+10.1145/1143844.1143874. URL http://doi.acm.org/10.1145/1143844.1143874 .
+Zejin Ding. Diversied Ensemble Classiers for Highly Imbalanced Data Learning and
+Its Application in Bioinformatics . PhD thesis, Georgia State University, Atlanta, GA,
+USA, 2011. ISBN: 978-1-267-04661-1.
+Georgios Douzas and Fernando Bacao. Geometric smote a geometrically enhanced drop-
+in replacement for smote. Information Sciences , 501:118 { 135, 2019. ISSN 0020-0255.
+doi: https://doi.org/10.1016/j.ins.2019.06.007. URL http://www.sciencedirect.
+com/science/article/pii/S0020025519305353 .
+T Elhassan, M Aljurf, F Al-Mohanna, and M Shoukri. Classication of Imbalance Data
+using Tomek Link (T-Link) Combined with Random Under-sampling (RUS) as a Data
+Reduction Method. Global Journal of Technology and Optimization , 1:2{11, 2016. doi:
+https://doi.org/10.21767/2472-1956.100011 , ISSN: 2472-1956.
+Ming Gao, Xia Hong, Sheng Chen, and Chris J. Harris. On combination of SMOTE
+and particle swarm optimization based radial basis function classier for imbalanced
+problems. In The 2011 International Joint Conference on Neural Networks , pages
+1146{1153. IEEE, Jul, 2011. doi: https://doi.org/10.1109/IJCNN.2011.6033353 ,
+ISBN: 978-1-4244-9635-8.
+A. Gosain and S. Sardana. Handling class imbalance problem using oversampling
+techniques: A review. In 2017 International Conference on Advances in Com-
+puting, Communications and Informatics (ICACCI) , pages 79{85, Sep 2017. doi:
+https://doi.org/10.1109/ICACCI.2017.8125820 , ISBN: 978-1-5090-6367-3.
+He Haibo, Bai Yang, E Garcia, and Li Shutao. Adasyn: Adaptive synthetic sampling
+approach for imbalanced learning. In 2008 IEEE International Joint Conference on
+Neural Networks , June, 2008. doi: https://doi.org/10.1109/IJCNN.2008.4633969
+, ISBN: 2161-4393.
+Hui Han, Wen-Yuan Wang, and Bing-Huan Mao. Borderline-smote: A new over-
+sampling method in imbalanced data sets learning. In Advances in Intelligent Com-
+23
+puting. ICIC , volume 3644, pages 878{887. Springer Berlin Heidelberg, 2005. doi:
+https://doi.org/10.1007/1153805_91 , ISBN: 978-3-540-31902-3.
+Fithria Siti Hanifah, Hari Wijayanto, and Anang Kurnia. SMOTE Bagging Algorithm
+for Imbalanced Dataset in Logistic Regression Analysis (Case: Credit of Bank X).
+Applied Mathematical Sciences , 9(138):6857{6865, 2015. doi: https://doi.org/10.
+12988/ams.2015.58562 , ISSN: 0066-5452.
+Georey E Hinton and Sam T. Roweis. Stochastic neighbor embedding. In S. Becker,
+S. Thrun, and K. Obermayer, editors, Advances in Neural Information Processing
+Systems 15 , pages 857{864. MIT Press, 2003. URL http://papers.nips.cc/paper/
+2276-stochastic-neighbor-embedding.pdf .
+Nishtha Hooda, Seema Bawa, and Prashant Singh Rana. B2fse framework for high
+dimensional imbalanced data: A case study for drug toxicity prediction. Neu-
+rocomputing , 276:31 { 41, 2018. ISSN 0925-2312. doi: https://doi.org/10.1016/
+j.neucom.2017.04.081. URL http://www.sciencedirect.com/science/article/
+pii/S092523121731545X . Machine Learning and Data Mining Techniques for Medical
+Complex Data Analysis.
+Shengguo Hu, Yanfeng Liang, Lintao Ma, and Ying He. MSMOTE: Improving Clas-
+sication Performance when Training Data is imbalanced. In Second International
+Workshop on Computer Science and Engineering , volume 2, pages 13{17, Jan, 2009.
+doi: https://doi.org/10.1109/WCSE.2009.756,ISBN:978-0-7695-3881-5 .
+Simon D. Jackman. Bayesian analysis for the social sciences . WILEY, 2009. doi:
+https://doi.org/10.1002/9780470686621,ISBN:9780470011546 .
+X. Jing, X. Zhang, X. Zhu, F. Wu, X. You, Y. Gao, S. Shan, and J. Yang. Multiset
+feature learning for highly imbalanced data classication. IEEE Transactions on
+Pattern Analysis and Machine Intelligence , pages 1{1, 2019. ISSN 1939-3539. doi:
+10.1109/TPAMI.2019.2929166.
+D Kobak and P Berens. Visualizing data using t-SNE. Nature Communications , 10,
+2019. doi: https://10.1038/s41467-019-13056-x .
+Gyrgy Kovcs. Smote-variants: A python implementation of 85 minority oversam-
+pling techniques. Neurocomputing , 366:352 { 354, 2019. ISSN 0925-2312. doi:
+https://doi.org/10.1016/j.neucom.2019.06.100. URL http://www.sciencedirect.
+com/science/article/pii/S0925231219311622 .
+T Le, M Thanh Vo, B Vo, Y Lee, and W Baik. A hybrid approach using oversampling
+technique and cost-sensitive learning for bankruptcy prediction. Complexity , 2019, 03
+2019. doi: https://10.1155/2019/8460934 .
+Sauchi Stephen Lee. Noisy replication in skewed binary classication. Com-
+put. Stat. Data Anal. , 34(2):165{191, August 2000. ISSN 0167-9473. doi: 10.
+1016/S0167-9473(99)00095-X. URL http://dx.doi.org/10.1016/S0167-9473(99)
+00095-X . doi: https://10.1016/S0167-9473(99)00095-X .
+24
+Guillaume Lema^ tre, Fernando Nogueira, and Christos K. Aridas. Imbalanced-learn: A
+Python Toolbox to Tackle the Curse of Imbalanced Datasets in Machine Learning.
+Journal of Machine Learning Research , 18:559{563, Jan, 2017. ISSN: 1532-4435.
+Shaza M. Abd Elrahman and Ajith Abraham. A review of class imbalance problem.
+Journal of Network and Innovative Computing , 1:332{340, 2013. ISSN: 2160-2174.
+Josey Mathew, Ming Luo, Chee Khiang Pang, and Hian Leng Chan. Kernel-based
+smote for svm classication of imbalanced datasets. In IECON 2015 - 41st An-
+nual Conference of the IEEE Industrial Electronics Society , pages 001127{001132.
+IEEE, Nov, 2015. doi: https://doi.org/10.1109/IECON.2015.7392251 , ISBN: 978-
+1-4799-1762-4.
+Kamthorn Puntumapon and Kitsana Waiyamai. A pruning-based approach for searching
+precise and generalized region for synthetic minority over-sampling. In Advances
+in Knowledge Discovery and Data Mining , pages 371{382, Berlin, Heidelberg, 2012.
+Springer Berlin Heidelberg.
+Enislay Ramentol, Nele Verbiest, Rafael Bello, Yaile Caballero, Chris Cornelis, and
+Francisco Herrera. Smote-frst: A new resampling method using fuzzy rough set
+theory. In World Scientic Proceedings Series on Computer Engineering and In-
+formation Science , volume 7, pages 800{805, 2012. doi: https://doi.org/10.1142/
+9789814417747_0128 , ISBN: 9789814417730.
+Jos e A. Saez, Bartosz Krawczyk, and Micha l Wo zniak. Analyzing the oversampling of
+dierent classes and types of examples in multi-class imbalanced datasets. Pattern
+Recognition , 57:164{178, 2016. doi: https://doi.org/10.1016/j.patcog.2016.03.
+012, ISBN: 978-1-267-04661-1.
+Takaya Saito and Marc Rehmsmeier. The precision-recall plot is more informative than
+the roc plot when evaluating binary classiers on imbalanced datasets. PLOS ONE ,
+10:1{21, 03 2015. URL https://doi.org/10.1371/journal.pone.0118432 . doi:
+https://doi.org/10.1371/journal.pone.0118432 .
+B Santoso, H Wijayanto, K A Notodiputro, and B Sartono. Synthetic over sampling
+methods for handling class imbalanced problems : A review. IOP Conference Series:
+Earth and Environmental Science , 58:012{031, Mar 2017. doi: https://doi.org/
+10.1088/1755-1315/58/1/012031 , ISSN: 1755-1315.
+Yirey Suh, Jaemyung Yu, Jonghoon Mo, Leegu Song, and Cheongtag Kim. A comparison
+of oversampling methods on imbalanced topic classication of korean news articles.
+Journal of Cognitive Science , 18:391{437, 2017.
+A. S. Tarawneh, A. B. A. Hassanat, K. Almohammadi, D. Chetverikov, and C. Bellinger.
+Smotefuna: Synthetic minority over-sampling technique based on furthest neighbour
+algorithm. IEEE Access , 8:59069{59082, 2020.
+Laurens van der Maaten and Georey Hinton. Visualizing data using t-SNE. Journal of
+25
+Machine Learning Research , 9:2579{2605, 2008. url: http://www.jmlr.org/papers/
+v9/vandermaaten08a.html .
+D. Varmedja, M. Karanovic, S. Sladojevic, M. Arsenovic, and A. Anderla. Credit
+card fraud detection - machine learning methods. In 2019 18th International Sym-
+posium INFOTEH-JAHORINA (INFOTEH) , pages 1{5, March 2019. doi: https:
+//10.1109/INFOTEH.2019.8717766 .
+Kung-Jeng Wang, Bunjira Makond, Kun-Huang Chen, and Kung-Min Wang. A
+hybrid classier combining SMOTE with PSO to estimate 5-year survivability of
+breast cancer patients. Applied Soft Computing , 20:15{24, Jul, 2014. doi: https:
+//doi.org/10.1016/J.ASOC.2013.09.014 , ISSN: 1568-4946.
+William A. Young, Ii, Scott L. Nykl, Gary R. Weckman, and David M. Chelberg. Using
+voronoi diagrams to improve classication performances when modeling imbalanced
+datasets. Neural Comput. Appl. , 26(5):1041{1054, July 2015. ISSN 0941-0643. doi: 10.
+1007/s00521-014-1780-0. URL http://dx.doi.org/10.1007/s00521-014-1780-0 .
+Supplementary data
+We provide the detailed individual results for each dataset and each ML model for our
+analysis as supplementary data. Here, we use the acronyms bl1, bl2, SVM and ADA for
+the oversampling models Borderline-1 SMOTE, Borderline-2 SMOTE, SVM-SMOTE
+and ADASYN respectively. We mark in bold for each dataset, the ML model with the
+highest average F1-Score, a criteria by which we select the model results to include in
+our further analysis.
+Dataset: abalone 19
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Baseline 0 0 0 0 0 0 0
+SMOTE 0.045 0.046 0.048 0.049 0.049 0.0474 0.00181659
+bl1 0.048 0.05 0.04 0.051 0.043 0.0464 0.00472229
+bl2 0.044 0.047 0.04 0.056 0.051 0.0476 0.0061887
+SVM 0.057 0.062 0.049 0.057 0.051 0.0552 0.00521536
+ADA 0.045 0.046 0.049 0.05 0.048 0.0476 0.00207364
+LoRAS (Em=t,p=10) 0.055 0.055 0.056 0.057 0.057 0.056 0.001
+F1-Score average 0.04288571
+Table 8: F1-Scores for the logistic regression model for 5 runs of 10-fold cross validation for
+abalone 19 dataset
+26
+Oversampling model lr1 lr2 lr3 lr4 lr5 mean sd
+Baseline 0.5 0.5 0.499 0.499 0.499 0.4994 0.00054772
+SMOTE 0.709 0.73 0.725 0.734 0.729 0.7254 0.00971082
+bl1 0.677 0.686 0.623 0.696 0.659 0.6682 0.02870017
+bl2 0.657 0.687 0.64 0.733 0.701 0.6836 0.03661694
+SVM 0.662 0.689 0.631 0.667 0.659 0.6616 0.02075572
+ADA 0.71 0.729 0.727 0.735 0.726 0.7254 0.00928978
+LoRAS (Em=t,p=10) 0.728 0.747 0.733 0.735 0.743 0.7372 0.00769415
+Table 9: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for abalone 19
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Baseline 0 0 0 0 0 0 0
+SMOTE 0.032 0.03 0.028 0.028 0.031 0.0298 0.00178885
+bl1 0.023 0.025 0.024 0.027 0.027 0.0252 0.00178885
+bl2 0.023 0.025 0.024 0.027 0.027 0.0252 0.00178885
+SVM 0.035 0.039 0.035 0.039 0.025 0.0346 0.00572713
+ADA 0.031 0.03 0.028 0.028 0.031 0.0296 0.00151658
+LoRAS (Em=t,p=10)) 0.032 0.033 0.029 0.033 0.032 0.0318 0.00164317
+F1-Score average 0.02517143
+Table 10: F1-Scores for the svm model for 5 runs of 10-fold cross validation for abalone 19
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Baseline 0.5 0.5 0.5 0.5 0.5 0.5 0
+SMOTE 0.766 0.733 0.701 0.727 0.74 0.7334 0.02343715
+bl1 0.615 0.662 0.635 0.703 0.684 0.6598 0.03563285
+bl2 0.615 0.662 0.635 0.703 0.684 0.6598 0.03563285
+SVM 0.686 0.728 0.684 0.737 0.702 0.7074 0.02416195
+ADA 0.757 0.733 0.699 0.726 0.753 0.7336 0.02334095
+LoRAS (Em=t,p=10) 0.745 0.758 0.703 0.768 0.752 0.7452 0.02505394
+Table 11: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for
+abalone 19 dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Baseline 0 0 0 0 0 0 0
+SMOTE 0.056 0.05 0.053 0.047 0.066 0.0544 0.00730068
+bl1 0.044 0.059 0.035 0.052 0.034 0.0448 0.01080278
+bl2 0.044 0.062 0.042 0.039 0.031 0.0436 0.0114149
+SVM 0.046 0.062 0.037 0.045 0.035 0.045 0.01065364
+ADA 0.057 0.049 0.053 0.054 0.063 0.0552 0.00521536
+LoRAS (Em=r,p=NA) 0.058 0.062 0.055 0.061 0.063 0.0598 0.00327109
+F1-Score average 0.04325714
+Table 12: F1-Scores for the knn model for 5 runs of 10-fold cross validation for abalone 19
+dataset
+27
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Baseline 0.677 0.5 0.5 0.5 0.5 0.5354 0.07915681
+SMOTE 0.555 0.652 0.661 0.635 0.72 0.6446 0.05943316
+bl1 0.572 0.569 0.522 0.564 0.537 0.5528 0.02210656
+bl2 0.555 0.594 0.541 0.543 0.545 0.5556 0.02213143
+SVM 0.678 0.57 0.523 0.548 0.538 0.5714 0.06199032
+ADA 0.656 0.651 0.668 0.669 0.71 0.6708 0.02323144
+LoRAS (Em=r,p=NA) 0.666 0.683 0.664 0.667 0.698 0.6756 0.01463899
+Table 13: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for
+abalone 19 datase
+28
+Dataset: arrhythmia
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Baseline 0.36 0.39 0.354 0.35 0.396 0.37 0.02140093
+SMOTE 0.346 0.34 0.249 0.35 0.44 0.345 0.06762396
+bl1 0.356 0.347 0.38 0.309 0.372 0.3528 0.0277074
+bl2 0.334 0.362 0.317 0.27 0.252 0.307 0.04540925
+SVM 0.403 0.426 0.244 0.326 0.351 0.35 0.07141078
+ADA 0.398 0.306 0.336 0.336 0.435 0.3622 0.05270863
+LoRAS (Em=t,p=1) 0.429 0.43 0.288 0.353 0.403 0.3806 0.06045908
+F1-Score average 0.35251429
+Table 14: F1-Scores for the lr model for 5 runs of 10-fold cross validation for arrhythmia dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Baseline 0.688 0.701 0.646 0.673 0.687 0.679 0.02094039
+SMOTE 0.674 0.673 0.624 0.673 0.686 0.666 0.02411431
+bl1 0.686 0.676 0.676 0.654 0.672 0.6728 0.01171324
+bl2 0.729 0.766 0.697 0.68 0.673 0.709 0.03850325
+SVM 0.713 0.723 0.621 0.671 0.668 0.6792 0.04074555
+ADA 0.696 0.642 0.649 0.656 0.695 0.6676 0.02594802
+LoRAS (Em=t,p=1) 0.718 0.725 0.639 0.695 0.694 0.6942 0.03377425
+Table 15: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for arrhythmia
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Baseline 0.259 0.381 0.387 0.376 0.321 0.3448 0.05475582
+SMOTE 0.259 0.381 0.387 0.376 0.321 0.3448 0.05475582
+bl1 0.259 0.381 0.387 0.376 0.321 0.3448 0.05475582
+bl2 0.259 0.381 0.387 0.376 0.321 0.3448 0.05475582
+SVM 0.259 0.381 0.387 0.376 0.321 0.3448 0.05475582
+ADA 0.259 0.381 0.387 0.376 0.321 0.3448 0.05475582
+LoRAS (Em=t,p=1) 0.259 0.381 0.387 0.376 0.321 0.3448 0.05475582
+F1-Score average 0.3448
+Table 16: F1-Scores for the svm model for 5 runs of 10-fold cross validation for arrhythmia
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Baseline 0.659 0.676 0.686 0.697 0.694 0.6824 0.01540454
+SMOTE 0.659 0.676 0.686 0.697 0.694 0.6824 0.01540454
+bl1 0.659 0.676 0.686 0.697 0.694 0.6824 0.01540454
+bl2 0.659 0.676 0.686 0.697 0.694 0.6824 0.01540454
+SVM 0.659 0.676 0.686 0.697 0.694 0.6824 0.01540454
+ADA 0.659 0.676 0.686 0.697 0.694 0.6824 0.01540454
+LoRAS (Em=t,p=1) 0.659 0.676 0.686 0.697 0.694 0.6824 0.01540454
+Table 17: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for
+arrhythmia dataset
+29
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Baseline 0 0 0 0 0.5 0.1 0.2236068
+SMOTE 0.185 0.191 0.202 0.192 0.22 0.198 0.01372953
+bl1 0.187 0.195 0.182 0.194 0.158 0.1832 0.01505656
+bl2 0.176 0.194 0.163 0.169 0.154 0.1712 0.01508973
+SVM 0.213 0.224 0.178 0.206 0.191 0.2024 0.01814663
+ADA 0.196 0.196 0.202 0.169 0.206 0.1938 0.01449828
+LoRAS (Em=t,p=1) 0.179 0.179 0.168 0.192 0.207 0.185 0.01494992
+F1-Score average 0.17622857
+Table 18: F1-Scores for the knn model for 5 runs of 10-fold cross validation for arrhythmia
+dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Baseline 0.5 0.5 0.5 0.5 0.5 0.5 0
+SMOTE 0.674 0.688 0.72 0.728 0.755 0.713 0.03234192
+bl1 0.665 0.677 0.66 0.691 0.658 0.6702 0.01377316
+bl2 0.666 0.689 0.642 0.666 0.658 0.6642 0.01697645
+SVM 0.684 0.681 0.609 0.69 0.689 0.6706 0.03463091
+ADA 0.712 0.693 0.719 0.727 0.73 0.7162 0.01475466
+LoRAS (Em=t,p=1) 0.664 0.673 0.67 0.728 0.715 0.69 0.02930017
+Table 19: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for
+arrhythmia dataset
+Dataset: isolet
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.901 0.792 0.819 0.811 0.807 0.826 0.0430581
+SMOTE 0.799 0.798 0.808 0.817 0.809 0.8062 0.00785493
+bl1 0.792 0.797 0.805 0.812 0.804 0.802 0.00771362
+bl2 0.695 0.698 0.694 0.7 0.681 0.6936 0.0074364
+SVM 0.796 0.795 0.813 0.795 0.8 0.7998 0.00766159
+ADA 0.806 0.793 0.815 0.813 0.803 0.806 0.00877496
+LoRAS (Em=t,p=30) 0.809 0.793 0.821 0.816 0.81 0.8098 0.01056882
+F1-Score average 0.79191429
+Table 20: F1-Scores for the lr model for 5 runs of 10-fold cross validation for isolet dataset
+Ovesampling models lr1 lr2 lr3 lr4 lr5 mean sd
+baseline 0.901 0.89 0.906 0.903 0.903 0.9006 0.0061887
+SMOTE 0.894 0.892 0.901 0.904 0.902 0.8986 0.00527257
+bl1 0.892 0.894 0.903 0.906 0.9 0.899 0.00591608
+bl2 0.906 0.907 0.905 0.912 0.902 0.9064 0.00364692
+SVM 0.907 0.908 0.92 0.909 0.911 0.911 0.00524404
+ADA 0.899 0.891 0.901 0.904 0.897 0.8984 0.00487852
+LoRAS (Em=t,p=30) 0.905 0.894 0.909 0.908 0.906 0.9044 0.00602495
+Table 21: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for isolet
+dataset
+30
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean variance
+Base 0.791 0.788 0.797 0.798 0.793 0.7934 0.00415933
+SMOTE 0.457 0.459 0.458 0.463 0.46 0.4594 0.00230217
+bl1 0.49 0.489 0.486 0.494 0.498 0.4914 0.00466905
+bl2 0.49 0.489 0.486 0.494 0.498 0.4914 0.00466905
+SVM 0.476 0.479 0.473 0.474 0.475 0.4754 0.00230217
+ADA 0.483 0.477 0.48 0.483 0.486 0.4818 0.00342053
+LoRAS (Em=t,p=30) 0.505 0.501 0.501 0.486 0.507 0.5 0.00824621
+F1-Score average 0.52754286
+Table 22: F1-Scores for the svm model for 5 runs of 10-fold cross validation for isolet dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Baseline 0.893 0.893 0.906 0.9 0.904 0.8992 0.00605805
+SMOTE 0.894 0.893 0.895 0.897 0.895 0.8948 0.00148324
+bl1 0.905 0.902 0.904 0.906 0.908 0.905 0.00223607
+bl2 0.905 0.902 0.904 0.906 0.908 0.905 0.00223607
+SVM 0.899 0.901 0.899 0.899 0.897 0.899 0.00141421
+ADA 0.903 0.898 0.902 0.903 0.904 0.902 0.00234521
+LoRAS (Em=t,p=30) 0.91 0.906 0.909 0.908 0.911 0.9088 0.00192354
+Table 23: Balanced Accuracies for the svm model for 5 runs of 10-fold cross validation for isolet
+dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.874 0.881 0.87 0.873 0.871 0.8738 0.00432435
+SMOTE 0.496 0.496 0.498 0.492 0.495 0.4954 0.00219089
+bl1 0.506 0.507 0.508 0.508 0.508 0.5074 0.00089443
+bl2 0.46 0.464 0.463 0.462 0.468 0.4634 0.00296648
+SVM 0.525 0.526 0.527 0.528 0.53 0.5272 0.00192354
+ADA 0.486 0.487 0.488 0.485 0.487 0.4866 0.00114018
+LoRAS (Em=t,p=30) 0.421 0.424 0.42 0.422 0.422 0.4218 0.00148324
+F1-Score average 0.53937143
+Table 24: F1-Scores for the knn model for 5 runs of 10-fold cross validation for isolet dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Baseline 0.914 0.92 0.91 0.915 0.913 0.9144 0.00364692
+SMOTE 0.915 0.915 0.915 0.913 0.913 0.9142 0.00109545
+bl1 0.917 0.918 0.918 0.918 0.918 0.9178 0.00044721
+bl2 0.905 0.903 0.902 0.902 0.904 0.9032 0.00130384
+SVM 0.923 0.923 0.924 0.924 0.925 0.9238 0.00083666
+ADA 0.911 0.912 0.912 0.911 0.911 0.9114 0.00054772
+LoRAS (Em=t,p=30) 0.883 0.884 0.882 0.884 0.883 0.8832 0.00083666
+Table 25: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for isolet
+dataset
+Dataset: letter image
+31
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Baseline 0.743 0.745 0.745 0.744 0.742 0.7438 0.00130384
+SMOTE 0.581 0.587 0.582 0.585 0.583 0.5836 0.00240832
+bl1 0.477 0.499 0.497 0.488 0.487 0.4896 0.00882043
+bl2 0.331 0.337 0.337 0.339 0.339 0.3366 0.00328634
+SVM 0.463 0.468 0.47 0.467 0.468 0.4672 0.00258844
+ADA 0.52 0.52 0.521 0.522 0.518 0.5202 0.00148324
+LoRAS(Em=r,p=NA) 0.666 0.643 0.636 0.638 0.644 0.6454 0.01199166
+F1-Score average 0.54091429
+Table 26: F1-Scores for the lr model for 5 runs of 10-fold cross validation for letter image dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Baseline 0.831 0.833 0.833 0.831 0.83 0.8316 0.00134164
+SMOTE 0.953 0.956 0.954 0.955 0.953 0.9542 0.00130384
+bl1 0.928 0.921 0.926 0.926 0.92 0.9242 0.00349285
+bl2 0.912 0.907 0.905 0.91 0.906 0.908 0.00291548
+SVM 0.945 0.947 0.945 0.944 0.944 0.945 0.00122474
+ADA 0.948 0.949 0.948 0.949 0.948 0.9484 0.00054772
+LoRAS (Em=r,p=NA) 0.915 0.942 0.942 0.944 0.946 0.9378 0.01285302
+Table 27: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for let-
+terimage dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Baseline 0.753 0.757 0.757 0.762 0.761 0.758 0.00360555
+SMOTE 0.166 0.166 0.165 0.165 0.165 0.1654 0.00054772
+bl1 0.174 0.173 0.174 0.174 0.174 0.1738 0.00044721
+bl2 0.174 0.169 0.174 0.174 0.174 0.173 0.00223607
+SVM 0.168 0.177 0.169 0.169 0.17 0.1706 0.00364692
+ADA 0.177 0.186 0.177 0.177 0.177 0.1788 0.00402492
+LoRAS (Em=t,p=1) 0.204 0.206 0.204 0.204 0.203 0.2042 0.00109545
+F1-Score average 0.26054286
+Table 28: F1-Scores for the svm model for 5 runs of 10-fold cross validation for letter image
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.829 0.831 0.831 0.833 0.832 0.8312 0.00148324
+SMOTE 0.809 0.809 0.808 0.807 0.807 0.808 0.001
+bl1 0.819 0.819 0.819 0.819 0.819 0.819 0
+bl2 0.819 0.819 0.819 0.819 0.819 0.819 0
+SVM 0.812 0.813 0.813 0.812 0.814 0.8128 0.00083666
+ADA 0.823 0.823 0.823 0.823 0.823 0.823 1.2413E-16
+LoRAS (Em=t,p=1) 0.851 0.852 0.851 0.85 0.849 0.8506 0.00114018
+Table 29: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for
+letter image dataset
+32
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.913 0.914 0.914 0.916 0.919 0.9152 0.00238747
+SMOTE 0.78 0.782 0.782 0.782 0.782 0.7816 0.00089443
+bl1 0.757 0.769 0.773 0.769 0.775 0.7686 0.0069857
+bl2 0.757 0.675 0.659 0.674 0.672 0.6874 0.03943729
+SVM 0.662 0.741 0.738 0.741 0.738 0.724 0.0346915
+ADA 0.732 0.729 0.732 0.735 0.734 0.7324 0.00230217
+LoRAS (Em=r,p=NA) 0.839 0.831 0.832 0.83 0.833 0.833 0.00353553
+F1-Score average 0.77745714
+Table 30: F1-Scores for the knn model for 5 runs of 10-fold cross validation for letter image
+dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.926 0.927 0.926 0.928 0.93 0.9274 0.00167332
+SMOTE 0.989 0.989 0.988 0.989 0.989 0.9888 0.00044721
+bl1 0.984 0.983 0.984 0.986 0.985 0.9844 0.00114018
+bl2 0.978 0.977 0.973 0.98 0.977 0.977 0.00254951
+SVM 0.986 0.986 0.986 0.986 0.986 0.986 0
+ADA 0.985 0.985 0.986 0.986 0.986 0.9856 0.00054772
+LoRAS (Em=r,p=NA) 0.99 0.989 0.989 0.99 0.989 0.9894 0.00054772
+Table 31: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for
+letter image dataset
+33
+Dataset: mammography
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.532 0.535 0.524 0.533 0.533 0.5314 0.00427785
+SMOTE 0.283 0.286 0.282 0.282 0.288 0.2842 0.00268328
+bl1 0.244 0.245 0.243 0.243 0.244 0.2438 0.00083666
+bl2 0.218 0.217 0.216 0.216 0.217 0.2168 0.00083666
+SVM 0.32 0.315 0.314 0.312 0.314 0.315 0.003
+ADA 0.207 0.21 0.21 0.209 0.209 0.209 0.00122474
+LoRAS (Em=t,p=.01) 0.366 0.362 0.355 0.363 0.366 0.3624 0.00450555
+F1-Score average 0.30894286
+Table 32: F1-Scores for the lr model for 5 runs of 10-fold cross validation for mammography
+dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.702 0.704 0.7 0.702 0.702 0.702 0.00141421
+SMOTE 0.885 0.884 0.88 0.881 0.886 0.8832 0.00258844
+bl1 0.881 0.881 0.878 0.879 0.88 0.8798 0.00130384
+bl2 0.872 0.87 0.868 0.87 0.872 0.8704 0.00167332
+SVM 0.883 0.88 0.88 0.882 0.88 0.881 0.00141421
+ADA 0.864 0.865 0.867 0.867 0.868 0.8662 0.00164317
+LoRAS (Em=t,p=.01) 0.853 0.853 0.863 0.856 0.859 0.8568 0.00426615
+Table 33: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for mam-
+mography dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.458 0.435 0.412 0.437 0.418 0.432 0.01806931
+SMOTE 0.097 0.096 0.097 0.0096 0.096 0.07912 0.03886608
+bl1 0.098 0.102 0.103 0.103 0.103 0.1018 0.00216795
+bl2 0.098 0.102 0.103 0.103 0.103 0.1018 0.00216795
+SVM 0.1 0.096 0.096 0.096 0.096 0.0968 0.00178885
+ADA 0.1 0.096 0.095 0.095 0.095 0.0962 0.00216795
+LoRAS (Em=t,p=.01) 0.108 0.106 0.108 0.106 0.106 0.1068 0.00109545
+F1-Score average 0.14493143
+Table 34: F1-Scores for the svm model for 5 runs of 10-fold cross validation for mammography
+dataset
+34
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.66 0.649 0.637 0.647 0.639 0.6464 0.00915423
+SMOTE 0.751 0.754 0.759 0.756 0.756 0.7552 0.00294958
+bl1 0.748 0.768 0.771 0.771 0.771 0.7658 0.01003494
+bl2 0.748 0.768 0.771 0.771 0.771 0.7658 0.01003494
+SVM 0.763 0.754 0.756 0.755 0.753 0.7562 0.00396232
+ADA 0.764 0.755 0.754 0.753 0.753 0.7558 0.00465833
+LoRAS (Em=t,p=.01) 0.78 0.774 0.78 0.773 0.775 0.7764 0.00336155
+Table 35: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for
+mammography dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.557 0.554 0.545 0.544 0.54 0.548 0.00717635
+SMOTE 0.408 0.417 0.411 0.416 0.416 0.4136 0.00391152
+bl1 0.417 0.413 0.416 0.417 0.411 0.4148 0.00268328
+bl2 0.324 0.33 0.331 0.326 0.323 0.3268 0.00356371
+SVM 0.473 0.469 0.463 0.463 0.467 0.467 0.00424264
+ADA 0.356 0.354 0.353 0.352 0.354 0.3538 0.00148324
+LoRAS (Em=r,p=NA) 0.515 0.512 0.505 0.511 0.512 0.511 0.00367423
+F1-Score average 0.43357143
+Table 36: F1-Scores for the knn model for 5 runs of 10-fold cross validation for mammography
+dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.706 0.706 0.701 0.702 0.7 0.703 0.00282843
+SMOTE 0.909 0.914 0.913 0.912 0.91 0.9116 0.00207364
+bl1 0.91 0.908 0.912 0.908 0.908 0.9092 0.00178885
+bl2 0.898 0.9 0.901 0.9 0.899 0.8996 0.00114018
+SVM 0.913 0.91 0.91 0.906 0.908 0.9094 0.00260768
+ADA 0.903 0.91 0.905 0.904 0.906 0.9056 0.00270185
+LoRAS (Em=r,p=NA) 0.9 0.894 0.899 0.896 0.894 0.8966 0.00279285
+Table 37: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for
+mammography dataset
+Dataset: scene
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.178 0.181 0.173 0.172 0.138 0.1684 0.01738678
+SMOTE 0.236 0.231 0.222 0.216 0.205 0.222 0.01226784
+bl1 0.246 0.242 0.244 0.224 0.198 0.2308 0.02032732
+bl2 0.227 0.24 0.226 0.221 0.205 0.2238 0.01263725
+SVM 0.234 0.243 0.237 0.24 0.224 0.2356 0.00730068
+ADA 0.231 0.242 0.233 0.216 0.2 0.2244 0.01653179
+LoRAS (Em=t,p=30) 0.239 0.234 0.233 0.22 0.206 0.2264 0.01339029
+F1-Score average 0.21877143
+Table 38: F1-Scores for the lr model for 5 runs of 10-fold cross validation for scene dataset
+35
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.554 0.559 0.553 0.553 0.536 0.551 0.00874643
+SMOTE 0.628 0.629 0.613 0.612 0.6 0.6164 0.01217785
+bl1 0.632 0.632 0.631 0.613 0.589 0.6194 0.01882286
+bl2 0.625 0.638 0.621 0.616 0.603 0.6206 0.01277889
+SVM 0.611 0.622 0.616 0.618 0.607 0.6148 0.00589067
+ADA 0.625 0.64 0.626 0.613 0.596 0.62 0.01647726
+LoRAS (Em=t,p=30) 0.631 0.628 0.625 0.61 0.6 0.6188 0.01325519
+Table 39: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for scene
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.333 0.189 0.149 0.169 0.158 0.1996 0.0760513
+SMOTE 0.226 0.198 0.203 0.188 0.194 0.2018 0.01460137
+bl1 0.222 0.214 0.204 0.199 0.193 0.2064 0.01163185
+bl2 0.222 0.214 0.204 0.199 0.193 0.2064 0.01163185
+SVM 0.269 0.203 0.208 0.189 0.189 0.2116 0.03317831
+ADA 0.241 0.205 0.195 0.191 0.195 0.2054 0.0205621
+LoRAS (Em=t,p=30) 0.239 0.211 0.209 0.191 0.197 0.2094 0.01851486
+F1-Score average 0.2058
+Table 40: F1-Scores for the svm model for 5 runs of 10-fold cross validation for scene dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.507 0.516 0.539 0.552 0.545 0.5318 0.01935717
+SMOTE 0.633 0.63 0.639 0.613 0.624 0.6278 0.00988433
+bl1 0.622 0.657 0.64 0.631 0.619 0.6338 0.01535252
+bl2 0.622 0.657 0.64 0.631 0.619 0.6338 0.01535252
+SVM 0.644 0.64 0.652 0.617 0.615 0.6336 0.01665233
+ADA 0.649 0.643 0.624 0.619 0.624 0.6318 0.01329286
+LoRAS (Em=t,p=30) 0.639 0.651 0.645 0.616 0.627 0.6356 0.01409965
+Table 41: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for scene
+dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.011 0 0.011 0 0.011 0.0066 0.00602495
+SMOTE 0.217 0.209 0.217 0.215 0.218 0.2152 0.00363318
+bl1 0.232 0.235 0.234 0.238 0.236 0.235 0.00223607
+bl2 0.234 0.235 0.238 0.233 0.232 0.2344 0.00230217
+SVM 0.247 0.26 0.259 0.248 0.263 0.2554 0.00736885
+ADA 0.208 0.211 0.213 0.214 0.21 0.2112 0.00238747
+LoRAS (Em=t,p=30) 0.222 0.222 0.223 0.225 0.223 0.223 0.00122474
+F1-Score average 0.19725714
+Table 42: F1-Scores for the knn model for 5 runs of 10-fold cross validation for scene dataset
+36
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.502 0.5 0.502 0.5 0.502 0.5012 0.00109545
+SMOTE 0.698 0.68 0.701 0.7 0.7 0.6958 0.00889944
+bl1 0.71 0.715 0.714 0.719 0.716 0.7148 0.00327109
+bl2 0.711 0.717 0.722 0.714 0.711 0.715 0.00463681
+SVM 0.704 0.724 0.722 0.702 0.725 0.7154 0.01139298
+ADA 0.684 0.69 0.697 0.695 0.69 0.6912 0.00506952
+LoRAS (Em=t,p=30) 0.7 0.701 0.705 0.71 0.706 0.7044 0.00403733
+Table 43: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for scene
+dataset
+37
+Dataset: ozone level
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.091 0.063 0.069 0.041 0.05 0.0628 0.01918854
+SMOTE 0.199 0.191 0.19 0.191 0.18 0.1902 0.00676018
+bl1 0.218 0.202 0.219 0.213 0.211 0.2126 0.00680441
+bl2 0.18 0.172 0.194 0.186 0.186 0.1836 0.00817313
+SVM 0.217 0.216 0.211 0.219 0.212 0.215 0.00339116
+ADA 0.2 0.19 0.191 0.197 0.186 0.1928 0.00563028
+LoRAS (Em=t,p=10) 0.216 0.204 0.209 0.205 0.205 0.2078 0.00496991
+F1-Score average 0.18068571
+Table 44: F1-Scores for the lr model for 5 runs of 10-fold cross validation for ozone level dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.525 0.52 0.52 0.511 0.513 0.5178 0.00571839
+SMOTE 0.812 0.795 0.805 0.804 0.785 0.8002 0.01042593
+bl1 0.785 0.771 0.778 0.775 0.776 0.777 0.00514782
+bl2 0.767 0.768 0.795 0.795 0.781 0.7812 0.013755
+SVM 0.735 0.737 0.733 0.747 0.739 0.7382 0.0054037
+ADA 0.816 0.8 0.8 0.808 0.793 0.8034 0.00882043
+LoRAS (Em=t,p=10) 0.813 0.808 0.807 0.809 0.808 0.809 0.00234521
+Table 45: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for ozone level
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0 0.02 0.022 0.018 0.02 0.016 0.00905539
+SMOTE 0.121 0.122 0.123 0.122 0.121 0.1218 0.00083666
+bl1 0.131 0.135 0.142 0.13 0.14 0.1356 0.00531977
+bl2 0.169 0.135 0.142 0.13 0.14 0.1432 0.01515586
+SVM 0.122 0.169 0.174 0.175 0.177 0.1634 0.02333024
+ADA 0.133 0.121 0.124 0.122 0.122 0.1244 0.0049295
+LoRAS (Em=t,p=30) 0.132 0.136 0.136 0.135 0.136 0.135 0.00173205
+F1-Score average 0.11991429
+Table 46: F1-Scores for the svm model for 5 runs of 10-fold cross validation for ozone level
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.498 0.505 0.506 0.503 0.504 0.5032 0.00311448
+SMOTE 0.753 0.756 0.758 0.748 0.754 0.7538 0.00376829
+bl1 0.756 0.775 0.785 0.746 0.787 0.7698 0.01810249
+bl2 0.756 0.775 0.785 0.746 0.787 0.7698 0.01810249
+SVM 0.787 0.791 0.79 0.792 0.803 0.7926 0.00610737
+ADA 0.755 0.751 0.76 0.749 0.759 0.7548 0.00481664
+LoRAS (Em=t,p=30) 0.778 0.782 0.782 0.774 0.788 0.7808 0.00521536
+Table 47: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for
+ozone level dataset
+38
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0 0 0 0 0 0 0
+SMOTE 0.095 0.098 0.117 0.112 0.129 0.1102 0.01398928
+bl1 0.099 0.081 0.118 0.126 0.123 0.1094 0.01903418
+bl2 0.108 0.089 0.11 0.107 0.105 0.1038 0.00846759
+SVM 0.102 0.09 0.11 0.101 0.127 0.106 0.01372953
+ADA 0.094 0.101 0.113 0.11 0.11 0.1056 0.00789303
+LoRAS (Em=t,p=30) 0.136 0.124 0.113 0.114 0.142 0.1258 0.01296919
+F1-Score average 0.0944
+Table 48: F1-Scores for the knn model for 5 runs of 10-fold cross validation for ozone level
+dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.5 0.5 0.5 0.5 0.5 0.5 0
+SMOTE 0.598 0.603 0.64 0.633 0.664 0.6276 0.02733679
+bl1 0.574 0.552 0.602 0.617 0.606 0.5902 0.02659323
+bl2 0.616 0.584 0.621 0.621 0.614 0.6112 0.01551451
+SVM 0.57 0.557 0.578 0.572 0.603 0.576 0.01692631
+ADA 0.595 0.61 0.635 0.627 0.624 0.6182 0.0158019
+LoRAS (Em=t,p=30) 0.67 0.659 0.63 0.641 0.676 0.6552 0.01938298
+Table 49: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for
+ozone level dataset
+Dataset: webpage
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.747 0.744 0.757 0.751 0.74 0.7478 0.00653452
+SMOTE 0.913 0.093 0.093 0.093 0.092 0.2568 0.36682721
+bl1 0.112 0.11 0.11 0.107 0.11 0.1098 0.00178885
+bl2 0.079 0.081 0.082 0.082 0.079 0.0806 0.00151658
+SVM 0.118 0.116 0.118 0.117 0.117 0.1172 0.00083666
+ADA 0.093 0.096 0.095 0.094 0.093 0.0942 0.00130384
+LoRAS (Em=r,p=NA) 0.098 0.101 0.098 0.102 0.095 0.0988 0.00277489
+F1-Score average 0.21502857
+Table 50: F1-Scores for the lr model for 5 runs of 10-fold cross validation for webpage dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.83 0.832 0.836 0.839 0.828 0.833 0.00447214
+SMOTE 0.709 0.714 0.715 0.717 0.713 0.7136 0.00296648
+bl1 0.768 0.763 0.763 0.756 0.762 0.7624 0.00427785
+bl2 0.663 0.672 0.675 0.676 0.66 0.6692 0.00725948
+SVM 0.78 0.776 0.781 0.778 0.778 0.7786 0.00194936
+ADA 0.717 0.724 0.721 0.718 0.716 0.7192 0.00327109
+LoRAS (Em=r,p=NA) 0.729 0.738 0.729 0.738 0.719 0.7306 0.00789303
+Table 51: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for webpage
+dataset
+39
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.729 0.732 0.749 0.747 0.737 0.7388 0.00889944
+SMOTE 0.087 0.088 0.088 0.088 0.089 0.088 0.00070711
+bl1 0.106 0.107 0.106 0.106 0.107 0.1064 0.00054772
+bl2 0.106 0.107 0.106 0.106 0.107 0.1064 0.00054772
+SVM 0.118 0.118 0.119 0.117 0.118 0.118 0.00070711
+ADA 0.091 0.083 0.092 0.091 0.091 0.0896 0.00371484
+LoRAS (Em=r,p=NA) 0.09 0.091 0.093 0.095 0.09 0.0918 0.00216795
+F1-Score average 0.19128571
+Table 52: F1-Scores for the svm model for 5 runs of 10-fold cross validation for webpage dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.817 0.814 0.832 0.823 0.825 0.8222 0.00704982
+SMOTE 0.693 0.699 0.697 0.697 0.702 0.6976 0.00328634
+bl1 0.752 0.754 0.752 0.752 0.757 0.7534 0.00219089
+bl2 0.752 0.754 0.752 0.752 0.757 0.7534 0.00219089
+SVM 0.779 0.78 0.782 0.778 0.78 0.7798 0.00148324
+ADA 0.708 0.715 0.714 0.708 0.71 0.711 0.00331662
+LoRAS (Em=r,p=NA) 0.7 0.708 0.712 0.85 0.702 0.7344 0.06479815
+Table 53: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for webpage
+dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.71 0.709 0.715 0.707 0.714 0.711 0.00339116
+SMOTE 0.268 0.27 0.264 0.268 0.269 0.2678 0.00228035
+bl1 0.274 0.275 0.272 0.278 0.274 0.2746 0.00219089
+bl2 0.291 0.287 0.285 0.287 0.287 0.2874 0.00219089
+SVM 0.269 0.268 0.266 0.267 0.268 0.2676 0.00114018
+ADA 0.266 0.267 0.261 0.265 0.265 0.2648 0.00228035
+LoRAS (Em=r,p=NA) 0.62 0.614 0.609 0.61 0.616 0.6138 0.00449444
+F1-Score average 0.38385714
+Table 54: F1-Scores for the knn model for 5 runs of 10-fold cross validation for webpage dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.804 0.804 0.808 0.806 0.806 0.8056 0.00167332
+SMOTE 0.906 0.908 0.904 0.907 0.907 0.9064 0.00151658
+bl1 0.9 0.901 0.9 0.903 0.903 0.9014 0.00151658
+bl2 0.905 0.903 0.902 0.901 0.905 0.9032 0.00178885
+SVM 0.904 0.905 0.904 0.905 0.906 0.9048 0.00083666
+ADA 0.903 0.905 0.901 0.904 0.906 0.9038 0.00192354
+LoRAS (Em=r,p=NA) 0.924 0.919 0.921 0.924 0.928 0.9232 0.00342053
+Table 55: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for webpage
+dataset
+Dataset: wine quiality
+40
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.069 0.069 0.064 0.069 0.068 0.0678 0.00216795
+SMOTE 0.181 0.174 0.187 0.182 0.175 0.1798 0.00535724
+bl1 0.183 0.18 0.181 0.188 0.178 0.182 0.00380789
+bl2 0.169 0.17 0.173 0.175 0.168 0.171 0.00291548
+SVM 0.214 0.215 0.207 0.217 0.228 0.2162 0.00759605
+ADA 0.181 0.18 0.181 0.182 0.18 0.1808 0.00083666
+LoRAS (Em=r,p=NA) 0.2 0.198 0.199 0.196 0.194 0.1974 0.00240832
+F1-Score average 0.17071429
+Table 56: F1-Scores for the lr model for 5 runs of 10-fold cross validation for wine quiality
+dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.518 0.518 0.517 0.518 0.517 0.5176 0.00054772
+SMOTE 0.723 0.709 0.731 0.724 0.707 0.7188 0.01035374
+bl1 0.72 0.712 0.715 0.721 0.709 0.7154 0.00512835
+bl2 0.709 0.708 0.715 0.715 0.709 0.7112 0.00349285
+SVM 0.72 0.711 0.704 0.71 0.718 0.7126 0.00646529
+ADA 0.723 0.722 0.718 0.726 0.718 0.7214 0.00343511
+LoRAS (Em=r,p=NA) 0.739 0.732 0.736 0.733 0.731 0.7342 0.00327109
+Table 57: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for
+wine quiality dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0 0 0 0.009 0 0.0018 0.00402492
+SMOTE 0.123 0.121 0.123 0.123 0.126 0.1232 0.00178885
+bl1 0.125 0.119 0.12 0.122 0.118 0.1208 0.00277489
+bl2 0.125 0.119 0.12 0.122 0.118 0.1208 0.00277489
+SVM 0.125 0.12 0.135 0.139 0.128 0.1294 0.00763544
+ADA 0.125 0.119 0.123 0.123 0.125 0.123 0.00244949
+LoRAS (Em=t,p=30) 0.128 0.126 0.13 0.129 0.126 0.1278 0.00178885
+F1-Score average 0.10668571
+Table 58: F1-Scores for the svm model for 5 runs of 10-fold cross validation for wine quiality
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.5 0.499 0.499 0.502 0.499 0.4998 0.00130384
+SMOTE 0.689 0.68 0.687 0.687 0.696 0.6878 0.00571839
+bl1 0.695 0.675 0.68 0.687 0.668 0.681 0.01046422
+bl2 0.695 0.675 0.68 0.683 0.668 0.6802 0.01003494
+SVM 0.692 0.671 0.687 0.691 0.67 0.6822 0.01084896
+ADA 0.695 0.673 0.688 0.687 0.694 0.6874 0.00879204
+LoRAS (Em=t,p=30) 0.703 0.697 0.706 0.707 0.696 0.7018 0.00506952
+Table 59: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for
+wine quiality dataset
+41
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0 0 0 0 0 0 0
+SMOTE 0.155 0.147 0.158 0.159 0.153 0.1544 0.00477493
+bl1 0.186 0.182 0.172 0.18 0.183 0.1806 0.00527257
+bl2 0.165 0.171 0.167 0.167 0.166 0.1672 0.00228035
+SVM 0.216 0.23 0.217 0.222 0.218 0.2206 0.00572713
+ADA 0.152 0.147 0.158 0.157 0.156 0.154 0.00452769
+LoRAS (Em=t,p=30) 0.156 0.156 0.157 0.163 0.154 0.1572 0.00342053
+F1-Score average . 0.14771429
+Table 60: F1-Scores for the knn model for 5 runs of 10-fold cross validation for wine quiality
+dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.5 0.5 0.5 0.5 0.5 0.5 0
+SMOTE 0.694 0.676 0.702 0.708 0.691 0.6942 0.01217374
+bl1 0.704 0.702 0.685 0.7 0.701 0.6984 0.00763544
+bl2 0.698 0.714 0.704 0.71 0.705 0.7062 0.00609918
+SVM 0.696 0.711 0.698 0.7 0.696 0.7002 0.00626099
+ADA 0.693 0.684 0.708 0.709 0.701 0.699 0.01055936
+LoRAS (Em=t,p=30) 0.693 0.693 0.701 0.711 0.693 0.6982 0.00794984
+Table 61: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for
+wine quiality dataset
+42
+Dataset: yeast ml8
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.023 0.031 0.02 0.032 0.011 0.0234 0.00861974
+SMOTE 0.155 0.154 0.152 0.15 0.153 0.1528 0.00192354
+bl1 0.142 0.147 0.15 0.175 0.155 0.1538 0.01275539
+bl2 0.146 0.147 0.151 0.157 0.159 0.152 0.00583095
+SVM 0.131 0.144 0.139 0.155 0.156 0.145 0.01065364
+ADA 0.14 0.156 0.148 0.154 0.139 0.1474 0.00779744
+LoRAS (Em=r,p=NA) 0.138 0.14 0.158 0.154 0.141 0.1462 0.0091214
+F1-Score average 0.13151429
+Table 62: F1-Scores for the lr model for 5 runs of 10-fold cross validation for yeast ml8 dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.5 0.5 0.505 0.507 0.501 0.5026 0.00320936
+SMOTE 0.554 0.551 0.549 0.545 0.547 0.5492 0.00349285
+bl1 0.533 0.541 0.541 0.576 0.551 0.5484 0.01669731
+bl2 0.541 0.54 0.543 0.552 0.558 0.5468 0.00785493
+SVM 0.525 0.537 0.531 0.548 0.548 0.5378 0.0102323
+ADA 0.532 0.553 0.541 0.55 0.529 0.541 0.0106066
+LoRAS (Em=r,p=NA) 0.528 0.531 0.553 0.548 0.531 0.5382 0.01143241
+Table 63: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for yeast ml8
+dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0 0 0 0 0 0 0
+SMOTE 0.149 0.14 0.15 0.143 0.137 0.1438 0.00563028
+bl1 0.137 0.15 0.157 0.155 0.141 0.148 0.0087178
+bl2 0.137 0.15 0.157 0.155 0.141 0.148 0.0087178
+SVM 0.135 0.154 0.147 0.156 0.156 0.1496 0.00896103
+ADA 0.144 0.143 0.146 0.138 0.147 0.1436 0.00350714
+LoRAS (Em=r,p=NA) 0.141 0.152 0.15 0.151 0.148 0.1484 0.00439318
+F1-Score average 0.12591429
+Table 64: F1-Scores for the svm model for 5 runs of 10-fold cross validation for yeast ml8 dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.5 0.5 0.5 0.5 0.5 0.5 0
+SMOTE 0.544 0.525 0.549 0.531 0.52 0.5338 0.01235718
+bl1 0.52 0.545 0.561 0.559 0.529 0.5428 0.01808867
+bl2 0.52 0.545 0.561 0.559 0.529 0.5428 0.01808867
+SVM 0.527 0.55 0.539 0.55 0.551 0.5434 0.01040673
+ADA 0.533 0.53 0.539 0.521 0.541 0.5328 0.00794984
+LoRAS (Em=r,p=NA) 0.528 0.549 0.546 0.547 0.543 0.5426 0.00844393
+Table 65: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for
+yeast ml8 dataset
+43
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0 0 0 0 0 0 0
+SMOTE 0.153 0.153 0.15 0.154 0.15 0.152 0.00187083
+bl1 0.155 0.149 0.153 0.153 0.157 0.1534 0.00296648
+bl2 0.156 0.154 0.15 0.15 0.157 0.1534 0.00328634
+SVM 0.158 0.155 0.162 0.156 0.162 0.1586 0.00328634
+ADA 0.152 0.15 0.153 0.151 0.153 0.1518 0.00130384
+LoRAS (Em=r,p=NA) 0.152 0.151 0.152 0.153 0.154 0.1524 0.00114018
+F1-Score average 0.13165714
+Table 66: F1-Scores for the knn model for 5 runs of 10-fold cross validation for yeast ml8 dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.5 0.5 0.5 0.5 0.5 0.5 0
+SMOTE 0.56 0.56 0.552 0.564 0.558 0.5588 0.00438178
+bl1 0.566 0.548 0.562 0.558 0.571 0.561 0.0087178
+bl2 0.57 0.562 0.56 0.549 0.574 0.563 0.00969536
+SVM 0.573 0.563 0.581 0.563 0.581 0.5722 0.0090111
+ADA 0.56 0.553 0.563 0.553 0.563 0.5584 0.00507937
+LoRAS (Em=r,p=NA) 0.558 0.555 0.558 0.561 0.565 0.5594 0.00378153
+Table 67: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for
+yeast ml8 dataset
+Dataset: yeast me2
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.206 0.171 0.214 0.205 0.254 0.21 0.0296395
+SMOTE 0.261 0.267 0.267 0.255 0.259 0.2618 0.00521536
+bl1 0.324 0.337 0.322 0.328 0.32 0.3262 0.00672309
+bl2 0.276 0.279 0.28 0.284 0.274 0.2786 0.00384708
+SVM 0.366 0.373 0.361 0.358 0.36 0.3636 0.00602495
+ADA 0.25 0.245 0.243 0.241 0.241 0.244 0.00374166
+LoRAS (Em=t,p=100) 0.287 0.285 0.29 0.286 0.286 0.2868 0.00192354
+F1-Score average 0.28157143
+Table 68: F1-Scores for the lr model for 5 runs of 10-fold cross validation for yeast me2 dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.572 0.562 0.576 0.567 0.585 0.5724 0.00879204
+SMOTE 0.793 0.803 0.801 0.791 0.799 0.7974 0.00517687
+bl1 0.811 0.823 0.81 0.813 0.819 0.8152 0.0055857
+bl2 0.805 0.807 0.814 0.817 0.82 0.8126 0.00642651
+SVM 0.812 0.814 0.819 0.804 0.811 0.812 0.00543139
+ADA 0.802 0.802 0.8 0.793 0.792 0.7978 0.00491935
+LoRAS (Em=t,p=100) 0.809 0.809 0.808 0.81 0.808 0.8088 0.00083666
+Table 69: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for yeast me2
+dataset
+44
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0 0 0 0 0 0 0
+SMOTE 0.295 0.296 0.285 0.282 0.279 0.2874 0.00770065
+bl1 0.329 0.332 0.32 0.329 0.324 0.3268 0.00476445
+bl2 0.329 0.332 0.32 0.329 0.324 0.3268 0.00476445
+SVM 0.346 0.345 0.362 0.358 0.348 0.3518 0.00769415
+ADA 0.27 0.258 0.268 0.277 0.257 0.266 0.00845577
+LoRAS (Em=r,p=NA) 0.301 0.299 0.284 0.296 0.291 0.2942 0.00683374
+F1-Score average 0.26471429
+Table 70: F1-Scores for the svm model for 5 runs of 10-fold cross validation for yeast me2 dataset
+Oversampling models svm1 svm2 svm3 svm4 svm5 mean sd
+Base 0.5 0.5 0.5 0.5 0.5 0.5 0
+SMOTE 0.819 0.821 0.815 0.806 0.907 0.8336 0.04143429
+bl1 0.82 0.822 0.81 0.821 0.819 0.8184 0.00482701
+bl2 0.82 0.822 0.81 0.821 0.819 0.8184 0.00482701
+SVM 0.816 0.809 0.81 0.82 0.816 0.8142 0.00460435
+ADA 0.81 0.8 0.809 0.812 0.799 0.806 0.00604152
+LoRAS (Em=r,p=NA) 0.812 0.837 0.799 0.817 0.811 0.8152 0.01386362
+Table 71: Balanced accuracies for the svm model for 5 runs of 10-fold cross validation for
+yeast me2 dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.061 0.066 0.061 0.061 0.123 0.0744 0.02725436
+SMOTE 0.32 0.342 0.319 0.329 0.345 0.331 0.01210372
+bl1 0.379 0.391 0.372 0.379 0.348 0.3738 0.01595932
+bl2 0.296 0.306 0.343 0.295 0.282 0.3044 0.02320129
+SVM 0.393 0.385 0.388 0.398 0.379 0.3886 0.00730068
+ADA 0.299 0.318 0.316 0.318 0.328 0.3158 0.01049762
+LoRAS (Em=r,p=NA) 0.355 0.347 0.355 0.36 0.357 0.3548 0.00481664
+F1-Score average 0.30611429
+Table 72: F1-Scores for the knn model for 5 runs of 10-fold cross validation for yeast me2 dataset
+Oversampling models knn1 knn2 knn3 knn4 knn5 mean sd
+Base 0.517 0.524 0.518 0.519 0.537 0.523 0.00827647
+SMOTE 0.809 0.855 0.819 0.839 0.849 0.8342 0.01962651
+bl1 0.797 0.809 0.799 0.791 0.793 0.7978 0.00701427
+bl2 0.781 0.791 0.815 0.783 0.784 0.7908 0.01404279
+SVM 0.782 0.783 0.785 0.786 0.789 0.785 0.00273861
+ADA 0.804 0.841 0.817 0.818 0.845 0.825 0.01739253
+LoRAS (Em=r,p=NA) 0.833 0.84 0.836 0.853 0.852 0.8428 0.00920326
+Table 73: Balanced accuracies for the knn model for 5 runs of 10-fold cross validation for
+yeast me2 dataset
+Dataset: credit fraud
+45
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.674 0.693 0.682 0.687 0.683 0.6838 0.00499166
+SMOTE 0.113 0.13 0.133 0.143 0.15 0.1338 0.00920145
+bl1 0.229 0.254 0.241 0.219 0.228 0.2342 0.01528616
+bl2 0.173 0.161 0.174 0.19 0.187 0.177 0.0132916
+SVM 0.282 0.305 0.276 0.262 0.273 0.2796 0.01834848
+ADA 0.109 0.132 0.125 0.127 0.123 0.1232 0.00386221
+LoRAS (Em=t,p=30) 0.56 0.544 0.558 0.595 0.539 0.5592 0.02531139
+F1-Score average 0.31297143
+Table 74: F1-Scores for the lr model for 5 runs of 10-fold cross validation for credit fraud dataset
+Oversampling models lr1 lr2 lr3 lr4 lr5 mean sd
+Base 0.83 0.846 0.833 0.84 0.838 0.8374 0.00622896
+SMOTE 0.923 0.93 0.928 0.934 0.934 0.9298 0.00460435
+bl1 0.927 0.93 0.928 0.93 0.928 0.9286 0.00134164
+bl2 0.926 0.932 0.93 0.932 0.931 0.9302 0.00248998
+SVM 0.927 0.924 0.927 0.925 0.924 0.9254 0.00151658
+ADA 0.922 0.932 0.932 0.93 0.927 0.9286 0.004219
+LoRAS (Em=t,p=30) 0.904 0.905 0.904 0.906 0.904 0.9046 0.00089443
+Table 75: Balanced accuracies for the lr model for 5 runs of 10-fold cross validation for credit
+fraud dataset
+Oversampling models rf1 rf2 rf3 rf4 rf5 mean
+Base 0.67 0.669 0.664 0.667 0.675 0.669 0.00464579
+SMOTE 0.36 0.366 0.355 0.359 0.357 0.3594 0.00478714
+bl1 0.644 0.639 0.662 0.644 0.64 0.6458 0.01071992
+bl2 0.552 0.545 0.571 0.55 0.562 0.556 0.01174734
+SVM 0.743 0.741 0.745 0.741 0.739 0.7418 0.00251661
+ADA 0.35 0.354 0.348 0.348 0.351 0.3502 0.00287228
+LoRAS (Em=t,p=30) 0.821 0.823 0.82 0.818 0.82 0.8204 0.00206155
+F1-Score average 0.5918
+Table 76: F1-Scores for the rf model for 5 runs of 10-fold cross validation for credit fraud dataset
+Oversampling models rf1 rf2 rf3 rf4 rf5 mean sd
+Base 0.775 0.775 0.772 0.774 0.779 0.775 0.00254951
+SMOTE 0.922 0.923 0.922 0.922 0.925 0.9228 0.00130384
+bl1 0.92 0.92 0.919 0.918 0.918 0.919 0.001
+bl2 0.919 0.919 0.919 0.92 0.92 0.9194 0.00054772
+SVM 0.914 0.914 0.913 0.914 0.911 0.9132 0.00130384
+ADA 0.922 0.925 0.922 0.924 0.925 0.9236 0.00151658
+LoRAS (Em=t,p=30) 0.905 0.906 0.904 0.904 0.904 0.9046 0.00089443
+Table 77: Balanced accuracies for the rf model for 5 runs of 10-fold cross validation for credit
+fraud dataset
+46

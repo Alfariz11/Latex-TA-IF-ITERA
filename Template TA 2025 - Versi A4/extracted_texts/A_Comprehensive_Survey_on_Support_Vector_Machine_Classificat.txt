@@ -1,0 +1,3104 @@
+A comprehensive survey on support vector machine classiﬁcation:
+Applications, challenges and trends
+Jair Cervantesa,⇑, Farid Garcia-Lamonta, Lisbeth Rodríguez-Mazahuab, Asdrubal Lopezc
+aUAEMEX (Autonomous University of Mexico State), Texcoco, 56259, Mexico
+bDivision of Research and Postgraduate Studies, Instituto Tecnológico de Orizaba, Veracruz 94320, Mexico
+cUAEMEX (Autonomous University of Mexico State), Zumpango 55600, Mexico
+article info
+Article history:
+Received 2 June 2019Revised 24 August 2019
+Accepted 1 October 2019
+Available online 08 May 2020
+Keywords:
+SVM
+ClassiﬁcationMachine learningabstract
+In recent years, an enormous amount of research has been carried out on support vector machines (SVMs)
+and their application in several ﬁelds of science. SVMs are one of the most powerful and robust classiﬁ-
+cation and regression algorithms in multiple ﬁelds of application. The SVM has been playing a signiﬁcant
+role in pattern recognition which is an extensively popular and active research area among the research-ers. Research in some ﬁelds where SVMs do not perform well has spurred development of other applica-
+tions such as SVM for large data sets, SVM for multi classiﬁcation and SVM for unbalanced data sets.
+Further, SVM has been integrated with other advanced methods such as evolve algorithms, to enhancethe ability of classiﬁcation and optimize parameters. SVM algorithms have gained recognition in researchand applications in several scientiﬁc and engineering areas. This paper provides a brief introduction of
+SVMs, describes many applications and summarizes challenges and trends. Furthermore, limitations of
+SVMs will be identiﬁed. The future of SVMs will be discussed in conjunction with further applications.The applications of SVMs will be reviewed as well, especially in the some ﬁelds.
+/C2112020 Elsevier B.V. All rights reserved.
+1. Introduction
+Machine Learning is a highly interdisciplinary ﬁeld which builds
+upon ideas from cognitive science, computer science, statistics,
+optimization among many other disciplines of science and mathe-
+matics. In machine learning, classiﬁcation is a supervised learning
+approach used to analyze a given data set and to build a model that
+separates data into a desired and distinct number of classes [1].
+There are many good classiﬁcation techniques in the literature
+including k-nearest-neighbor classiﬁer [2,3] , Bayesian networks
+[4,5] , artiﬁcial neural networks [6–10] , decision trees [11,12] and
+SVM [13–15] . K-nearest-neighbor methods have the advantage
+that they are easy to implement, however, they are usually quite
+slow if the input data set is very large. On the other hand, these
+are very sensitive to the presence of irrelevant parameters [2,3] .
+Decision trees have also been widely used in classiﬁcation prob-
+lems. These are usually faster than neural networks in the training
+phase, however, they do not have ﬂexibility to modeling the
+parameters [11,12] . Neuronal networks are one of the most used
+techniques [16–20] . Neural networks have been widely used in alarge number of applications as a universal approach. However,
+many factors must be taken into account to building a neural net-
+work to solve a given problem: the learning algorithm, the archi-
+tecture, the number of neurons per layer, the number of layers,
+the representation of the data and much more. In addition, these
+are very sensitive to the presence of noise in the training data
+[21,22] .
+From these techniques, SVM is one of the best known tech-
+niques to optimize the expected solution [13,15] . SVM was intro-
+duced by Vapnik as a kernel based machine learning model for
+classiﬁcation and regression task. The extraordinary generalization
+capability of SVM, along with its optimal solution and its discrim-
+inative power, has attracted the attention of data mining, pattern
+recognition and machine learning communities in the last years.
+SVM has been used as a powerful tool for solving practical binary
+classiﬁcation problems. It has been shown that SVMs are superior
+to other supervised learning methods [23–29] . Due to its good the-
+oretical foundations and good generalization capacity, in recent
+years, SVMs have become one of the most used classiﬁcation
+methods.
+Decision functions are determined directly from the training
+data by using SVM in such a way that the existing separation
+(margin) between the decision borders is maximized in a highly
+https://doi.org/10.1016/j.neucom.2019.10.118
+0925-2312/ /C2112020 Elsevier B.V. All rights reserved.⇑Corresponding author.
+E-mail addresses: jcervantesc@uaemex.mx (J. Cervantes), fgarcial@uaemex.mx
+(F. Garcia-Lamont).Neurocomputing 408 (2020) 189–215
+Contents lists available at ScienceDirect
+Neurocomputing
+journal homepage: www.else vier.com/locate/neucom
+
+dimensional space called the feature space. This classiﬁcation
+strategy minimizes the classiﬁcation errors of the training data
+and obtains a better generalization ability, i.e., classiﬁcation skills
+of SVMs and other techniques differ signiﬁcantly, especially when
+the number of input data is small. SVMs are a powerful technique
+used in data classiﬁcation and regression analysis. A notable
+advantage of SVMs lies in the fact that they obtain a subset of sup-
+port vectors during the learning phase, which is often only a small
+part of the original data set. This set of support vectors represents a
+given classiﬁcation task and is formed by a small data set.
+The rest of this paper is divided as follows: in Section 2the the-
+oretical basis of SVM are presented; in addition, their characteris-
+tics, advantages and disadvantages are described. In Section 3
+weaknesses of SVM are introduced and reviewed. In Section 4a
+set of SVM implementations are presented. Section 5shows some
+applications of SVM in real world problems. Finally, Section 6
+closes the paper with trends and challenges.
+2. Theoretical basis of SVMs
+The principal objective in pattern classiﬁcation is to get a model
+which maximizes the performance for the training data. Conven-
+tional training methods determine the models in such a way that
+each input–output pair is correctly classiﬁed within the class to
+which it belongs. However, if the classiﬁer is too ﬁt for the training
+data, the model begins to memorize training data rather than
+learning to generalize, degrading the generalization ability of the
+classiﬁer.
+The main motivation of SVM is to separate several classes in the
+training set with a surface that maximizes the margin between
+them. In other words, SVM allows to maximizing the generaliza-tion ability of a model. This is the objective of the Structural Risk
+Minimization principle (SRM) that allows the minimization of a
+bound on the generalization error of a model, instead of minimiz-
+ing the mean squared error on the set of training data, which is the
+philosophy often used by the methods of empirical risk
+minimization.
+In this Section, we discuss Support Vector Machines, in which
+training data are linearly separable in the input space and the case
+where training data are not linearly separable.
+2.1. Linearly separable case
+Training a SVM requires a set of nexamples. Each example con-
+sists of a pair, an input vector x
+iand the associated label yi. Assume
+that a training set Xis given as:
+ðx1;y1Þ;ðx2;y2Þ;...;ðxn;ynÞð 1Þ
+i:e.,X¼fxi;yign
+i¼1where xi2Rdand yi2þ 1;/C01 ðÞ . For reasons of
+visualization, we will consider the case of a two-dimensional input,
+i.e., x2R2. The data are linearly separable and there are many
+hyperplanes that can perform the separation. Fig. 1 shows several
+decision hyperplanes that perfectly separate the input data set. It
+is clear that there are inﬁnite hyperplanes that could perform this
+work. However, the generalization ability depends on the location
+of the separation hyperplane and the hyperplane with maximum
+margin. This hyperplane is called optimal separation hyperplane
+[14]. The decision level, i.e., the hyperplane that separates the input
+space is deﬁned by the equation wTxiþb¼0.
+The simplest case of SVM is the linearly separable case in the
+feature space. We optimize the geometric margin by setting the
+functional margin kappai ¼1(also called Canonical Hyperplane
+[30]), therefore, the linear classiﬁer yi¼1,w/C1xþhi þb¼1
+w/C1x/C0hi þb¼/C01ð2Þ
+These can be combined into a set of inequalities:
+yiðw/C1xi hi þ bÞP18i ð3Þ
+The geometric margin of xþyx/C0is
+ci¼1
+2wwkk/C1xþDE
+/C0w
+wkk/C1x/C0DE /C16/C17
+¼1
+2wkkw/C1xþhi /C0w/C1x/C0hi ½/C138
+¼1
+wkkð4Þ
+where wdeﬁnes the optimal separation hyperplane and bis the
+bias. The distance between the hyperplane and the training data
+closest to the hyperplane is called margin. The generalization ability
+is maximized if the optimal separation hyperplane is selected as the
+separation hyperplane. Optimizing the geometric margin means
+minimizing the norm of the vector of weights. When solving the
+problem of quadratic programming we try to ﬁnd the optimal
+hyperplane and two parallel hyperplanes ( H1and H2).
+The distance between H1and H2is maximized and there is no
+data between the two hyperplanes. When the distance between
+H1and H2is maximized, some data points can be over H1and some
+data points can be over H2.These points of data are called support
+vectors [14,30 ], since they participate directly in deﬁning the sepa-
+ration hyperplane, the other points can be removed or changedwithout crossing the planes H
+1and H2and will not modify in
+any way the generalization skill of the classiﬁer, i.e., the solution
+of an SVM is given only by this small set of support vectors. Any
+hyperplane can be represented by w;xand b, where wis a vector
+perpendicular to the hyperplane. Fig. 2 shows the geometric repre-
+sentation of the quadratic programming problem showing H(opti-
+mal separator) and hyperplanes H1and H2. In this way, the original
+problem of optimization is as follows.
+Proposition 1. For the linearly separable case
+S¼x1;y1 ðÞ /C1 /C1 /C1 xl;ylðÞ ½/C138 ,i f w;bðÞ is the solution
+min
+w;bw/C1whi ¼wkk2
+subject to :yiw/C1xi hi þb ðÞ P1ð5Þ
+then the maximal margin is given by c¼1
+wkk.
+We change this to the dual problem using the Lagrange formu-
+lation. There are two reasons to do this. The ﬁrst lies in the fact that
+the conditions given in the Eq. (5)will be replaced by LagrangeFig. 1. Separation hyperplanes.190 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+multipliers, which are much easier to handle. The second is the
+reformulation of the problem, the training data will only appear
+in the form of dot product between vectors. This is a fundamental
+property that will allow to generalize the procedure in the non-
+linear case. In this way, the Lagrangian is given by:
+Lðw;b;aÞ/C171
+2w/C1whi /C0Xl
+i¼1ai½yiðw/C1xi hi þb/C01/C138ð 6Þ
+where aiare the Lagrange’s multipliers.
+The dual is found in two steps: ﬁrst, taking the derivative with
+respect to wand b
+@Lðw;b;aÞ
+@w¼w/C0Xl
+i¼1aiyixi¼0!w¼Xl
+i¼1aiyixi ð7Þ
+@Lðw;b;aÞ
+@b¼/C0Xl
+i¼1aiyi¼0!Xl
+i¼1aiyi¼0 ð8Þ
+and second, substituting Eqs. (7) and (8) in the original Lagrangian
+(6)
+Lðw;b;aÞ¼1
+2w/C1whi /C0Xl
+i¼1ai½yiðw/C1xi hi þbÞ/C01/C138
+¼1
+2Xl
+i¼1aiyixi/C1Xl
+i¼1aiyixi*+
+/C0Xl
+i;j¼1aiajyiyjðxj/C1xi/C10/C11
+þbÞ/C0Xl
+i¼1ai
+¼1
+2Xl
+i;j¼1aiyiajyjxi/C1xj/C10/C11
+/C0Xl
+i;j¼1aiyiajyjxj/C1xi/C10/C11
+/C0Xl
+i¼1aiyibþXl
+i¼1ai
+¼/C01
+2Xl
+i;j¼1aiyiajyjxi/C1xj/C10/C11
+þXl
+i¼1ai
+ð9Þ
+The data points with ai>0 are called ‘‘support vectors” and
+these vectors deﬁne the hyperplanes H1;H2. At all other training
+dataai¼0. Support vectors are the critical elements of the training
+data and these are the closest to the decision hyperplane.
+Remark 1. SVMs obtain a hyperplane by training the initial data
+set, which perfectly separates these data and is deﬁned by a small
+set of support vectors. If all other points (non-support vectors)
+were eliminated (or moved around without crossing H1orH2) and
+the training was repeated, the same hyperplane deﬁned by the
+same set of support vectors would be found. Therefore, the original
+problem of optimization is as follows.Proposition 2. To the linearly separable case
+S¼½ ðx1;y1Þ/C1/C1/C1ð xl;ylÞ/C138,i fa/C3
+iis the solution to the quadratic opti-
+mization problem
+maxai/C01
+2Xl
+i;j¼1aiyiajyjxi/C1xj/C10/C11
+þXl
+i¼1ai
+s:t::Xl
+i¼1aiyi¼0ð10Þ
+Then wkk2deﬁnes the minimum w/C3¼Pl
+i¼1a/C3
+iyixiand the geometric
+margin c/C3¼1
+w/C3kkis maximized.
+2.2. Karush-Kuhn-Tucker conditions
+Karush-Kuhn-Tucker conditions (KKT) [31,32] play a very
+important role in the theory of optimization, because they give
+the conditions to obtain an optimal solution to a general optimiza-
+tion problem.
+Theorem 1. Given an optimization problem with convex domain
+X#Rn,
+minimize fðwÞ;w2X
+s:t: giðwÞ60;i¼1;...;k;
+hiðwÞ¼0;i¼1;...;m;ð11Þ
+with f2C1convex, the necessary and sufﬁcient conditions for a
+normal point w/C3to be optimal are the existence of a/C3;b/C3such that
+@Lðw/C3;a/C3;b/C3Þ
+@w¼0
+@Lðw/C3;a/C3;b/C3Þ
+@b¼0
+a/C3
+igiðw/C3Þ¼0;i¼1;...;k;
+giðw/C3Þ60;i¼1;...;k;
+a/C3
+iP0;i¼1;...;k:ð12Þ
+From KKT conditions if the training set is linearly separable, it is
+veriﬁed that
+w/C3kk2¼w/C3/C1w/C3hi ¼ ðX
+i2sva/C3
+iÞ/C01
+2ð13Þ
+Therefore, the maximum distance of a hyperplane is:
+1
+w/C3kk¼X
+i2sva/C3
+i !/C01
+2
+ð14Þ
+2.3. Soft margin hyperplanes
+The learning problem presented before is valid for the case
+where the data is linearly separable, which means that the training
+data set has no intersections. However, these problems are rare inthe real life. At the same time, there are problems in which the lin-
+ear separation hyperplane can give good results even when the
+data set has intersections. However, quadratic programming solu-
+tions as given above can not be used in the case of intersection
+because the condition y
+iðw/C1xi hi þ bÞP1;8ican not be satisﬁed
+in the case of intersection (see Fig. 3 ). The points that are in the
+intersection can not be correctly classiﬁed and for any misclassiﬁed
+data xi, its corresponding aiwill tend to inﬁnite.
+To ﬁnd a classiﬁer with maximum margin, the algorithm
+presented above should be changed allowing a soft margin ( Fig.
+4), therefore, it is necessary to introduce non-negative slack
+variables niðP0Þin the Eq. (3)Fig. 2. Optimal classiﬁer.J. Cervantes et al. / Neurocomputing 408 (2020) 189–215 191
+yiðwT/C1xi/C10/C11
+þbÞP1/C0ni8i ð15Þ
+Using the slack variables ni, the feasible solution always exists.
+For the training data xi,i f0 <ni<1, the data do not have the
+maximum margin, but can be correctly classiﬁed. On the other
+hand, the width of this soft margin can be controlled by the penalty
+parameter C, which determines the relationship between the train-
+ing error and the Vapnik–Chervonenkis dimension.
+Deﬁnition 1. (Dimension Vapnik–Chervonenkis -VC- ) The VC
+dimension describes the capacity of a set of functions implemented
+in a learning machine. For binary classiﬁcation, his the maximum
+number of points in which two classes can be separated in all the
+2hpossible ways using the functions of the learning machine.
+Choosing a large Cprovides a small number of classiﬁcation
+errors and a large wTw. It is clear that taking C¼1 requires that
+the number of misclassiﬁed data be zero. However, in this case it
+is not possible, since the problem may be feasible only for some
+value C<1. Introducing non-negative ‘‘soft variables ”
+niði¼1;lÞto the optimization problem, now instead of the condi-
+tions of the Eq. (5), the separation hyperplane should satisfy
+min
+w;b;niw/C1whi þ CXl
+i¼1n2
+i
+s:t::yiðw/C1xi hi þbÞP1/C0ni
+niP0ð16Þi.e., subject to
+w/C1xi hi þbPþ1/C0ni;yi¼þ1;niP0 ð17Þ
+w/C1xi hi þb6/C01þni;yi¼/C01;niP0 ð18Þ
+Ifni<0;yiðw/C1xi hi þbÞP1/C0niP1, then, we do not consider
+the condition ni<0.
+For the maximum soft margin with Norm-2 (with the diagonal
+1
+Cdij) the original Lagrangian is given by:
+Lðw;b;ni;aÞ¼1
+2w/C1whi /C0Xl
+i¼1ai½yiðw/C1xi hi þ bÞ/C01þni/C138þC
+2Xl
+i¼1n2
+i
+ð19Þ
+The dual is found in two steps: in the same way as in the lin-
+early separable case, ﬁrst differentiating with respect to wand b,
+and then replacing it in the original Lagrangian
+maxai/C01
+2Xl
+i;j¼1aiyiajyj½xi/C1xj/C10/C11
+þ1
+Cdij/C138þXl
+i¼1ai
+s:t::Xl
+i¼1aiyi¼0ð20Þ
+The Kuhn-Tucker condition is
+a/C3
+i½yiðw/C3/C1xi hi þb/C3Þ/C01þni/C138¼0 ð21Þ
+That is, the quadratic optimization problem is practically the
+same as in the separable case with the only difference of the mod-
+iﬁed heights of the Lagrange multipliers ai. The parameter Cis
+determined by the user. The selection of an appropriate Cis done
+experimentally using some cross-validation technique [30,14,33] .
+2.4. Kernels
+In an SVM, the optimal hyperplane is determined to maximize
+the generalization ability of the model. But, if the training data
+are not linearly separable, the classiﬁer obtained may not have a
+high generalization ability, even if the hyperplanes are optimally
+determined i.e., to maximize the space between classes, the origi-
+nal input space is transformed into a highly dimensional space
+called ‘‘feature space”.
+The basic idea in designing non-linear SVMs is to transform the
+input vectors x2Rninto vectors UðxÞof a highly dimensional fea-
+ture space [30] F(where Urepresents the mapping: Rn!Rf) and
+solve the problem of linear classiﬁcation in this feature space
+x2Rn!UðxÞ¼/1ðxÞ;/2ðxÞ;...;/nðxÞ ½/C138T2Rfð22Þ
+The set of hypotheses considered will be
+fðxÞ¼Xl
+i¼1wi/iðxÞþb ð23Þ
+where /:X!Fis a non-linear mapping from an input space to a
+feature space , i.e., the learning procedure consists of two steps: ﬁrst,
+a non-linear mapping transforms the data within a feature space F
+and later, a SVM is used to classify the data in a feature space.
+A property of linear learning machines is that they can be
+expressed in a dual representation, this means that the Eq. (23)
+can be expressed as a linear combination of the training data
+points. Therefore, the decision rule can be evaluated using dot
+products
+fðxÞ¼Xl
+i¼1aiyi/ðxiÞ/C1/ðxÞ hi þb ð24Þ
+If there is a way to capture the product /ðxiÞ/C1/ðxÞ hi in the fea-
+ture space directly as a function of the original input data, this
+makes it possible to join the two necessary steps to build a non-
+linear learning machine. This method of direct computation is
+called kernel function [13].Fig. 3. Soft margin hyperplanes.
+Fig. 4. Non linearly classiﬁer.192 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+Deﬁnition 2. A kernel is a function K, such that for each x;z2X
+Kðx;zÞ¼ /ðxÞ/C1/ðzÞ hi ð25Þ
+where /is a mapping of Xto a feature space F.
+The key to the approach is to ﬁnd a kernel function that can be
+evaluated efﬁciently. Once we have such a decision function, the
+rule can be evaluated
+fðxÞ¼Xl
+i¼1aiyiKx i/C1xj/C10/C11
+þb ð26Þ
+A kernel function must respect the following properties: for any
+x;y;z2Xanda2R
+1.x/C1x¼0 only if x¼0
+2.x/C1x>0 otherwise
+3.x/C1y¼y/C1x
+4.ðax/C1yÞ=aðx/C1yÞ
+5.ðzþxÞ/C1y=ðz/C1yÞþð x/C1yÞ
+Moreover, kernel functions must fulﬁll the condition given by
+Mercer theorem. Some of the most used kernel functions are:
+1.Linear kernel: Kðxi;xjÞ¼ð xi/C1xjÞ;
+2.Polynomial kernel: Kðxi;xjÞ¼ð xi/C1xjþ1Þp;
+3.Gaussian kernel: Kðxi;xjÞ¼e/C0xi/C0xjkk2
+2r2;
+4.RBF kernel: Kðxi;xjÞ¼e/C0cðxi/C0xjÞ2;
+5.Sigmoid kernel: Kðxi;xjÞ¼tanhðgxi/C1xjþmÞ;
+We checked the type of kernel used in some real-world applica-
+tions. Table 1 shows a summary of the four main kernels found. In
+some papers, more than one kernel was applied, in these cases we
+consider the kernel that produces the better results. Without a
+doubt, Gaussian RBF function is the most commonly used in many
+different type of applications.
+There is no unanimous conclusion about which kernel is better
+or worse for speciﬁc applications, some authors such as [34] have
+performed tests to identify the performance of SVM with different
+kernels, reaching the general conclusion that the polynomial and
+the Gaussian RBF function are the best option for acoustic signals.
+On the other hand, Kasnavi et al. [35] found that Gaussian RBF and
+hyperbolic tangent are the best for genome wide prediction. For
+other applications, less common kernels produce better results
+than the most popular, for example, in [36], Hasan concludes that
+Laplace kernel is the ideal one for intrusion detection. Furthermore,
+personalized kernels can be designed for certain applications, such
+is the case of the introduced in [37,38] .
+The observation in which all the authors agree, is that the selec-
+tion of the kernel should be based on the characteristics of data,
+and that to obtain good results it is necessary to determine the
+optimal parameters of the kernel used.
+2.5. Mercer’s condition
+Mercer’s theorem [60,13] determines the conditions of func-
+tions to be kernels. Given a ﬁnite input space X¼x1;...;xn fg and
+assuming that Kðx;zÞis a symmetric function of Xthen
+K¼ðKðxi/C1xjÞÞn
+i;j¼1ð27Þ
+Since Kis symmetric there exists an orthogonal matrix Vsuch
+that K¼VKV0, where Kis the diagonal matrix that contains theeigenvalues ktofK;with its corresponding eigenvectors
+vt¼ðvtiÞi¼1. Assuming that all eigenvalues are non-negative and
+considering the mapping
+/:xi#ðﬃﬃﬃﬃ
+ktpvtiÞn
+t¼12Rn;i¼1;...;n: ð28Þ
+/ðxiÞ/C1/ðxjÞ/C10/C11
+¼Xn
+t¼1ktvtivtj¼ðVKV0Þij¼Kij¼Kðxi/C1xjÞð 29Þ
+this implies that Kðx;zÞis a kernel function corresponding to the /
+mapping. The requirement that the eigenvalues of Kbe non-
+negative is necessary, since if we have a negative eigenvalue ksin
+the eigenvector vs, the point
+z¼Xn
+i¼1vsi/ðxiÞ¼ﬃﬃﬃﬃ
+Kp
+V0vs ð30Þ
+in the feature space could have square norm
+zkk2¼z/C1zhi ¼ v0
+sVﬃﬃﬃﬃ
+Kpﬃﬃﬃﬃ
+Kp
+V0vs¼v0
+sVKV0vs¼v0sKv s¼ks
+<0; ð31Þ
+contradicting the geometry of this space. This brings us to the next
+proposition.
+Proposition 3. Let Xbe a ﬁnite input space with a symmetric
+function on XKðx;zÞ.We say that Kðx;zÞis a kernel function if and
+only if the matrix
+K¼ðKðxi/C1xjÞÞn
+i;j¼1ð32Þ
+is positive semi-deﬁnite (has non-negative eigenvalues).
+Allowing a slight generalization of a dot product in a Hilbert
+space [14] by entering a weight kifor each dimension
+/ðxÞ/C1/ðzÞ hi ¼X1
+i¼1ki/iðxÞ/C1/iðzÞ¼Kðx;zÞ; ð33Þ
+therefore, the feature vector would be
+/ðxÞ¼ð /iðxÞ;/iðxÞ;...;/iðxÞ;...Þ: ð34Þ
+Mercer’s theorem gives the necessary and sufﬁcient conditions
+so that a symmetric continuous function Kðx;zÞis represented
+Kðx;zÞ¼X1
+i¼1ki/iðxÞ/C1/iðzÞð 35Þ
+with non-negative ki, which is equivalent to Kðx;zÞbeing a dot pro-
+duct in the feature space F/C19/ðXÞ;where Fis the space l2of all the
+sequences
+w¼ðw1;w2;...wi;...Þ: ð36Þ
+for which
+X1
+i¼1kiw2
+i<1: ð37Þ
+This implicitly induces a space deﬁned by the feature vector and
+as a consequence a linear function in Fcan be represented by
+fðxÞ¼X1
+i¼1kiwi/iðxÞþb¼Xl
+j¼1ajyjKðx;xjÞþb ð38Þ
+where the ﬁrst expression is the original representation and the
+second is the dual [30]. The relationship is given by
+w¼Xl
+j¼1ajyj/ðxjÞ: ð39ÞJ. Cervantes et al. / Neurocomputing 408 (2020) 189–215 193
+In the original representation, the number of terms in the sum
+is equal to the dimensionality in the feature space, while in the
+dual there are lterms. The analogy with the ﬁnite case is similar.
+The contribution from the functional analysis leads us to the prob-
+lem for integral equations of the form
+Z
+XKðx;zÞ/ðzÞdz¼k/ðxÞð 40Þ
+where Kðx;zÞis the symmetric and positive kernel function, and Xis
+an compact space.
+Theorem 2. (Mercer) Let Xbe a compact subset of Rn. Assuming
+that Kis a symmetric continuous function such that the integral
+operator TK:L2ðXÞ! L2ðxÞ,[14]
+ðTKfÞð/C1Þ ¼Z
+XKð/C1;xÞfðxÞdx; ð41Þ
+is positive, that is
+Z
+X/C2XKðx;zÞfðxÞfðzÞdxdzP0; ð42Þ
+for all f2L2ðXÞ. then Kðx;zÞcan be expanded in a uniformly conver-
+gent series (on X/C2X) in terms of functions /j2L2ðXÞ, normalized in
+such a way that /j/C13/C13/C13/C13
+L2¼1 and positive eigenvalues associated
+kjP0,
+Kðx;zÞ¼X1
+j¼1kj/jðxÞ/jðzÞ: ð43Þ2.6. Non-linearly separable case
+The linear classiﬁers presented in the two previous sections are
+very limited. In most real life data sets, the data points not only
+overlap or intersect when generating a separation hyperplane,
+but the genuine separation of these data is given by non-linear
+hyper-surfaces.
+The approach presented above can be easily extended to create
+non-linear decision functions. The reason for this extension is that
+an SVM can create a non-linear hyper surface of decision, capable
+of classifying non-linearly separable data. Generally, for n-
+dimensional input patterns, instead of a non-linear curve, anSVM will create a non-linear separation hyper-surface.
+The problem of optimization using kernels is as follows [30,13] :
+Proposition 4. Given a data set S¼x
+1;y1 ðÞ /C1 /C1 /C1 xl;ylðÞ ½/C138 , a feature
+space /xðÞdeﬁned by the kernel Kðx;zÞ¼ /xðÞ/C1/zðÞ hi , the solution
+of
+maxai/C01
+2Xl
+i;j¼1aiyiajyjKx i;xj/C0/C1
+þ1
+Cdij/C2/C3
+þXl
+i¼1ai
+subject to a :Xl
+i¼1aiyi¼0ð44Þ
+isa/C3
+i;fxðÞ ¼Pl
+i¼1a/C3
+iyiKx i;xðÞ þ b/C3,where b/C3is choosing such that
+yifðxi¼1/C0n/C3¼1/C0a/C3
+C
+w/C3¼Xl
+i¼1a/C3
+iyiKðx;xÞ;ð45ÞTable 1
+Popular kernels for SVM.
+Kernel name Expression Parameters Characteristics Some applications
+Polynomial Kðxi;xjÞ¼ð <xi;xj>þ1Þrr2ZþThis kernel allows to map the input space
+into a higher dimensional space that is acombination of products of polynomials.Despite its high computational load, thiskernel is frequently applied to data that hasbeen normalized (norm L
+2)[39].Fault diagnosis of
+centrifugal pumps [40],
+natural language pro-cessing [41,42
+Gaussian radial basis
+function (RBF)Kðx
+i;xjÞ¼exp/C0kxi/C0xjk2
+2r2r This kernel is one of the most widely used
+in applications, it can be considered a
+general-purpose translation-invariant
+kernel. Other related functions are theexponential kernel and Laplacian kernel.Parameter
+rmust be carefully chosen.Electric power load
+forecasting [43], hyper-
+spectral/image classiﬁ-
+cation [44][45][46][47]
+[48], clustering (One-
+class SVM) [49], bank-
+ruptcy prediction [50],
+classiﬁcation of elec-troencephalography sig-
+nals [51], bioemetric
+identiﬁcation [52],
+health applications [53],
+intrusion detection [54],
+stream ﬂow predictions[55]
+Linear Kðx
+i;xjÞ¼<xi;xj>þ1¼xT
+ixjþ1 None This is the simplest kernel function. It
+represents the non-kernelized version of
+SVM. Datasets with many features usually
+become linearly separable problems.Therefore, the choice of this kernel can be agood option in these cases.Stock prediction [56],
+malware detection [57]
+Hiperbolic tangent Kðx
+i;xjÞ¼tanhð<xi;xj>bþbÞ b;b This kernel is also known as sigmoid
+kernel, it is also used as activation functionin neural networks. bcan be seen as a
+scaling parameter of the product x
+T
+ixj, and b
+a shift. These parameters affect
+considerably the performance of SVM. [58]
+showed that using b>0 and b<0 guar-
+antees this kernel be conditional positivedeﬁnite.Audio classiﬁcation [59]194 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+The decision function sgn½fðxÞ/C138is equivalent to the hyperplane
+in the feature space deﬁned by the kernel Kðx;zÞwhich solves
+the optimization problem. Then, the geometric margin is given by
+c/C3¼X
+i2sva/C3
+i/C01
+Ca/C3/C1a/C3hi !/C01
+2
+ð46Þ
+Using the kernel
+K0x;zðÞ ¼ Kx;zðÞ þ1
+CdxzðÞ ð 47Þ
+The soft margin in L1
+min
+w;b;niw/C1whi þCXl
+i¼1ni
+s:t::yiw/C1xi hi þ b ðÞ P1/C0ni
+niP0ð48Þ
+where the original Lagrangian is
+Lðw;b;ni;aÞ¼1
+2w/C1whi /C0Xl
+i¼1ai½yiðw/C1xi hi þ bÞ/C01þni/C138þCXl
+i¼1ni/C0Xl
+i¼1cini
+ð49Þ
+the dual is given by
+wðaÞ¼/C01
+2Xl
+i;j¼1aiyiajyjxi/C1xj/C10/C11
+þuml
+i¼1ai ð50Þ
+This is the same maximum margin, but
+C/C0ai/C0ci¼0;ciP0)CPai ð51Þ
+with Kuhn-Tucker conditions
+cini¼0oðai/C0CÞni¼0
+ai½yiðw/C1xi hi þbÞ/C01þni/C138¼0ð52Þ
+where ni–0;ci¼0;)C¼ai, with ni¼0 the maximum margin, ai
+is positive and can increased to C, therefore CPaiP0.
+Proposition 5. Given a data set S¼½ ðx1;y1Þ...ðxl;ylÞ/C138, a feature
+space /ðxÞdeﬁned by the kernel Kðx;zÞ¼ /ðxÞ/C1/ðzÞ hi , the solution
+maxai/C01
+2Xl
+i;j¼1aiyiajyjKðxi;xjÞþXl
+i¼1ai
+s:t::Xl
+i¼1aiyi¼0;CPaiP0ð53Þ
+is given by a/C3
+i;fðxÞ¼Pl
+i¼1a/C3
+iyiKðxi;xÞþb/C3, the decision function
+sgn½fðxÞ/C138is equivalent to the hyperplane in the feature space deﬁned
+by the Kernel Kðx;zÞ, which solves the optimization problem. The
+geometric margin is given by
+c/C3¼X
+i2sva/C3
+i !/C01
+2
+ð54Þ
+When the bound of aiisC, the problem of maximum margin
+arises.
+Choosing Cis the same as getting vin
+maxai/C01
+2Xl
+i;j¼1aiyiajyjKðxi;xjÞ
+s:t::Xl
+i¼1aiyi¼0;
+Xl
+i¼1aiPv;
+1
+lPaiP0ð55ÞFor a non-optimal solution, ^ais the current value of the dual
+variables. The vector of weights is calculated by@L
+@w¼0. The solu-
+tion ^w/C1^w satisﬁes the original conditions with
+1
+2^wkk2þcPl
+i¼1ni;inf w;bLðw;b;^aÞas a feasible dual solution
+L¼1
+2w/C1whi /C0ml
+i¼1ai½yiðw/C1xi hi þbÞ/C01/C138; ð56Þ
+w¼Xl
+i¼1^aiyixi; ð57Þ
+@L
+@b¼0!Xl
+i¼1aiyi¼0 ð58Þ
+Computing the difference between the original and dual feasi-
+ble solutions C/C0ai¼ci
+1
+2wkk2þcXl
+i¼1ni/C0inf
+w;bLðw;b;^aÞ
+¼Xl
+i¼1^ai½yiðXl
+j¼1yjajKx j/C1xi/C10/C11
+þb/C01þni/C138þXl
+i¼1cini
+¼CXl
+i¼1niþXl
+i¼1^ai½yiðXl
+j¼1yjajKx j/C1xi/C10/C11
+þbÞ/C01/C138
+¼Xl
+i;j¼1^aiyiyjajKx j/C1xi/C10/C11
+/C0Xl
+i¼1^aiþCXl
+i¼1ni
+¼Xl
+i¼1^ai/C02wðaÞþCXl
+i¼1nið59Þ
+3. Weaknesses of SVM
+Despite the generalization capacity and many advantages of the
+SVM, they have some very marked weaknesses, among which are:
+the selection of parameters, algorithmic complexity that affects the
+training time of the classiﬁer in large data sets, development of
+optimal classiﬁers for multi-class problems and the performance
+of SVMs in unbalanced data sets.
+3.1. Algorithmic complexity
+Maybe the principal disadvantage of SVM is due to its excessive
+computational cost in large data sets, because the training kernel
+matrix grows in quadratic form with the size of the data set, which
+provokes that training of SVM on large data sets is a very slow pro-
+cess. Support Vector Machines (SVM) have demonstrated highly
+competitive performance in many real-world applications. How-ever, despite its good theoretical foundations and generalization
+performance, SVM is not suitable for large data set classiﬁcation.
+Training an SVM is usually posed as a quadratic programming
+(QP) problem to ﬁnd a separation hyperplane which implicates a
+matrix of density n/C2n, where the nis the number of points in
+the data set. This needs huge quantities of computational time
+and memory for large data sets, so the training complexity of
+SVM is highly dependent on the size of a data set [61,62] .
+According to the strategy used, the training methods for SVM
+can be categorized into data selection, decomposition, geometric,
+parallel implementations and heuristics. Their core ideas and the
+most representative algorithms are presented in this section.
+Data selection methods for SVM intent to decrease the size of
+data sets by removing the instances that do not contribute to the
+deﬁnition of the optimal separating hyperplane. The latter depends
+completely on instances which are located closest to the separation
+boundary [63], and correspond to those whose Lagrange multipli-
+ers are greater than zero in the Karush–Kuhn–Tucker conditionsJ. Cervantes et al. / Neurocomputing 408 (2020) 189–215 195
+(60). These instances are called support vectors (SVs). Generally,
+the number of SVs is a small portion compared with the size of
+training sets.
+ai¼0)yiðx;xihi þbÞP1;ni¼0
+0<ai<C)yiðx;xihi þbÞ¼1;ni¼0
+alphai¼C)yiðx;xihi þbÞ61;niP0ð60Þ
+Simple random sampling (SRS) is probably the most basic strat-
+egy to reduce the size of training sets. It consists in choosing a
+number of instances and then training a SVM with them. The
+works presented in [64–66] show that uniform random sampling
+is the optimal robust selection scheme in terms of several statisti-cal criteria. However, although SRS is computationally cheap, the
+standard deviation of classiﬁcation accuracy is large in most cases
+[66].
+A more sophisticated form of this type of sampling consists in
+assigning to each instance a probability to be chosen. Once a num-
+ber of instances is randomly selected, a SVM is trained with them.
+After this, the probabilities are updated, increasing those whose
+instances have been miss-classiﬁed [67–69] . This process is
+repeated several times.
+Some data selection methods have been developed by comput-
+ing the distance between the instances and the optimal hyper-
+plane. Several metrics for measuring distance have been used in
+previous works: These measures include the Euclidean [70], Maha-
+lanobis [71] and Hausdorff [72,73] distances. Most of the current
+distance-based methods are inspired on two observations: (1)
+the instances closest to those ones with opposite label have high
+chances to be SVs [72] and (2) instances far from hyperplane do
+not contribute to the deﬁnition of the decision boundary [74].A
+problem with naive implementations that require to compute all
+distances between objects is that this task has a temporal and a
+spatial complexity of Oðn
+2Þ.
+The Condensed Nearest Neighbor (CNN) [75] chooses instances
+near to class frontiers, reducing the size of training sets. However,
+CNN is not noise tolerant. Reduced Nearest Neighbor (RNN) [76],
+Selective Nearest Neighbor (SNN) [77] and Minimal Consistent
+Set (MCS) are methods based on CNN, and therefore, they have also
+problems with noisy data sets. RNN, SNN and MCS are more costly
+than CNN.
+Neighborhood properties of SVs have also been exploited to
+reduce size of training sets. Wang and Kwong [78] used neighbor-
+hood entropy, while in [79] only the patterns in the overlap region
+around the decision boundary are selected. The method presented
+in[80] follows this trend but use fuzzy C-mean clustering to select
+samples on the boundaries of class distribution, whereas [72] uses
+hyper spheres. Clustering has been proved to be an effectivemethod to collaborate with SVM on classifying large data sets.
+For example, hierarchical clustering [81,82] , k-means [83] and par-
+allel clustering [84]. Clustering-based methods can reduce the
+computations burden of SVM, however, the clustering algorithms
+themselves are still complicated for large data set. Rocchio bund-
+ling is a statistics-based data reduction method [85]. The Bayesian
+committee machine is also reported to be used to train SVM on
+large data sets, where the large data set is divided into msubsets
+of the same size, and mmodels are derived from the individual sets
+[86]. But, it has higher error rate than normal SVM and the sparse
+property does not hold.
+The basis for decomposition methods lies in the fact that the
+training time can be reduced if only the active constraints of the
+QP problem are taken into account [87]. A similar idea to active
+set methods for optimization is applied in decomposition methods.
+In the active set approach, two sets are used: the working set and
+the set of ﬁxed variables. The optimization is made only on the
+working set. For the case of SVM, the working set is usually com-posed of instances that violate the Karush–Kuhn–Tucker condi-
+tions. Apart of the proved convergence [88], a clear advantage of
+decomposition is that memory requirement is linear in the number
+of training examples; but on the other hand, because only a frac-
+tion of variables is being considered in each iteration, it is time
+consuming [89,90] if elements in the active set are not carefully
+selected. One of the ﬁrst decomposition methods was Chunking
+[74]. It consists in repetitively obtaining the maximum margin
+hyperplane from an amount of instances (called the chunk) and
+then forming a new chunk with the SVs from the previous solution
+and some new instances. Probably the most famous decomposing
+algorithm is the SMO [15]. Sequential minimal optimization
+(SMO) is a fast method to train SVM [91,84] . Training SVM requires
+the solution of the QP optimization problem. SMO breaks this large
+QP problem into a series of smallest possible QP problems. It con-siders the smallest size working set: only two training samples,
+and it is faster than the projected conjugate gradient (PCG) chunk-
+ing algorithm. Dong et al. [61] introduced a parallel optimization
+step where block diagonal matrices are used to approximate the
+original kernel matrix so that SVM classiﬁcation can be split into
+hundreds of sub-problems. A recursive and computational superior
+mechanism referred as adaptive recursive partitioning was pro-
+posed in [92], where the data are recursively subdivided into smal-
+ler subsets. Genetic programming is able to deal with large data
+sets that do not ﬁt in main memory [93]. Neural networks tech-
+nique can also be applied for SVM to simplify the training process
+[94]. LibSVM [95] is an algorithm based on SMO with the improve-
+ment of a more advanced mechanism of selection of the working
+set by using the second order information method previously
+shown in [96]. The SVMlight[97] is another important state-of-
+the-art decomposition method.
+Variants of SVM speed up the training time of SVM at expense
+of loosing accuracy [89]. These methods work by changing the
+original QP problem formulation. Most of the variants methods
+conclude with a system of linear equations solved efﬁciently if
+the number of features is moderate, i.e., around 100. A representa-
+tive method in this category is the least square SVM (LS-SVM) [98]
+which changes the original QP problem by using a linear system of
+equations that can be solved explicitly or by using a conjugate gra-
+dient method. Other important methods are the PSVM (ProximalSVM) [99] and reduced SVM (RSVM) [100] .
+Parallel implementation of the QP problem is difﬁcult because
+there is a strong dependence between data [101] . Most parallel
+methods for training SVM divide the training set into independent
+subsets to train SVM in different processors, as in [101–103] .I n
+[61], the kernel matrix of SVM is approximated by block diagonal
+matrices so that the original optimization problem can be decom-
+posed into hundreds of sub problems, which are easy to solve in a
+parallel fashion. Other parallel implementations can be found in
+[104–108] .
+Geometric methods for SVM are based on that computing the
+optimal separating hyperplane is equivalent to ﬁnd the closest pair
+of points belonging to convex hulls [63,109,110] . Recent advances
+on geometric methods can be found in [111–115] .
+Among all heuristic methods, the alpha seeding [116] consists
+of providing initial estimates of the
+aivalues for the starting of
+the QP problem. Alpha seeding seems to be a practical method to
+improve training time of SVM. Recently, an improvement of this
+method has been proposed in [117] .
+According to the reviewed literature, there are currently just
+few methods that combine decision tree (DT) for instance selection
+in a similar way to the presented in this research. In [118] , the pat-
+terns by ordered projections (POP) algorithm was presented. It
+uses projections of instances on the axis of attributes to ﬁnd the
+minimal number of elements to represent hyper-rectangles which196 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+contain instances of the same class (entropy zero). A disadvantage
+of POP is that the reduction of the size of data sets is very low
+[119] .
+In[120] , a method that approximates the decision boundary of
+SVM using a DT to speed up SVM in its testing phase was proposed.
+In[120] , an SVM is used in some leaves of a DT. The idea is to
+reduce the number of test data points that require SVM’s decision.
+Recently, in [121,26] , the combination of a DT and SVM was
+proposed. The underlying idea is to train an SVM ﬁrst, and then
+use the predictions of the model obtained to modify the class of
+examples in the training set. A DT is afterward trained using the
+modiﬁed set. The SVM is used as a pre-processor for improving
+the performance of DT, when dealing with the problem of
+imbalance.
+3.2. Development of optimal classiﬁers for multi-class problems
+Support Vector Machines were originally designed to solve bin-
+ary classiﬁcation problems [122] . The problem of multi-
+classiﬁcation for SVM, does not present an easy solution. In order
+to apply SVM to multi-classiﬁcation problems, it is necessary to
+change the problem to multiple binary classiﬁcation problem.
+There are two basic types of algorithms to solve the multiclass
+classiﬁcation based in SVM.
+1. ‘‘one versus one” method (OVO). This method constructskðk/C01Þ
+2
+hyperplanes for k-class problem, where each one is trained with
+just two-class data sets. Thus given ntraining data
+ðx1;y1Þ;...;ðxn;ynÞ, where xi2Rd;i¼1;...;n and
+yi21;...;k fg is the class of xi, the ithSVM solves the problem:
+min
+wij;bij;nij1
+2ðwijÞTwijþCXl
+j¼1nij
+t
+ðwijÞT/ðxtÞþbijP1/C0nij
+t;ifo
+yt¼i
+ðwiÞT/ðxjÞþbi6/C01þnij
+t;ifo
+yt¼j
+nij
+tP0;j¼1;...;nð61Þ
+At the prediction phase, a voting scheme is applied to get the class
+ofx. The KðK1Þ=2 classiﬁers are applied to an unseen sample x. If the
+kthclassiﬁer says that xbelongs to the iclass, then one vote for the i
+class is added by one and the label of xis predicted in the class that
+got the highest number of votes. The principal disadvantage of OVO
+is that some times the ambiguities in some regions of its input
+space can provoke that two regions receive the same number of
+votes.
+2. ‘‘one versus all” method (OVA). This algorithm constructs k
+hyperplanes for k-class problem. The i-th hyperplane is trained
+with the samples between the i-th class and the rest data. Thus
+given n training data ðx1;y1Þ;...;ðxn;ynÞ, where
+xi2Rd;i¼1;...;nand yi21;...;k fg is the class of xi, the ith
+SVM solves the problem:
+min
+wp;bp;np1
+2ðwpÞTwpþCXl
+j¼1np
+i
+ðwpÞT/ðxiÞþbpP1/C0np
+i;ifo
+yi¼p
+ðwpÞT/ðxiÞþbp6/C01þnp
+i;ifo
+yi–p
+np
+iP0;i¼1;...;nð62Þ
+where xiare mapped to high dimensional space by means of /,
+where /is a Kernel that satisﬁes the Mercer’s condition [14], and C
+is a penalty parameter. The kdecision functions are given byðw1ÞT/ðxÞþb1
+ðw2ÞT/ðxÞþb2
+...
+ðwkÞT/ðxÞþbkð63Þ
+Given a sample xto classify, the label of the class that has the lar-
+gest value of the decision function is chosen as:
+class of x ¼arg max
+i¼1;2;...;kððwpÞT/ðxÞþbpÞð 64Þ
+where wiand bidepict the hyperplane of the ith SVM.
+Currently, most of methods use one-against-all or one-against-
+rest approaches to facing multi-class problems with SVM. How-
+ever, there are numerous researchers who have faced the problem
+and have developed algorithms to try to solve the problem [123–
+131] .
+3.3. Performance of SVMs in imbalanced datasets
+In imbalanced data sets, the correct classiﬁcation of minority
+class objects is a challenging problem. Normal classiﬁcation meth-
+ods, such as support vector machines, do not work well for these
+skewed data sets because is difﬁcult to get the optimal separation
+hyperplane for an SVM trained with imbalanced data.
+The imbalance in data sets affects considerably the performance
+of most classiﬁers. In general, the model extracted from this type of
+data sets is biased towards the minority class. As a result, the accu-
+racy on the minority classes is hampered. The imbalance in data
+sets is a recurrent problem in many domains, some examples
+are: fraud detection problems [132] , classiﬁcation of protein
+sequences [133–135] , medical diagnosis of rare and dangerous dis-
+eases [136] , intrusion detection and text classiﬁcation [137,138] ,
+discrimination between earthquakes and nuclear explosions
+[139] . Support Vector Machines were introduced by Vapnik [13]
+as a kernel based machine learning model for classiﬁcation and
+regression tasks. The generalization capabilities and discriminative
+power of SVM have attracted the attention of practitioners and
+theorists in last years. SVM has strong theoretical foundations,
+and, in general, it presents high classiﬁcation accuracy in real-
+world applications. However, recent experiments [140–142] show
+that the performance of SVM is severely affected when it is applied
+on imbalanced data sets. This is more evident when the ratio
+between the majority and the minority class is large. The ﬁrst dis-
+advantage of SVM on imbalanced data sets is due to the margin
+obtained is biased towards the minority class.
+There are several solutions of SVM classiﬁcation for imbalanced
+data [143] . The techniques used to minimize the negative effect of
+imbalanced data sets on classiﬁers can be categorized as external
+and internal. The ﬁrst techniques balance the data sets before
+training a classiﬁer [144,145,142] . The second techniques modify
+the model or architecture of classiﬁcation methods [146–148] .
+Principal external techniques are under sampling and over sam-
+pling. In general, under sampling consists in selecting, randomly,
+a small number of objects from majority class [146] . Over sampling
+techniques generate artiﬁcial examples of the minority class. Other
+methods use evolutionary algorithms to balance the data sets
+[143,149,150] . However, to add artiﬁcial data points to the minor-
+ity class is a promising technique to tackle the problem of imbal-
+ance. Chawla et al. [140] proposed Synthetic Minority Over
+sampling Technique (SMOTE), which generates artiﬁcial objects
+to be included as members of the minority class. The minority class
+is over-sampled by taking each minority class sample and intro-
+ducing synthetic examples along the line segments joining any or
+all of the kminority class nearest neighbors. It does not causeJ. Cervantes et al. / Neurocomputing 408 (2020) 189–215 197
+any information loss and could potentially ﬁnd hidden minority
+regions. The disadvantage of this method is that it creates noise
+for the classiﬁers which could result in a loss of performance
+because SMOTE makes the assumption that the instance between
+a positive class instance and its nearest neighbors is also positive
+[151] .
+Classiﬁcation for imbalanced data sets has been studied by
+machine learning community since the last decade [142] . There
+are many methods that are applied to imbalanced data sets in
+order to improve the performance of classiﬁers [135] . Generally,
+these methods are divided into two categories: external methods
+and internal methods. External methods involve a pre processing
+of training data sets in order to make them balanced. Internal
+methods deal with modiﬁcations of the learning algorithms in
+order to reduce their sensitiveness to class imbalance. In otherwords, external methods attempt to balance the data sets by con-
+sidering the number of examples for each class, whereas internal
+methods consider the costs associated with misclassiﬁcation and
+include these costs in the model. The most popular external meth-
+ods are under-sampling, over-sampling and SMOTE. The under
+sampling and over sampling method [146] balances the data sets
+by randomly selecting small number of objects from majority class,
+and doubling the objects in the minority class. The main drawback
+is that some important points, such as support vectors, may be
+neglected by the random algorithm. [141] pointed out that the
+under sampling strategy is not a good choice for SVM, and that
+the over sampling cannot improve the ﬁnal accuracy. The synthetic
+minority over sampling technique [140] generates artiﬁcial data in
+the minority class by multiplying a random number in each origi-
+nal object. [152] showed that SMOTE is better than under sampling
+and over sampling. Several proposals inspired in SMOTE have been
+proposed, see, for example, [153–155] .I n[146] an SVM with differ-
+ent costs and SMOTE is used. That method introduces a scheme to
+penalize classiﬁcation errors. The majority class is assigned a high
+cost and the minority class is assigned a low cost. This combination
+makes denser the distribution of the minority class, and pushes the
+separating hyperplane to the minority class. In [135] , a penaliza-
+tion criterion is used to produce a similar effect on the separating
+hyper plane. In [142] , a kernelized version of SMOTE is proposed.
+Other kernel-modiﬁcation methods have been proposed in
+[142,156,157] . Other proposals can be found in [158,159] .
+Although sampling methods and cost-sensitive learning meth-
+ods seem to dominate the current research efforts in imbalanced
+learning, Genetic Algorithm (GA)-based approaches have also been
+pursued by the community. These algorithms use GAs in order to
+balanced data sets. [149] used a GA for under-sampling the major-
+ity class, the algorithm tackles the difﬁculties of SVM learning on
+large data sets, because the method signiﬁcantly reduce the sizeof the training set without loss of performance. Batuwita and
+Palade [160] applied Fuzzy SVM (FSVM) to improve the perfor-
+mance on imbalanced data sets to handle the problem of outliers
+and noise by assigning different fuzzy-membership values based
+on their importance. In [161] , the authors proposed a efﬁcient
+resampling method selecting the most informative data examples
+located closer to the class boundary region by using the separating
+hyperplane found by training an SVM model on the original imbal-
+anced data set, and then use only those examples in resampling. An
+excellent survey about classiﬁcation on imbalanced data sets can
+be found in [162] .I n[143] , a GA is used to balance skewed data
+sets. That method produces better results than simple random
+sampling. Bazi and Melgani [163] used PSO algorithm in order to
+improve the performance of SVM. That method was applied for
+the classiﬁcation of electrocardiogram signals and parameters esti-
+mation. In [159] , the authors propose a classiﬁcation system in
+order to detect the most important rules, and the rules which per-
+turb the performance of classiﬁer. That system uses hierarchicalfuzzy rules and a GA. Garcia et al. [150] implemented an algorithm
+which performs an optimized selection of examples from data sets.
+The learning algorithm is based on the nested generalized exem-
+plar method and GA to generate and select the best suitable data
+to enhance the classiﬁcation performance over imbalanced
+domains. GA is used to guide the search process. Although gener-
+ating new instances in the minority class can improve the perfor-
+mance in SVM classiﬁcation [144] , this process could introduce
+noise to the data set, and to select randomly instances that helps
+to improve the performance in this area is almost impossible with-
+out using a genetic algorithm because the search space is huge.
+4. SVM implementations
+Currently there are several implementations of SVM in the liter-
+ature. Table 2 shows a list of the most used SVM implementations.
+SVMs must solve a quadratic programming problem to ﬁnd a
+hyperplane that separates the classes. The main reason for multiple
+implementations is because computational time depends mainly
+on the heuristics used to divide the problem into small fragments.
+In small data sets, the computational time of the SVMs is not
+important, however the computational complexity of the SVMs is
+almost cubic, so that in large data sets the training time is enor-
+mous and it is very important to use some algorithm that face this
+challenge. This section brieﬂy shows some approaches used to
+improve the training time of SVM.
+Data reduction: In most cases the SVM solution is given by a
+small subset of data called support vectors and not by the entire
+data set. The basic idea is to eliminate data less likely to be support
+vectors and preserve the data more likely to be support vectors and
+train an SVM with them.
+Chunking: It is based on the sparsity of the SVM. In most cases
+the solution of the SVM is given by a small subset of data and not
+by the entire data set [164–167] . Moreover, an aipoint can only be
+optimal if it fully satisﬁes the conditions of KKT. The algorithm
+starts selecting an arbitrary subset of the data called chunk. The
+quadratic optimization problem is solved on this small ‘‘chunk”
+and the next chunk is obtained with the resulting support vectors
+and the points violating the KKT conditions. The process is stopped
+until all the training data are considered and the chunk get all the
+SV. This algorithm reduces the complexity of SVM by reducing the
+large problem to a sequence of smaller optimization problems,
+iteratively determining the support vectors.
+Decomposition: These methods are similar to chunking meth-
+ods. However, in decomposition methods the size of the sub prob-
+lems is ﬁxed. Decomposition methods were designed to reduce the
+complexity to computing the full kernel matrix by solving asequence of smaller quadratic programming sub problems.
+Decomposition methods tackle the problem of training an SVM
+by optimizing iteratively only on the variables belonging to a sub-
+set of tractable size. This is the so-called working or active set. The
+variables that do not belong to the working set are ﬁxed and form
+the so-called ﬁxed set. Decomposition methods can be classiﬁed
+into primal and dual methods. They aim for dual(primal) feasibil-
+ity, while maintaining primal (dual) feasibility and complementary
+slackness.
+A clear advantage in this scheme, in addition to its proved con-
+vergence [168,169] , is that its memory requirements grow linearly
+with the number of training examples. On the other hand, because
+only a fraction of the variables is being considered in each iteration,
+it is time consuming [89] if elements in the working set are not
+carefully selected. It has been observed that the active set method
+can oscillate nearby the solution [170] .
+The most important element in decomposition methods for
+them to converge quickly is the selection of the subset of variables198 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+in the working set [171] . One method, commonly used,consists in
+selecting those samples that violated the most KTT conditions
+[172–174] .
+Sequential Minimal Optimization: The Sequential Minimal
+Optimization algorithm (SMO) [15] is obtained from the idea of
+the decomposition method to the extreme, by optimizing a mini-
+mum subset of only two points in each iteration. The power of this
+technique lies in the fact that the two-point optimization problem
+admits an analytical solution, eliminating the need to use an iter-
+ative quadratic programming optimizer as part of the algorithm
+[97].
+The conditionPl
+i¼1aiyi¼0 always requires that the number of
+multipliers which can be optimized at each step is 2. Each time
+that a multiplier is updated, at least one other multiplier needs
+to be adjusted in order to maintaining the condition true. In each
+step, SMO chooses two elements aiandajto optimize them, ﬁnds
+the optimal value of those two parameters, and updates the vector
+a. The choice of the two points is determined by a heuristic, while
+the Optimization of the two multipliers is performed analytically.
+Experimentally, SMO performance is very well. This is because
+the time of kernel computing can be reduced, which directly
+improves its performance. Although it needs more iterations to
+converge, each iteration uses only a few operations, so it converges
+very fast. In addition to the convergence time, another feature of
+the algorithm is that it does not need to store the kernel matrix
+in memory since matrix operations are not involved.
+The SMO algorithm performs well for large data sets because it
+scales well with the size of the training set. The authors argue that
+SMO is a strong candidate to become the standard algorithm of
+SVM training [15].
+Shrinking: The shrinking heuristics are designed to speed up
+the optimization reducing the number of kernel values needed to
+update the gradient vector. The algorithm is based on the fact that
+An optimal solution aof the SVM dual problem may contain some
+bounded elements(i.e., ai¼0o r C). The principal propose of shrink-
+ing technique is to reduce the size of the problem by temporarily
+eliminating the bounded elements ai(Joachims, 1999).
+Working selection: The selection of an initial set of variables as
+a working set is important when optimizing SMO so that the cur-
+rent iteration moves towards the minimum. There are many ways
+to select the pair of indices (i, j) representing the working set for
+each iteration of the SMO algorithm. Although maximal gain work-
+ing set selection may reduce the number of iterations, it makes
+each iteration very slow. Practical working set selection schemes
+can to achieve a good compromise between the number of itera-
+tions and the speed of each iteration [175,165–167] .
+Most of the implementations are designed to solve classiﬁcation
+and regression problems. In addition, the implementations have
+many beneﬁts, among which we could highlight some as:
+1. These can work on large data sets, the implementations can
+handle several hundred-thousands of training examples andmany thousands of support vectors.
+2. They can supports standard kernel functions and in some
+cases it is possible to deﬁne your own kernel function.3. They can perform efﬁcient multi-class classiﬁcation.
+4. They efﬁciently compute cross validation for model selection.
+5. In some cases they can use weighted SVM for unbalanced
+data.
+6. They provide probability estimates.
+InTable 2 is shown some of the most popular SVM implemen-
+tations to large data sets. All current implementations use one or
+more of the approaches described above to reduce SVM training
+time.
+SVMLigth uses Working selection and Shrinking techniques.
+SVMLigth is one of the most popular SVM implementations. The
+algorithm is very fast and has been applied to solve classiﬁcation
+and regression problems in large data sets.
+SVMTorch uses Working selection and Shrinking to improve
+the training time of SVM the authors argue that the implementa-
+tion can efﬁciently solve large scale regression problems.
+Pegasos use decomposition methods to reduce the training
+time of SVM. Pegasos is essentially an Stochastic Subgradient Des-
+cent optimization algorithm that solves the primal formulation,
+which means it needs the actual feature vectors. Pegasos can be
+used to train a non-linear SVM only if can be represent the kernel
+as a dot product of ﬁnite-dimensional feature vectors.
+LIBSVM algorithm is based on the SMO algorithm, however,
+LIBSVM has a more advanced work set selection algorithm. Most
+decomposition methods obtain an initial data set from the entire
+data set, this data set is optimized in each iteration, then the value
+of the objective function is improved in each iteration. The iterativeprocess ends when a stop criterion derived from Karush–Kuhn–T
+ucker conditions is satisﬁed or a required accuracy is reached.
+LIBSVM uses a search direction algorithm which maximizes the
+increase in the objective function in each iteration. The algorithm
+starts by making a ﬁrst approximation of the objective function
+by obtaining a vector
+a. From this ﬁrst approximation compute
+a0¼aþku, where the direction uhas only two non zero coefﬁ-
+cients. The algorithm uses two search directions, a search direction
+uijfor positive kand a search direction /C0uij¼ujifor negative k. The
+most effective search direction for each iteration will be the direc-
+tion that maximizes the increase in the objective function.
+Incremental SVM: is a framework for incremental learning and
+adaptation of support vector machine classiﬁers that aims to sim-
+plify the model selection task by perturbing the SVM solution as
+the regularization and kernel parameters are adjusted.
+5. Applications in real-world problems
+SVM applications have been used to solve many real-world
+problems, in this section we describe some of them.
+5.1. Text (and hypertext) categorization
+The authors in [181] presented the implementation of a text
+document classiﬁcation framework that uses the SVM approach
+in the training phase and the Euclidean distance in the classiﬁca-
+tion phase. In the proposed approach, the support vectors for eachTable 2
+SVM Implementations
+Implementation Developer Source code University Web page
+SVMTorch Ronan Collobert and Samy Bengio C++ Universite de Montreal [176]
+Pegasos Shai Shalev-Shwartz C++ The Hebrew University of Jerusalem [177]
+LibSVM Chih-Chung Chang and Chih-Jen Lin C and Java National Taiwan University [178]
+SVMLight Thorsten Joachims C Cornell University [179]
+Incremental SVM Chris Diehl M Carnegie Mellon [180]J. Cervantes et al. / Neurocomputing 408 (2020) 189–215 199
+category are identiﬁed from the training data points during train-
+ing phase using SVM. During classiﬁcation, when a new data point
+is mapped into the original vector space, the average distances
+between the new data point and the support vectors from different
+categories are measured using the Euclidean distance. The classiﬁ-
+cation decision is made based on the category of support vectors
+which has the lowest average distance with the new data point,
+making the classiﬁcation decision irrespective of the efﬁcacy of
+hyper-plane formed by applying the particular kernel function
+and soft margin parameter.
+In[182] , is evaluated three machines learning methods, k-
+nearest neighbor, SVM and adaptive resonance associative map
+are evaluated for Chinese document categorization. Based on two
+Chinese corpora, a series of controlled experiments evaluated their
+learning capabilities and efﬁciency in mining text classiﬁcationknowledge. SVM is highly efﬁcient in learning from well-
+organized samples of moderate size, although on relatively large
+and noisy data the efﬁciency of SVM and adaptive resonance asso-
+ciative map are comparable.
+In reference [183] , the authors showed that in the case of text
+classiﬁcation, term-frequency transformations have a larger
+impact on the performance of SVM than a kernel itself. It is dis-
+cussed the role of importance-weights, which is not totally under-
+stood given the model complexity and calculation cost. It is also
+shown that the time consuming lemmatization or stemming can
+be avoided even when classifying highly inﬂection language.
+SVM is one of the techniques used in active learning to reduce
+data labeling effort in different ﬁelds of pattern recognition. In
+[184] , it was presented a batch mode active learning using SVM
+for text classiﬁcation, since most of the related works applying
+active learning methods to automatic text classiﬁcation are
+focused on requesting the label of an unlabeled document in each
+iteration.
+The authors in [185] bring forward linear SVM together with
+distributional clustering of words to realize its potential in text cat-
+egorization realm. Distributional clustering has been presented as
+an efﬁcient alternative to the feature selection conventionally used
+in text categorization. Distributed clustering together with linear
+SVM brings down the dimensionality of text documents without
+any compromise in classiﬁcation performance. In this study, linear
+SVM and its extension fuzzy SVM were employed together with
+distributed clustering for text categorization.
+The authors in [186] proposed an approach for term weighting
+in very short documents that is used with an SVM classiﬁer. The
+paper focuses on market research and social media documents.
+In both data sources, the average length of a document is below
+twenty words. As the documents are short, each word occurs usu-
+ally only once within a document. Thus, it was proposed anapproach for term weighting that does not use term frequency
+within a document but substitutes it with other word statistics.
+In high dimensions and large-scale multi-class textual data, it is
+common to ignore the semantic between words with the tradi-
+tional feature selection method. The authors in reference [187]
+introduced the categories information into the existing LDA (Latent
+Dirichlet Allocation) model feature selection algorithm and con-
+struct SVM multi-class classiﬁer on the implicit topic-text matrix.
+In[188] , it was presented a text classiﬁer using positive and
+unlabeled examples. The challenge of this problem as compared
+with the classical text classiﬁcation problem is that no labeled neg-
+ative documents are available in the training example set. Many
+more reliable negative documents are identiﬁer by an improved
+1-DNF algorithm. Then, a set of classiﬁers are built by iteratively
+applying the SVM algorithm on a training data set, which is aug-
+mented during iteration. Later, different from previous PU-
+oriented text classiﬁcation works, the weighted vote of all classi-
+ﬁers generated in the iteration steps is adopted to construct theﬁnal classiﬁer instead of choosing one of the classiﬁers as the ﬁnal
+classiﬁer. The authors propose an approach to evaluate the
+weighted vote for all classiﬁers generated in the iteration steps
+to construct the ﬁnal classiﬁer based on particle swarm
+optimization.
+In reference [189] , the authors proposed the combined dichot-
+omy transformations, a text categorization system that combines
+binary classiﬁers that are trained with different dichotomy sets
+using dichotomy transformation, where the number of training
+examples increases exponentially when they are compared with
+the original set. This property is desirable because each classiﬁer
+can be trained with different data without reducing the number
+of examples or features. Thus, it is possible to compose an ensem-
+ble with diverse and strong classiﬁers. Experiments are preformed
+using SVM, random subspace, boostexter and random forest.
+The authors in [190] promoted a new benchmark called RTA-
+news, which is a data set of multi-label Arabic news articles for
+text categorization. They conducted an extensive comparison of
+most of the well-known multi-label learning algorithms for Arabic
+text categorization in order to have baseline results and show the
+effectiveness of these algorithms for Arabic text categorization on
+RTAnew. The evaluation involves several algorithms, such as bin-ary relevance, classiﬁer chains, calibrated ranking, SVM, k-nearest
+neighbors (KNN), random forest and four adaptation-based algo-
+rithms. The results demonstrate that adaptation-based algorithms
+are faster than transformation-based algorithms.
+5.2. Image classiﬁcation
+In[191] , the image is enhanced with the help of median ﬁlter,
+Gaussian ﬁlter and un-sharp masking. After that, morphological
+operations and the entropy based segmentation are used to ﬁnd
+the region of interest and ﬁnally the KNN and SVM classiﬁcation
+techniques are employed for the analysis of kidney stone images.
+Kidney stone detection is a sensitive topic. There are various prob-
+lems associated with this topic like low resolution images, similar-
+ity of kidney stone and prediction of stone in the new image
+kidney. Ultrasound images have low contrast and are difﬁcult to
+detect and extract the region of interest. Therefore, the image
+has to go through the preprocessing which normally contains
+image enhacement.
+Qiao et al. [192] presented a method which combines low and
+high frequency Curvelet coefﬁcients with feature vectors based
+on the traditional features to make up for contour and texture fea-
+ture in details. Commonly used parameters optimization algo-
+rithms in SVM are cross validation grid search, genetic algorithm
+and PSO algorithm. In reference [192] , the smart algorithm is used
+for parameter optimization, making it simple and rapid.
+The authors in [193] developed a handle device featured with
+low cost and high performance to enhance early detection of mel-
+anoma at the primary healthcare. SVM is a common classiﬁer that
+shows high accuracy for classifying melanoma within the diagnosis
+system and is considered as the most compute-intensive task in
+the system. Therefore, the authors propose a dynamic hardware
+system for implementing a cascade SVM classiﬁer on FPGA for
+early melanoma detection. A multi-core architecture is proposed
+to implement a two-stage cascade classiﬁer using two classiﬁers
+obtaining high accuracies.
+Orthogonal moments are the projections of image function onto
+particular kernel function. They play vital role in digital image fea-
+ture extraction being rotation, scaling, translation invariant, robust
+to image noise and contain minimal information redundancy.
+Fractional-order moments are superclass of integer order and more
+efﬁcient underrated. Kaur et al. [194] proposed fractional-order
+Zernike moments along with SVM to recognize grape leaf diseases.200 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+Comparative analysis with integer-order Zernike moments along
+with other feature selection methods has been explored.
+In[195] , the authors presented a framework for person-
+independent expression recognition by combining multiple types
+of facial features via multiple kernel learning in multiclass SVM.
+Approaches based on multiple kernel learning jointly learn the
+same kernel weights with l1-norm constraint for all binary classi-
+ﬁers, whereas the proposed framework learns one kernel weight
+vector per binary classiﬁer in the multiclass-SVM with lp-norm
+constraints, which considers both sparse and non-sparse kernel
+combinations within multiple kernel learning. The authors studied
+the effect of lp-norm of multiple kernel learning in multiclass algo-
+rithm for learning the kernel weights and evaluated the recogni-
+tion results.
+In reference [28], it was addressed the recognition of Indian
+signs based on dynamic hand gesture recognition techniques in
+real-time scenario. The captured video is converted to HSV color
+space for pre-processing and then the skin pixels are segmented.
+Hu moments and motion trajectory are extracted from the image
+frames and the classiﬁcation of gestures is performed by using
+SVM.
+The authors of reference [196] proposed a system consisting of
+three modules: digital zoom, adaptive skin detection and hand ges-
+ture recognition. The last module recognizes both static and
+dynamic hand gesture. The region of interest next to the detected
+user face is for ﬁst/waving hand gesture recognition. An efﬁcient
+algorithm using SVM is developed to classify the dynamic hand
+gestures under complex background, motion history image and
+four groups of novel Haar-like features are investigated to classify
+the dynamic and right hand gestures.
+In reference [197] , three robust approaches for feature extrac-
+tion for gender classiﬁcation were presented. The ﬁrst approach
+is based on using discrete cosine transform and consists of two dif-
+ferent methods for calculating features values. The second
+approach is based on the extraction of texture features using the
+gray-level co-occurrence matrix. The third approach is based on
+2D-wavelet transform. The extracted features vectors are classiﬁed
+using SVM. K-fold cross validation is used in training the SVM.
+The authors in [198] introduced a method for spectral-spatial
+classiﬁcation of hyperspectral images. The proposed technique
+consists of two steps: 1) a probabilistic SVM pixelwise classiﬁca-
+tion of the hyperspectral image is applied; 2) spatial contextual
+information is used for reﬁning the classiﬁcation results obtained
+in the ﬁrst step, by means of a Markov random ﬁeld regularization.
+In reference [199] , the feature selection methods for mass clas-
+siﬁcation of mammograms are addressed. A procedure based on
+SVM recursive feature elimination is integrated with a normalized
+mutual information feature selection to avoid their disadvantages.Different initialization methods are investigated with spatial con-
+straints as the initialization step. Different feature selection meth-
+ods with a minimum redundancy-maximum relevance ﬁlter are
+used to select features and to compare mass classiﬁcation results
+using the selected features.
+The contribution of reference [200] concerns histogram inter-
+section kernel SVM for image classiﬁcation. The intersection coor-
+dinate descent and a deterministic and scalable histogram
+intersection kernel solver are proposed. The intersection coordi-
+nate descent is faster than general purpose SVM solvers and other
+fast histogram intersection kernel SVM training methods.
+The use of color in QR codes brings extra data capacity, but also
+inﬂicts tremendous challenges on the decoding process due to
+chromatic distortion-cross-channel color interference and illumi-
+nation variation. The authors of reference [201] proposed two
+approaches to solve these problems: LSVM-CMI and QDA-CMI
+which jointly model these different types of chromatic distortion.
+Extended from SVM and QDA (Quadratic Discriminant Analysis),respectively, LSVM-CMI and QDA-CMI optimize over a particular
+objective function and learn a color classiﬁer.
+5.3. Bioinformatics (protein classiﬁcation and cancer classiﬁcation
+The authors in reference [202] proposed a semi-supervised
+SVM-based feature selection, which simultaneously exploits the
+knowledge from unlabeled and labeled data. Experimental results
+on the gene expression data of lung cancer show that semi-
+supervised SVM-based feature selection achieves the higher accu-
+racy and requires shorter processing time compared with the well-
+known supervised method.
+In[203] , it was presented a clinical decision support system
+aimed to save lives, time and resources in the early diagnostic pro-
+cess. Segmentation, feature extraction and lesion classiﬁcation arethe important steps in the proposed system. The system analyzes
+the images to extract the affected area using a segmentation
+method. The underlying features which indicate the difference
+between melanoma and benign images are obtained through spe-
+cialized texture analysis methods. Self-SVM is employed for classi-ﬁcation which shows improved classiﬁcation rate.
+Zhang et al. [204] applied an 1-norm SVM with the squared loss
+to implement fast gene selection for cancer classiﬁcation. The 1-
+norm SVM square loss performs gene selection and classiﬁcation
+at the same. The approach is used as a gene selector and adopts
+a subsequent classiﬁer to classify the selected genes.
+The authors of reference [205] proposed to identify signiﬁcant
+attributes in a well-established prostate cancer gene expression
+data set. Different statistical and artiﬁcial intelligence-based fea-
+ture selection methods are paired with neural networks, Naive
+Bayes, AdaBoost and J48. Naive Bayes and AdaBoost achieve the
+best accuracy with SVM attribute selection. By investigating
+National Center Biotechnology Information database, 21 out of 24
+attributes that belong to SVM attribute selection have a reference
+to cancer/tumor, establishing a link between feature selection
+and biological plausibility.
+In reference [206] , the performance of SVM classiﬁcation to
+stratify the Gleason score of prostate cancer in the central gland
+was assessed, based on image features across multi parametric
+magnetic resonance imaging. Fifty-ﬁve variables are computed in
+the SVM classiﬁcation. The classiﬁcation model is developed with
+10-fold cross-validation and is further validated mutually across
+two separated data sets.
+The authors of reference [207] proposed an algorithm based on
+deep neural network and emotional learning process. Firstly, prin-
+cipal component analysis is applied for feature reduction; then, the
+features are extracted using a deep neural; different classiﬁers are
+implemented: multi-layer perceptron, SVM, decision tree andGaussian mixture model. Experimental results show that, gener-
+ally, using emotional learning increased the accuracy, where the
+highest accuracy is obtained using SVM.
+The use of convolutional neural networks in the classiﬁcation
+and diagnosis of medical image problems is becoming common
+and popular. Nevertheless, the training of convolutional neural
+networks requires a large data set of images. In [208] , it was pro-
+posed to overcome this problem by using transfer learning to
+extract images features for further classiﬁcation. Three architec-
+tures of convolutional neural networks are tested where the fea-
+tures are selected according to their gain ratios and used as input
+to the SVM classiﬁer.
+Mazo, Alegre and Trujillo [209] classiﬁed automatically cardio-
+vascular tissues using texture information and SVM. Also, several
+cardiovascular organs are recognized following the same process.
+The texture of histological images is described using local binary
+patterns, local binary patterns invariant to rotation and Haralick
+features and different concatenations between them. SVM isJ. Cervantes et al. / Neurocomputing 408 (2020) 189–215 201
+selected as the classiﬁer with a higher area under the curve that
+represents both higher recall and precision. A linear SVM allows
+the separation of four classes of tissue: cardiac muscle of the heart,
+smooth muscle of the muscular artery, loose connective tissue and
+smooth muscle of the large vein and the elastic artery.
+In reference [210] , the authors presented a method based on
+ultrasound RF time series analysis and an extended version of
+SVM classiﬁcation for generating probabilistic cancer maps that
+can augment ultrasound images of prostate and enhance the
+biopsy process. The RF time tries are formed by recording sequen-
+tial ultrasound RF echoes backscattered from tissue while the
+imaging probe and the tissue are stationary in position.
+5.4. Hand-written character recognition
+Bhowmik et al. [29] proposed recognition of hand-written Ban-
+gla characters based on SVM hierarchical classiﬁcation schemes. It
+is observed that there are groups of characters having similar
+shapes. These groups are determined in two different ways on
+the basis of confusion matrix obtained from SVM classiﬁer. Three
+different two-stage hierarchical learning architectures are pro-
+posed using the grouping schemes.
+In reference [211] , binary area matrix calculation was pre-
+sented. The performance of the binary zone area matrix is mea-
+sured individually and with combinations of other existing
+features. The proposed method for character recognition is applied
+to the eighteen different scripts authorized by the Government of
+India Sridhar. The recognition of the characters is performed using
+SVM classiﬁers.
+Jebri et al. [212] proposed an optical character recognition sys-
+tem for Arabic characters. In the ﬁrst phase the characters are
+extracted, in the second phase histograms of oriented gradient
+are used for feature extraction. The ﬁnal phase employs SVM for
+character classiﬁcation.
+In[213] , an approach for handwritten digit recognition is devel-
+oped that uses a small number of patterns for training phase. The
+recognition performance is improved by using the bag of visual
+words technique to construct images feature vectors. Each visual
+word is described by scale invariant feature transform method.
+For learning feature vectors, SVM classiﬁers are employed.
+The authors of reference [27] presented a system to recognize
+handwritten character for the Gujarati language. SVM with linear,
+polynomial & RBF kernel, k-NN with different values of k and
+multi-layer perceptron are employed to classify strokes using
+hybrid feature set.
+In reference [214] , it was proposed a framework of providing
+handwritten character recognition as a service via internet, based
+on cloud computing technology. SVM classiﬁer is used, along withother classiﬁers, for large scale character recognition, writing adap-
+tation technology and handwriting Chinese word/text recognition.
+Bertolini et al. [215] investigated the efﬁcacy of a writer-
+independent classiﬁer based on dissimilarity for multi-script wri-
+ter identiﬁcation. Multi-script writer identiﬁcation consists in
+identifying a person of a given text written in one script from the
+samples of the same person written in another script. The authors
+performed experiments on Arabic and English samples, features
+are extracted using the texture descriptors local binary patterns
+and local phase quantization; with these features SMVs with Gaus-
+sian kernel are used as classiﬁers. The free parameters of the sys-
+tem for the SVM are chosen using 5-fold cross validation; the
+parameters are determined through a grid search.
+The authors of reference [216] performed experiments for
+handwritten character recognition using and comparing the per-
+formance of multi-layer feed forward back propagation neural net-
+work and SVM classiﬁer. The neural network is trained with the
+pixels of character images resized into 7050 pixels, which isdirectly subjected to training. In other words, each resized image
+has 3500 pixels and these pixels are fed for the neural network
+training. For the SVM, 25 features are extracted from each charac-
+ter and these features are employed to train the SVM, where the
+polynomial kernel is used.
+In reference [217] , it was described a method for ofﬂine writer
+identiﬁcation, using RootSIFT descriptors computed densely at the
+script contours. GMM (Gaussian Mixture Model) supervectors are
+used to describe the characteristic handwriting of an individual
+scribe. Exemplar-SVMs are proposed to train a document-speciﬁc
+similarity measure.
+In[218] , the authors proposed the block wise local binary count
+as descriptor for ofﬂine text independent writer identiﬁcation of
+handwritten documents. The proposed operator characterizes the
+writing style of each writer by a set of histograms calculated fromall the connected components in the writing. Each histogram is
+constructed by calculating the occurrence distribution of pixels
+corresponding to the writing within small blocks in each connectedcomponent extracted and cropped from the input handwriting
+sample. The samples are classiﬁed according to their normalized
+histogram feature vectors through the nearest-neighbor rule using
+the Hamming distance and SVM.
+5.5. Face detection
+Je, Kim and Yang Bang [219] proposed the automatic detection
+of human face in digital video using an SVM ensemble to improve
+the detection performance. The SVM ensemble consists of several
+SVMs trained using training samples via a bootstrap technique.
+They are aggregated in order to make a collective decision via a
+majority voting scheme.
+One of the problems of face detection is the large variations
+because of some factors, like viewpoint, extreme illuminations
+and expression changes, leading to large intra-class variations
+and making the detection algorithms not robust enough. The
+authors of reference [220] proposed a locality-sensitive SVM using
+kernel combination algorithm to solve the problems mentioned
+before. The locality-sensitive SVM is employed to construct a local
+model on each local region, which handles the classiﬁcation task.
+Then, multiple local convolutional neural networks are employed
+to jointly learn local facial features because of the strength of con-
+volutional neural networks learning characteristic.
+Face recognition plays an important role in video surveillance;
+these systems are exposed to challenging operational environ-
+ments. The appearance of faces changes when captured under
+unconstrained conditions due to variations in pose, scale, illumina-
+tion, occlusion, blur, etc. In [221] , the authors developed a multi-
+classiﬁer system based on multiple face representation and
+domain adaptation. An individual-speciﬁc ensemble of exemplar-
+SVM classiﬁers is thereby designed to improve robustness to
+intra-class variations. During enrollment of a target, an ensemble
+is used to model the single reference, where multiple face descrip-
+tors and random feature subspaces allow generating a diverse pool
+of patch-wise classiﬁers. These ensembles are adapted to the oper-
+ational domains; the exemplar-SVMs are trained using labeled face
+patches extracted from the reference still versus patches extracted
+from cohort and other non-target stills mixed with unlabeled
+patches extracted from the corresponding face trajectories cap-
+tured with surveillance cameras.
+In reference [222] , the authors proposed a methodology to solve
+the problem of full illumination variation by the combination of
+histogram equalization and Gaussian low-pass ﬁlter. So as to pro-
+cess illumination normalization, feature extraction is applied with
+consideration of both Gabor wavelet and principal component
+analysis. An SVM classiﬁer is used for face classiﬁcation.202 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+The authors of reference [223] presented an automatic gender
+recognition algorithm based on machine learning methods. It con-
+sists of two stages: adaptive feature extraction and SVM classiﬁca-
+tion. The algorithm consists of the following steps: color space
+transform, image scaling, adaptive feature set calculation and
+SVM classiﬁcation with preliminary kernel transformation.
+In[224] , the authors proposed a method for face detection
+based on principal component analysis and SVM. Firstly, the poten-
+tial face area of the image is ﬁltered using statistical feature, which
+is generated by analyzing local histogram distribution; and then,
+SVM classiﬁer is used to detect face feature in the test image.
+PCA is employed to reduce dimension of sample data; after PCA
+transform, the feature vectors, which are used for training SVM
+classiﬁer, are generated.
+Kumar, Kar and Chandra [225] employed mean and median ﬁl-
+ters which are normally used to reduce noise present in an image
+and for preserving useful detail in the image. Adaptive ﬁltering is
+more selective which helps for preserving edges and other high fre-
+quency parts of an image. Once the noise from an image has been
+removed the image is sent to the SVM trained for identiﬁcation of
+faces.
+While a number of face spoof detection techniques have been
+proposed, their generalization ability has not been adequately
+addressed. In reference [226] , it was proposed a robust face spoof
+detection algorithm based on image distortion analysis. Four dif-
+ferent features: spectacular reelection, blurriness, chromatic
+moment and color diversity, are extracted to form the feature vec-
+tor. An ensemble classiﬁer, consisting of multiple SVM classiﬁers
+trained for different face spoof attacks is used to distinguish
+between genuine and spoof faces.
+Waring and Liu [227] presented a face detection method using
+spectral histograms and SMV. Each image window is represented
+by its spectral histogram, which is a feature vector consisting of
+histograms of ﬁltered images. Using statistical sampling, the
+authors showed systematically the representation groups face
+images together; in comparison, commonly used representations
+often do not exhibit this necessary and desirable property. The
+high performance of the approach is attributed to the desirable
+properties of the spectral histogram representation and good gen-
+eralization of the SVMs.
+Face direction detection plays an important role in human–
+computer interaction and has a wide application. Current detection
+methods are mainly focused on extracting speciﬁc patterns from
+user’s optical images, which raises concerns on privacy invasion
+and these detection techniques do not usually work in dark envi-
+ronments. In reference [228] , the authors developed an activity
+recognition system guided by an unobtrusive sensor. By using a
+low pixel infrared thermopile array sensor, the proposed systemis capable of identifying ﬁve facing directions through the SVM
+classiﬁer.
+5.6. Protein fold and remote homology detection
+Rahman et al. [229] presented a computational model that
+introduces ways to extract features from protein sequences, but
+also optimizes classiﬁcation of trans-Golgi and cis-Golgi proteins.
+After feature extraction, random forest model is employed to rank
+the features based on the importance score obtained from it. After
+selection of the top ranked features, the Golgi proteins are classi-
+ﬁed using SVM.
+In[230] , a computational approach was tried to ﬁnd the evolu-
+tionarily related fold of the receptor-associated proteins. Through
+the structural and sequence-based analysis, various protein folds
+were found that are very close to the receptor-associated protein
+folds. Remote homolog data sets were used potentially to developdifferent SVM methods to recognize the homologous receptor-
+associated protein fold.
+Mei [231] presented SVM ensemble based transfer learning
+model for membrane proteins discrimination, to reduce the data
+constraints on computational modeling. This method investigates
+the effectiveness of transferring the homolog knowledge to the tar-
+get membrane proteins under the framework of probability
+weights ensemble learning. As compared to multiple kernel learn-
+ing based transfer learning model, the method takes the advan-
+tages of sparseness based SVM optimization on large data; hence,
+is more computationally efﬁcient for large protein data analysis.
+In reference [232] it was developed an intelligent prediction
+system for protein sub cellular localization using ﬂuorescence
+microscopy images. The proposed prediction system uses a feature
+extraction strategy and ensemble classiﬁcations. The featureextraction mechanism exploits statistical and text based image
+descriptors, whereas ensemble classiﬁcation is performed using
+the majority voting based ensemble of SVMs. The contribution of
+this work lies in the individual exploitation of the feature spaces
+generated from both individual gray level co-occurrence matrices
+and sexton images as well as in the manner the extracted featuresare exploited using the learning capabilities of SVM, which is uti-
+lized as base classiﬁer in majority voting based ensemble.
+In[233] , the performances of SVM and neural networks for lipid
+binding proteins identiﬁcations were compared. Fivefold cross-
+validation and independent evaluation tests are used to assess
+the validity of the two methods. The results indicated that SVM
+outperforms neural network.
+Remote homology detection at amino acid level is a complex
+problem in bio-informatics. Customary detection methods may
+be replaced by SVM based approaches where a sequence is repre-
+sented by signiﬁcant feature vectors. Two approaches are pre-
+sented in [234] : 1) 2-mers are generated from individual amino
+acid for protein sequences and various physicochemical parame-
+ters are used to generate the feature vector; 2) the properties of
+amino acid are used to create the feature vectors using 3-mers in
+the similar manner. Principal component analysis is employed
+for dimensionality reduction and SVM is applied for classiﬁcation.
+The authors in reference [235] proposed a proﬁle-based repre-
+sentation for sequences called Ngram. This representation extends
+the traditional Ngram scheme and permits considering all of the
+evolutionary information in the proﬁle. Ngrams are extracted from
+the whole proﬁle, equipping them with a weight directly com-
+puted from the corresponding evolutionary frequencies. Two dif-
+ferent approaches are proposed to model the representation and
+to derive a feature vector which can be effectively used for classi-
+ﬁcation using an SVM.
+Bedoya and Tischer [236] presented a method for remote pro-
+tein homology detection. Usually, the discriminative methods con-
+catenate the values extracted from physicochemical properties to
+build a model that separates homolog and non–homolog examples.
+Each discriminative method uses a speciﬁc strategy to represent
+the information extracted from the protein sequence and a differ-
+ent number of indices. After the vector representation is obtained,
+SVMs are often employed. The contribution of this work lies on
+reducing the high dimensionality of the feature vector using mod-
+els that are deﬁned at the 3D level.
+Homology-based methods have been developed to detect pro-
+tein structural classes from protein primary sequence information,
+these methods are divided into three types: 1) discriminative clas-
+siﬁers, generative models for protein families and pairwise
+sequence comparisons. SVMs have shown being fast speed during
+training, more accurate and efﬁcient compared to neural networks.
+In reference [237] it was presented a comprehensive method based
+on two-layer classiﬁers. The ﬁrst layer detects up to superfamily
+and family in SCOP (Structural Classiﬁcation of Proteins) hierarchyJ. Cervantes et al. / Neurocomputing 408 (2020) 189–215 203
+using optimized binary SVM classiﬁcation rules. It employs the
+Bio-kernel, which incorporates the biological information in the
+classiﬁcation process. The second layer uses discriminative SVM
+algorithm with string kernel that detects up to protein fold level
+in SCOP hierarchy.
+5.7. Generalized predictive control
+Wang and Kwong [78] presented a surge control strategy for
+centrifugal compressor using nonlinear model predictive control
+based on lease-squared SVM in order to increase efﬁciency of cen-
+trifugal compressor. The nonlinear predictive models of compres-
+sor’s discharge pressure and mass ﬂow are developed by the
+lease-square SVM.
+In[238] , an SVM-based multi-model predictive control is pro-
+posed, in which SVM classiﬁcation combines well with SVM
+regression. Each working environment is modeled by SVM regres-
+sion and the SVM network-based model predictive control algo-
+rithm corresponding to each environment is developed, and then
+a multi-class SVM model is established to recognize multiple oper-
+ating conditions. For control, the current environment is identiﬁed
+by the multi-class SVM model and then the corresponding con-
+troller is activated at each sampling instant.
+The lease-squared SVM has been successfully used to predictive
+control on small samples, nonlinear data. It was presented the pre-
+dictive model methodology in reference [239] . The control results
+are inﬂuenced by the parameters on the lease-squared SVM. They
+are optimized by genetic algorithm, according to root mean square
+relative error. To successfully control the depth and attitude of an
+autonomous underwater vehicle, it is important to study the algo-
+rithm of the control. The autonomous underwater vehicle control
+on lease-square SVM is including the direction, depth, trims and
+roll movement.
+In reference [240] , the authors proposed a systematic data-
+driven method for the design of quantized explicit model predic-
+tive control for time-varying output tracking in nonlinear systems.
+The design involves: sampling the admissible state space; at each
+sampled point, solving for optimal quantized model predictive
+control actions and determining feasibility of the intrinsic mixed-
+integer nonlinear programming problem, and constructing the
+quantized explicit model predictive control surface using multi-
+class SVMs.
+Chu et al. [241] developed a rapid modeling method for cen-
+trifugal compressor based on model migration and SVM. The base
+model of an existing old compressor is revised to ﬁt for the new
+compressor by SVM. This method is evaluated by a simulation case
+and the results show that, compared with the pure SVM, the
+migrated model can ﬁt the new compressor faster with betteraccuracy.
+The authors of reference [242] analyzed whether trust can be
+used as a predictor of cross-functional team performance by
+proposing a prediction model. The inputs of the model are both
+team structural and contextual factors and project process factors,
+which are two major sources that form team trust. The output of
+the model is different of team performance, which consists of
+internal performance and external performance. The SVM tech-
+niques are used to establish the model. The authors give reference
+for managers to dynamically control and predict team performance
+during project period.
+5.8. Complex classiﬁcations problems
+SVM have been successfully used in multiple ﬁelds of applica-
+tion. However, there are very complex applications where further
+research is still needed to obtain satisfactory results. This section
+lists some of those applications:5.8.1. Plant species classiﬁcation
+The classiﬁcation of plant species from digital images has been a
+subject studied in recent years and today, very important results
+have been obtained in data sets of images with fully controlled
+environments and with very speciﬁc characteristics. However,
+important results are still not obtained in images of plants in
+uncontrolled and partially controlled environments or in data sets
+with very few images [243–245] .
+Moreover, current studies are carried out on very small data
+sets. However, the vast majority of the species in the world is
+around (369 Kspecies) and the performance of state-of-the-art
+machine learning algorithms on these data sets is unknown and
+presumably much lower [246] .
+5.8.2. Classiﬁcation of credit card fraud
+Currently, the credit-card fraud is turning into a substantial
+challenge for ﬁnancial institutions and service providers. Reported
+studies on the use of modern data-driven and learning-based
+methods to detect credit-card fraud are relatively few [247–250] .
+To solve these kind of problems is not common due to the imbal-
+ance in the data set (many examples of one class and very few of
+another class). The ratio of non-fraudulent transactions to fraudu-lent transactions is around 99 :83%to 0:17%respectively.
+The principal challenge is to design new algorithms to cope
+with the disadvantage of working with imbalanced data sets
+because performance of machine learning algorithms changes a
+lot when they are trained with unbalanced data sets. These algo-
+rithms tend to show a bias for the majority class, treating the
+minority class as a noise in the data set.
+5.8.3. Classiﬁcation and staging of melanoma
+Melanoma is the most aggressive type of skin cancer, its diagno-
+sis is unstable in 25 %. Therefore, research has been done for the
+analysis of melanoma through computer vision images and great
+progress has been observed. Support vector machines is a robust
+machine learning model that shows high accuracy with different
+classiﬁcation problems, although there is a disadvantage of the
+SVM classiﬁer in many cases as integrated detection systems and
+some image processing since the SVM model is computationally
+expensive and time consuming. Although the implementation of
+SVM in software produces high accuracy rates and with real-time
+limitations, the accuracy in the detection of melanoma and early
+diagnosis can help to reduce mortality rates and treatment costs.
+Dermatoscopic images acquired are used in computational analysis
+for the detection of skin cancer, however there are limitations of
+image quality such as noise, shadows, artifacts that compromise
+the robustness of skin image analysis [251–253] .
+6. Trends and challenges
+Large amounts of data are generated and collected at each
+moment. The supervised and unsupervised learning methods of
+machine learning are the responsible for transforming these data
+into useful information. SVMs have proven to be one of the best
+supervised learning methods in various applications; however,
+since SVM development several challenging problems have been
+identiﬁed to be able to use this classiﬁer with very large data sets,
+also in dynamic environments such as data streams with concept
+drift, in multi-class problems, in data sets with few tagged data,
+and the selection of the right kernel and adjusting its parameters
+efﬁciently. These challenges are more difﬁcult to solve when two
+or more of them are presented simultaneously. In the following,
+we explain in brief some of the challenge problems of SVM
+classiﬁer.204 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+/C15Multi-class SVM . The mathematical formulation of the SVM
+classiﬁer is designed for two classes, these are the positive
+and the negative. Such a formulation restricts the direct applica-
+tion of SVM to binary problems. However, many real-world data
+sets have multi-class output.
+For more than two decades several methods have been pro-
+posed to extend the capabilities of SVM to face multi-class
+problems. The earliest and commonest methods use one-
+against-all or one-against-one approach.
+The basic idea of one-against-all or one-against-rest approach is
+to train an amount of SVMs equal to the number of classes. Each
+binary classiﬁer is constructed considering the samples of one
+class as the positive, and the rest of instances as belonging to
+the negative class. The prediction is assigned to the model that
+produces the largest value after evaluating its decision function.One-against-one approach [124,125] builds binary SVMs using
+only the samples that belong to two different classes, therefore,
+the number of models obtained is
+KðK/C01Þ
+2, with Kequals to the
+number of classes. To decide the class of a previously unseen
+instance, a voting scheme between all models is used. Voting
+strategy to achieve high classiﬁcation accuracy is a key compo-
+nent for facing multi-class problems with SVM. To compensate
+the errors in the predictions of individual SVM binary classiﬁers,
+differential evolution was applied in [126] .
+Other methods are similar to the work presented by Breden-
+steiner in [127] . The proposal of this approach is to construct
+a piecewise-nonlinear classiﬁcation function. Each piece of this
+classiﬁer can be a polynomial, a radial basis function, or a clas-
+siﬁer such as a neural network. Recently, Tang [128] proposed a
+method that maps the K classes to K vertices of a ( K/C01)-
+dimensional regular simplex so that the K-class classiﬁcation
+becomes a ( K/C01)-output learning task.
+Shao et al. [129] proposed a method that use a binary tree clas-
+siﬁer which is build with a method that maximizes the distance
+between the classes in each partition, for this purpose twin sup-
+port vector machines are trained. Although the reported results
+show the effectiveness of this method for facing multi-class
+problems, a drawback is that it needs to train 2K/C01/C01 SVM at
+each stage. In [130] , a decision tree like algorithm capable of
+tackling multi-class data sets was presented. Similar to other
+approaches, a binary SVM is used to split the data at each level
+of the decision tree. Different from other proposals, a kernelized
+clustering algorithm is used to create the sets of positive and
+negative samples.
+Santosa [131] proposed a method based on the one-against-
+rest and one-against-one approaches for multi-class problems
+with SVM. To train the SVMs the Cross entropy method is uti-
+lized. Cross entropy is a stochastic optimization method that
+consists in improving solutions iteratively by means of an
+speciﬁc random mechanism. Usually, initial solutions are gen-
+erated randomly following a normal distribution with mean
+an standard deviation established arbitrarily. A subset of the
+best solutions is used to update the mean and standard devi-
+ation, these new parameters are used to generate the next set
+of solutions. This process is repeated until a stopping criteria
+is satisﬁed. Four experiments were done in [131] . The results
+of experiments showed that Cross entropy has less computa-tional complexity than the standard quadratic programming
+SVM, besides, it produces comparable results in terms of gen-
+eralization error.
+Most of methods use one-against-all or one-against-rest
+approaches for facing multi-class problems with SVM. For a
+large number of classes, new heuristic, stochastic or hybrid
+methods need to be designed to improve classiﬁcation
+accuracy./C15Multi-task SVM
+Multi-task learning (MTL) is a recently area of machine learning
+based on the assumption that if different tasks are related
+among them, then jointly learning these multiple tasks can lead
+to better performance than learning them independently, i.e.,
+the idea is to leveraging useful information among the tasks.
+The determination of the relatedness between tasks is usually
+the key to the formulation of MTL [254] .
+For supervised MTL with SVM, most of current approaches use
+multiple multitask binary problems, this can be seen as the
+opposite to the philosophy of MTL because the relationships
+between classes are ignored. Ji and Sun [255] proposed to cast
+multitask multiclass problems into a constrained optimization
+problem with a quadratic objective function, this approach pro-
+duces accurate prediction, as shown in the results of experi-ments.
+Deeper studies on supervised MTL with SVM to determine its
+usefulness in speciﬁc real-world applications is a current trend.
+/C15Large-scale problems . The training of an SVM basically consists
+in solving a QP problem, this task is a high computational bur-
+den when the number of instances is large. In the last past few
+years scholars have proposed some methods to enable SVM on
+large data sets. Most common approaches are based on the fol-
+lowing strategies:
+-Under sampling .
+The underlying idea with under sampling is to select a small
+yet signiﬁcant number of samples from a large data set to
+train SVM. In order for the generated model to perform well
+in classifying new data, it is necessary to design an adequate
+data selection strategy. Among these strategies random
+sampling and support vectors candidate selection are the
+most studied, these consists in the identiﬁcation of data that
+have a high probability of being support vectors.
+In[256–258] the SVs candidates set is formed by picking the
+points from all CHs. This type of strategy is based on the
+observation that SVs are the closest points and they corre-
+spond to convex hull [113] . Other approaches [259,260]
+use the fact that SVs are usually the closest to opposite class
+or far from the class center. On the other hand, some authors
+propose to train a classiﬁer diferent from SVM
+[26,244,261,262] or a linear SVM [263,264] to select SV can-
+didates, and then train with them. Clustering methods [265–
+267,73] or heuristic methods [263,268,269[ also have been
+studied.
+-Alternative optimization methods .
+The QP problem associated to SVM has one global optimal
+solution. In order to search this solution, interior point
+methods, gradients methods, decomposition methods, areused in many works. These methods can converge slow in
+many cases. To improve performance the stochastic gradient
+descent method called PEGASOS was proposed in [270] , the
+run-time of PEGASOS does not depend directly on the size of
+the training set. Recently, Wang et al. [271] have adapted
+PEGASOS to twin support vector machines. Experiments
+showed that the method can handle large scale problems
+easily.
+-Transform QP problem into a simpler problem
+Instead of solving a QPP that is costly in terms of memory
+and computing time, an approach is to transform such prob-
+lem into a one easier to solve. The Sequential Minimal Opti-
+mization (SMO) algorithm proposed by Platt [15]
+decomposes the QP problem into a series of smallest possi-
+ble sub-problems that are solved analytically. This is one
+of the most successfully methods implemented in some
+libraries. The Cholesky decomposition to solve SVM itera-J. Cervantes et al. / Neurocomputing 408 (2020) 189–215 205
+tively was proposed in [272] . De Lima et al. [273] proposed a
+Sherman–Morrison–Woodbury formulation which is
+employed to reduce the complexity of nonlinear Improve-
+ments on least squares twin multi-class support vector
+machine. The solution requires solving two systems of linear
+equations, instead of solving two QPPs.
+New methods to put the QPP of SVM in a simpler form, and
+then solve it in more efﬁcient ways have not been discov-
+ered yet. .
+-Geometric approach . The convex-hull (CH) of a set of points
+X is the smallest convex set that contains all the elements in
+X. Usually, CH is very small compared with the data set X.
+Mavrofarakis in [274] took advantage of the geometry of
+SVM to propose a framework for training SVM using projec-
+tions of points that belong to CH. For the linearly inseparablecase, Mavrofarakis proposed to use reduced or shrinked CHs,
+transforming the problem into a linearly separable one. Dif-
+ferent from this approach, Liu et al. [275] use measures in
+the projected high dimensional feature space for SVM since
+this is where the separating hyperplanes are determined to
+select a subsets of instances.
+-Parallel algorithms . With the availability of tools to perform
+parallel computing using low-cost computer clusters, pro-
+gress has been made in parallelizing algorithms to train
+SVM. In [276] , the MapReduce framework is employed to
+train SVM in a distributed way to predict protein–protein
+interactions. Efﬁcient implementations of SVM in dedicated
+hardware architectures, distributed systems or GPUs can
+help to apply SVM classiﬁers on large-scale problems or in
+dynamic environments.
+/C15On-line SVM
+Data streams such as sensor networks, ﬁnancial markets, social
+networks, and healthcare monitoring systems are very common
+in these days [277] . In these environments, the distribution of
+classes is changing dynamically (this phenomena is known as
+concept drift), therefore, the predictor must be updated accord-
+ing to the changes. A classiﬁer needs to be trained very fast and
+easily upgradeable, these two requirements make difﬁcult to
+apply SVM classiﬁer on data streams.
+Zheng et al. [278] proposed to use a type of sampling from a
+data stream, the method learns the prototypes and continu-
+ously adjusts prototypes to the data concept, an SVM is then
+trained with these elements. Recently, Wang and Xing [279]
+noticed that training SVM with old and new prototypes can
+have a bad inﬂuence on its performance due to losing much
+information about the data. They proposed to use a Representa-
+tive Prototype Area (RPA), that retains the representative data of
+all historical data. In the RPA, each class is maintained by anOnline Incremental Feature Map (OIM) which learns a suitable
+representative set from the stream data automatically. Experi-
+ments showed that the algorithms can deal with data sets with
+millions of samples.
+Liu et al. [280] pointed that On-line learning is more difﬁcult on
+data over distributed environments, also when data privacy is
+required.
+/C15Kernel choice and parameter optimization
+In order to apply SVM successfully on a data set, it is necessary
+to select appropriate kernel and also tune its parameters. The
+basic approach to tune the parameters of kernels is the so-
+called grid search algorithm. It is a process that searches
+exhaustively through a manually speciﬁed subset of the hyper-
+parameter space of the targeted algorithm [281] . Other
+approach is based on analyzing the class separability [282] .
+Candelieri et al. [283] proposed a parallel global optimization
+model to optimize the hyper-parameters of Support Vector
+Machine. Wang [284] created a method for parameter selectionof SVM with Gaussian kernel (one of the most commonly used).
+Other approaches use evolutionary algorithms [285] .
+Automatic kernel choice and calibration of this parameters in a
+low computational cost fashion is a problem that has not been
+completely solved. For some applications, such as speech recog-nition [286] , recognition based on image set [287] , the design of
+new kernel functions can improve the performance of SVM. This
+is another important issue.
+/C15Semi-supervised and transductive SVM
+Supervised learning methods, such as SVM and others, need the
+data be labeled. Collecting unlabeled data is usually easy, cheap,
+and it can be done automatically; however, the manual labeling
+of data is a slow and error-prone process, or even unfeasible in
+some circumstances, such as on-line applications. New strate-
+gies to enable SVM on partially labeled data sets are necessary.Recently, extensions to apply SVM on partially labeled data
+have been attracted the attention of researchers and practition-
+ers. One of the most representative algorithms is Transductive
+SVM (TSVM), the idea is to ﬁnd an hyperplane that separates
+the labeled samples with a large margin, but at the same time
+that ensures that the unlabeled instances will be as far as pos-
+sible from the margin. In some tasks, semi-supervised SVM
+can be applied successfully by exploiting the information con-
+tained in data [288] . Davy et al. [289] used a sequential opti-
+mization algorithm to detect abnormal events. However, not
+in all cases is feasible to take advantage of the characteristics
+of the problem.
+Chevikalp and Franc [290] replaced the Hinge loss that is used
+for labeled data with a Ramp loss (a loss function is a measure
+of the distance between predictions and the real class, Hinge
+and Ramp are examples of loss functions). Also, they solved
+the optimization problem in the primal space (most of
+approaches do this on dual space) by using a stochastic gradient
+algorithm. To give an idea of the speed of this state-of-the-art
+method, it takes 38 s to train a TSVM with 2,000 labeled sam-
+ples and 8,000 unlabeled ones. Each instance with 100 attri-
+butes. It is reported that this algorithm is able to train a TSVM
+with about 400,000 instances each one with 2,000 features,
+however, the training time is not reported.
+Li et al. [291] pointed that in TSVM the unlabeled examples
+harm the performance of the classiﬁer. To address this problem,
+they proposed two algorithms to optimize the margin distribu-
+tion of TSVM via maximizing the margin mean and minimizing
+the margin variance simultaneously. Results showed that this
+solution is robust to the outliers and noise.
+Among the plethora of classiﬁcation methods, SVM has been
+one of the most popular methods in a wide variety of applications,this due to its good classiﬁcation accuracy. In spite of this out-
+standing performance, some important problems of this classiﬁer
+have been identiﬁed since it was published. Although most of these
+problems have been studied for more than ten years, and there are
+many proposals to solve them, every time it becomes more neces-
+sary to develop better solutions.
+Deep learning Vs SVMDeep learning is a set of machine learning algorithms that
+attempts to model high-level abstractions in data using computa-
+tional architectures that support multiple non-linear and iterative
+transformations of data expressed in matrix or tensorial form
+[292] . In recent years the popularity and expansion of Deep Learn-
+ing has grown due to its potential utility in different types of appli-
+cations in the ‘‘real world”, mainly because it obtains high success
+rates with ‘‘unsupervised” training. Many studies have been con-
+ducted with deep learning especially in healthcare, ﬁnance, speech206 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+recognition, augmented reality, digital image processing and more
+complex 3D and video applications.
+In this Section is shown a comparative of performance between
+deep learning and SVM from several authors. The Figs. 5 and 6
+show the results obtained by different authors in different applica-tions [293–301] . The Fig. 5 shows the comparison of the perfor-
+mance obtained using some SVM algorithm and deep learning. In
+the Figure.
+Some authors propose the use of deep learning combined with
+SVM. The reported results improve the results in most cases. InQuang Tang Liu Chen Kim Majtner Tomita Tsai Riordon
+DL 66.1 70.1 86.678 95.93 73.78 79.4 98 97.37 94.1
+SVM 58.2 71.2 94.626 95.55 73.38 80.5 82 99.96 78.566.1
+70.186.67895.93
+73.78
+79.498
+97.3794.1
+58.271.294.626
+95.55
+73.3880.5
+8299.96
+78.5
+020406080100120Accuracy
+CiteDL-SVM
+DL SVM
+Fig. 5. Performance of SVM vs Deep Learning.
+Majtner Codella Erfani Kaur
+DL/SVM 0.805 0.723 0.9838 0.96
+SVM 0.794 0.715 0.9137 0.940.805
+0.7230.98380.96
+0.794
+0.7150.91370.94
+00.20.40.60.811.2COMBINED METHODS
+DL/SVM SVM
+Fig. 6. Performance of combined SVM and Deep learning.J. Cervantes et al. / Neurocomputing 408 (2020) 189–215 207
+some cases, the combination is done by training one of the SVM
+classes from the characteristics learned by the convolutional neu-
+ral network, a linear kernel can be replaced by non-linear ones
+without losing precision. The Fig. 5 shows the results obtained
+with combinations of SVM and Deep learning [298,302,303,194] .
+It is important to note that SVM and deep learning have similar
+performances on average. Together they can work in synergy
+improving performance in different applications.
+6.1. Impact of SVM
+We analyzed the impact of SVM in the literature. Fig. 7 shows
+the distribution of research papers of SVM by year.
+Most of the SVM papers have been written mainly for solving
+problems in normal-sized data sets and balanced data sets,where the SVM does not have problems. We used Science direct
+and IEEE Xplore search engines to retrieve publications, pub-
+lished only in journals, containing the term SVM, the search pro-
+duced more than 13,000 results. Fig. 7 shows the number of
+publications in book chapters and journals per year, from 1998
+to 2018.
+For the purpose of identifying two applications of SVM (Large
+data sets and imbalanced data sets), we searched publications
+related to applications of SVM using the search engine IEEE Xplore
+and Science direct. We selected the publications that satisfy the
+following criteria: /C15The papers analyzed are the published in jour-
+nals and book chapters. /C15Papers from 1998 up to 2018 were con-
+sidered in the study. /C15Publications were selected that contain at
+least one of the search terms in the title, abstract and/or list of
+key- words.
+1103
+865833 838
+707
+571 554 555
+351 337273219142 11860 7422 135 3 01090
+856825 838
+702
+569 552 550
+350 335272219141 11860 7320 13 4 3881
+639
+528 545
+455386 381
+295 275221 212 202126 118 9353 42 6821 15 6 020040060080010001200
+1995 2000 2005 2010 2015 2020Papers published
+Publication year SVM Articles Published by Editorial and Year
+Articles and Chapters Elsevier Articles IEEE Articles
+Fig. 7. Number of publications, in book chapters and journals, per year which contain the search term SVM.
+11
+6
+3 34
+2 2
+012
+12
+0 0 067
+58 8
+25
+12
+13
+0 0 0 0
+024681012
+2002 2004 2006 2008 2010 2012 2014 2016 2018 2020Papers published
+Publication yearSVM applied in imbalanced datasets
+IEEE Elsevier
+Fig. 8. Number of publications, in book chapters and journals, per year which contain the search terms SVM and Imbalanced data sets.208 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+We found 440 publications of SVM on Large data sets and 85
+publications of SVM on imbalanced data sets. The Figs. 8 and 9
+show the number of publications, in book chapters and journals.
+7. Conclusions
+Due to its good theoretical foundations and generalization
+capacity among other advantages, the SVMs have been imple-
+mented in many real-world applications. SVM algorithms have
+been implemented in many research ﬁelds like: Text (and hyper-
+text) categorization, Protein fold and remote homology detection,
+Image classiﬁcation, Bioinformatics (protein classiﬁcation and can-
+cer classiﬁcation), Hand-written character recognition, Face detec-
+tion, Generalized predictive control and many more. Many
+researchers have shown that SVMs are better than other current
+classiﬁcation techniques. However, despite SVM has some limita-
+tions related to: parameter selection, algorithmic complexity, mul-
+ticlass data sets and imbalanced data sets, SVM has been
+implemented in many real life classiﬁcation problems due to its
+good theoretical foundations and generalization performance.
+It is important to mention that SVM is not so popular when the
+data sets are very large because some SVM implementationsdemand huge training time or in other cases when the data sets
+are imbalanced, the accuracy of SVM is poor, we have presented
+some techniques when the data sets are imbalanced. This paper
+describes in detail the principal disadvantages of SVM and many
+algorithms implemented to face these disadvantages and cites
+the works of researchers who have faced these disadvantages.
+Declaration of Competing Interest
+The authors declare that they have no known competing ﬁnan-
+cial interests or personal relationships that could have appeared to
+inﬂuence the work reported in this paper.References
+[1]P.-N. Tan, M. Steinbach, V. Kumar, Introduction to Data Mining, Pearson, 2005 .
+[2]N.S. Altman, An introduction to kernel and nearest-neighbor nonparametric
+regression, Am. Statist. 46 (Aug 1992) 175–185 .
+[3]Y. Zhang, G. Cao, B. Wang, X. Li, A novel ensemble method for k-nearest
+neighbor, Pattern Recogn. 85 (2019) 13–25 .
+[4]B.G. Marcot, T.D. Penman, Advances in bayesian network modelling:
+integration of modelling technologies, Environ. Modell. Software 111 (Jan
+2019) 386–393 .
+[5] B. Drury, J. Valverde-Rebaza, M.-F. Moura, A. de Andrade Lopes, A survey of
+the applications of bayesian networks in agriculture, EngineeringApplications of Artiﬁcial Intelligence, 2017, vol. 65, pp. 29–42. .
+[6]
+D. Huang, Systematic theory of neural networks for pattern recognition,
+Publishing House of Electronic Industry of China (1996) .
+[7]D.-S. Huang, Radial basis probabilistic neural networks: model and
+application, Int. J. Pattern Recognit Artif Intell. 13 (07) (1999) 1083–1101 .
+[8]D.-S. Huang, A constructive approach for ﬁnding arbitrary roots of
+polynomials by neural networks, IEEE Trans. Neural Networks 15 (March2004) 477–491
+.
+[9]D.-S. Huang, H.H.S. Ip, K.C.K. Law, Z. Chi, Zeroing polynomials using modiﬁed
+constrained neural network approach, IEEE Trans. Neural Networks 16 (May
+2005) 721–732 .
+[10] D.-S. Huang, Radial basis probabilistic neural networks: model andapplication, Int. J. Pattern Recognit Artif Intell. 13 (07) (1999) 1083–1101
+.
+[11] A. Trabelsi, Z. Elouedi, E. Lefevre, Decision tree classiﬁers for evidential
+attribute values and class labels, Fuzzy Sets Syst., 2018. .
+[12] M. Fratello, R. Tagliaferri, Decision trees and random forests, in: Encyclopedia
+of Bioinformatics and Computational Biology, Elsevier, 2019, pp. 374–383 .
+[13] V.N. Vapnik, The Nature of Statistical Learning Theory, Springer, 1998 .
+[14] N. Cristianini, J. Shawe-Taylor, An Introduction to Support Vector Machinesand Other Kernel-based Learning Methods, Cambridge University Press, 2000
+.
+[15] J. Platt, Sequential minimal optimization: a fast algorithm for training
+support vector machines, tech. rep., 1998. .
+[16] D.S. Huang, J.X. Du, A constructive hybrid structure optimization
+methodology for radial basis probabilistic neural networks, IEEE Trans.Neural Networks 19 (Dec 2008) 2099–2115
+.
+[17] X.-F. Wang, D.-S. Huang, A novel multi-layer level set method for image
+segmentation, J. Univers. Comput. Sci 14 (14) (2008) 2428–2452 .
+[18] Z.-Q. Zhao, D.-S. Huang, A mended hybrid learning algorithm for radial basis
+function neural networks to improve generalization capability, Appl. Math.Model. 31 (7) (2007) 1271–1281
+.
+[19] J.-X. Du, D.-S. Huang, X.-F. Wang, X. Gu, Shape recognition based on neural
+networks trained by differential evolution algorithm, Neurocomputing 70 (4)
+(2007) 896–903, Advanced Neurocomputing Theory and Methodology .14
+8 871110
+28 8
+56 6
+13210 0 0 0 061
+30
+2232
+152831
+1718
+1413
+9 910
+7
+3 365 5
+2010203040506070
+1995 2000 2005 2010 2015 2020Papers published
+Publication yearSVM applied in large datasets
+Elsevier IEEE
+Fig. 9. Number of publications, in book chapters and journals, per year which contain the search terms SVM and Large data sets.J. Cervantes et al. / Neurocomputing 408 (2020) 189–215 209
+[20] J. Du, D. Huang, G. Zhang, Z. Wang, A novel full structure optimization
+algorithm for radial basis probabilistic neural networks, Neurocomputing 70
+(1–3) (2006) 592–596 .
+[21] M. Zhang, H. Qu, X. Xie, J. Kurths, Supervised learning in spiking neural
+networks with noise-threshold, Neurocomputing 219 (Jan 2017) 333–349 .
+[22] L. Huang, Y. Cui, D. Zhang, S. Wu, Impact of noise structure and networktopology on tracking speed of neural networks, Neural Networks 24 (Dec
+2011) 1110–1119
+.
+[23] B.-Y. Sun, D.-S. Huang, H.-T. Fang, Lidar signal denoising using least-squares
+support vector machine, IEEE Signal Process. Lett. 12 (Feb 2005) 101–104 .
+[24] P. Chen, B. Wang, H.-S. Wong, D.-S. Huang, Prediction of protein b-factorsusing multi-class bounded SVM, Protein Peptide Lett. 14 (Feb 2007) 185–190
+.
+[25] X. Liang, L. Zhu, D.-S. Huang, Multi-task ranking SVM for image
+cosegmentation, Neurocomputing 247 (Jul 2017) 126–136 .
+[26] J. Cervantes, F. García Lamont, A. López-Chau, L. Rodríguez Mazahua, J. Sergio
+Ruíz, Data selection based on decision tree for SVM classiﬁcation on large
+data sets, Appl. Soft Comput. J. (2015) .
+[27] V.A. Naik, A.A. Desai, Online handwritten gujarati character recognition using
+svm, mlp, and k-nn, in: 2017 8th International Conference on Computing,
+Communication and Networking Technologies (ICCCNT), 2017, pp. 1–6. .
+[28] J.L. Raheja, A. Mishra, A. Chaudhary, Indian sign language recognition using
+svm, Pattern Recogn. Image Anal. 26 (Apr 2016) 434–441 .
+[29] T.K. Bhowmik, P. Ghanty, A. Roy, S.K. Parui, Svm-based hierarchicalarchitectures for handwritten bangla character recognition, Int. J. Document
+Anal. Recogn. (IJDAR) 12 (2009) 97–108
+.
+[30] C.J. Burges, A tutorial on support vector machines for pattern recognition,
+Data Min. Knowl. Disc. 2 (2) (1998) 121–167 .
+[31] W. Karush, Minima of functions of several variables with inequalities as side
+conditions (Master’s thesis), Department of Mathematics, University of
+Chicago, Chicago, IL, USA, 1939. .
+[32] H.W. Kuhn, A.W. Tucker, Nonlinear programming, in: Proceedings of the
+Second Berkeley Symposium on Mathematical Statistics and Probability,
+(Berkeley, Calif.), University of California Press, 1951, pp. 481–492..
+[33] S. Haykin, Neural Networks: A Comprehensive Foundation (second ed.),
+Prentice Hall, 1998 .
+[34] M. Achirul Nanda, K. Boro Seminar, D. Nandika, A. Maddu, A comparison
+study of kernel functions in the support vector machine and its application
+for termite detection, Information 9 (2018) 5 .
+[35] S. Kasnavi, M. Aminafshar, M. Shariati, N. Emam Jomeh Kashan, M. Honarvar,
+The effect of kernel selection on genome wide prediction of discrete traits bysupport vector machine, Gene Reports 11 (2018) 279–282
+.
+[36] M. Hasan, S. Xu, M. Kabir, S. Ahmad, Performance evaluation of different
+kernels for support vector machine used in intrusion detection system, Int. J.
+Comput. Networks Commun. 8 (6) (2016) 39–53 .
+[37] K. Chui, M. Lytras, A novel moga-svm multinomial classiﬁcation for organ
+inﬂammation detection, Appl. Sci. (Switzerland) 9 (11) (2019) .
+[38] S. Saeed, H. Ong, Performance of svm with multiple kernel learning forclassiﬁcation tasks of imbalanced datasets, Pertanika J. Sci. Technol. 27 (1)
+(2019) 527–545
+.
+[39] J. Pennington, F.X. Yu, S. Kumar, ”Spherical random features for polynomial
+kernels, in: Proceedings of the 28th International Conference on Neural
+Information Processing Systems - Volume 2, NIPS’15, (Cambridge, MA, USA),MIT Press, 2015, pp. 1846–1854. .
+[40]
+M.A.S. ALTobi, G. Bevan, P. Wallace, D. Harrison, K. Ramachandran, Fault
+diagnosis of a centrifugal pump using mlp-gabp and svm with cwt, Eng. Sci.
+Technol. Int. J. 22 (3) (2019) 854–861 .
+[41] Y.-W. Chang, C.-J. Hsieh, K.-W. Chang, M. Ringgaard, C.-J. Lin, Training and
+testing low-degree polynomial data mappings via linear svm, J. Mach. Learn.
+Res. 11 (Aug. 2010) 1471–1490 .
+[42] Y. Goldberg, M. Elhadad, splitsvm: Fast, space-efﬁcient, non-heuristic,
+polynomial kernel computation for nlp applications, 2008, pp. 237–240. .
+[43] C. Xia, M. Zhang, J. Cao, A hybrid application of soft computing methods with
+wavelet svm and neural network to electric power load forecasting, J. Electr.
+Syst. Inf. Technol. 5 (3) (2018) 681–696 .
+[44] K. Chen, C. Li, B. Kuo, M. Wang, Applying automatic kernel parameter
+selection method to the full bandwidth rbf kernel function for hyperspectral
+image classiﬁcation, in: 2014 IEEE Geoscience and Remote Sensing
+Symposium, 2014, pp. 3442–3445. .
+[45] B. Kuo, H. Ho, C. Li, C. Hung, J. Taur, A kernel-based feature selection method
+for svm with rbf kernel for hyperspectral image classiﬁcation, IEEE J. Selected
+Top Appl. Earth Observ. Remote Sensing 7 (Jan 2014) 317–326 .
+[46] O. Chapelle, P. Haffner, V. Vapnik, Support vector machines for histogram-
+based image classiﬁcation, IEEE Trans. Neural Networks 10 (5) (1999) 1055–
+1064, cited By 967 .
+[47] B. Schölkopf, K.-K. Sung, C. Burges, F. Girosi, P. Niyogi, T. Poggio, V. Vapnik,
+Comparing support vector machines with gaussian kernels to radial basisfunction classiﬁers, IEEE Trans. Signal Process. 45 (11) (1997) 2758–2765,
+cited By 796
+.
+[48] J. Cheng, T. Liu, Y. Zhou, Y. Xiong, Road junction identiﬁcation in high
+resolution urban sar images based on svm, Adv. Intell. Syst. Comput. 994
+(2020) 597–606 .
+[49] Y. Xiao, H. Wang, W. Xu, Parameter selection of gaussian kernel for one-class
+svm, IEEE Trans. Cybern. 45 (May 2015) 941–953 .
+[50] A. Chaudhuri, K. De, Fuzzy support vector machine for bankruptcy prediction,
+Appl. Soft Comput. J. 11 (2) (2011) 2472–2486, cited By 85 .[51] Q. Xu, H. Zhou, Y. Wang, J. Huang, Fuzzy support vector machine for
+classiﬁcation of eeg signals using wavelet-based features, Med. Eng. Phys. 31
+(7) (2009) 858–865 .
+[52] N. Tran, D. Tran, S. Liu, L. Trinh, and T. Pham, Improving svm classiﬁcation on
+imbalanced datasets for eeg-based person authentication, in: F. Martínez
+Álvarez, A. Troncoso Lora, J.A. Sáez Muñoz, H. Quintián, E. Corchado (Eds.),International Joint Conference: 12th International Conference on
+Computational Intelligence in Security for Information Systems (CISIS 2019)
+and 10th International Conference on EUropean Transnational Education
+(ICEUTE 2019), (Cham), Springer International Publishing, 2020, pp. 57–66..
+[53] V.J. Kadam, S.S. Yadav, S.M. Jadhav, Soft-margin svm incorporating feature
+selection using improved elitist ga for arrhythmia classiﬁcation, in: A.
+Abraham, A.K. Cherukuri, P. Melin, and N. Gandhi, (Eds.), Intelligent
+Systems Design and Applications, (Cham), Springer International
+Publishing, 2020, pp. 965–976. .
+[54] X. Dai, N. Wang, W. Wang, Application of machine learning in bgp anomaly
+detection, vol. 1176, 2019. .
+[55] A. ur Rauf, A. Ghumman, S. Ahmad, H. Hashmi, Performance assessment of
+artiﬁcial neural networks and support vector regression models for stream
+ﬂow predictions, Environ. Monitor. Assessment 190(12) (2018). .
+[56]
+B.M. Henrique, V.A. Sobreiro, H. Kimura, Stock price prediction using support
+vector regression on daily and up to the minute prices, J. Finance Data Sci. 4
+(3) (2018) 183–201 .
+[57] B. Sanjaa and E. Chuluun, Malware detection using linear svm, in: Ifost, vol. 2,
+2013, pp. 136–138. .
+[58] H.-T. Lin, C.-J. Lin, A study on sigmoid kernels for svm and the training of non-
+psd kernels by smo-type methods, Neural Comput. 06 (2003) .
+[59] L. Grama, L. Tuns, C. Rusu, On the optimization of svm kernel parameters forimproving audio classiﬁcation accuracy, in: 2017 14th International
+Conference on Engineering of Modern Electric Systems (EMES), 2017, pp.
+224–227
+.
+[60] R. Courant, D. Hilbert, Methods of Mathematical Physics, vol. 1, Wiley-VCH,
+1989 .
+[61] J. Xiong Dong, A. Krzyzak, C. Suen, Fast svm training algorithm with
+decomposition on very large data sets, Pattern Analysis and MachineIntelligence, IEEE Transactions on, vol. 27, 2005, pp. 603–618. .
+[62]
+X. Li, J. Cervantes, W. Yu, A novel svm classiﬁcation method for large data sets,
+in: 2010 IEEE International Conference on Granular Computing, 2010, pp.
+297–302 .
+[63] K.P. Bennett, E.J. Bredensteiner, Geometry in learning, in: In Geometry atWork, 1997
+.
+[64] Y.-J. Lee, S.-Y. Huang, Reduced support vector machines: a statistical theory,
+IEEE Trans. Neural Networks 18 (1) (2007) 1–13 .
+[65] F. Zhu, J. Yang, N. Ye, C. Gao, G. Li, T. Yin, Neighbors distribution property and
+sample reduction for support vector machines, Appl. Soft Comput. 16 (2014)
+201–209 .
+[66] X. Li, J. Cervantes, W. Yu, Fast classiﬁcation for large data sets via randomselection clustering and support vector machines, Intelligent Data Anal. 16
+(6) (2012) 897–914
+.
+[67] B. Gartner, E. Welzl, A simple sampling lemma: analysis and applications in
+geometric optimization, Discrete Computat. Geometry 25 (4) (2001) 569–
+590.
+[68] S. Canu, L. Bottou, S. Canu, Training invariant support vector machines using
+selective sampling, MIT Press, 2007 .
+[69] J.L. Balcázar, Y. Dai, J. Tanaka, O. Watanabe, Provably fast training algorithms
+for support vector machines, Theory Comput. Syst. 42 (4) (2008) 568–595 .
+[70] Y.-G. Liu, Q. Chen, R.-Z. Yu, Extract candidates of support vector from training
+set, in: Machine Learning and Cybernetics, 2003 International Conference on,
+vol. 5, nov. 2003, pp. 3199–3202. .
+[71] A. Shigeo, I. Takuya, Fast training of support vector machines by extracting
+boundary data, in: ICANN ’01: Proceedings of the International Conference on
+Artiﬁcial Neural Networks, (London, UK), Springer-Verlag, 2001, pp. 308–
+313..
+[72] D. Wang, D. Yeung, E. Tsang, Weighted mahalanobis distance kernels forsupport vector machines, IEEE Trans. Neural Networks 18 (sept. 2007.) 1453–
+1462
+.
+[73] D. Wang, L. Shi, Selecting valuable training samples for SVMs via data
+structure analysis, Neurocomputing 71 (13) (2008) 2772–2781 .
+[74] B.E. Boser, I.M. Guyon, V.N. Vapnik, A training algorithm for optimal margin
+classiﬁers, in: Proceedings of the ﬁfth annual workshop on Computational
+learning theory, COLT ’92, (New York, NY, USA), pp. 144–152, 1992, ACM..
+[75] P.E. Hart, The condensed nearest neighbor rule, IEEE Trans. Inf. Theory 14
+(1968) 515–516 .
+[76] G. Gates, The Reduced Nearest Neighbor Rule, IEEE Trans. Inf. Theory, vol. IT-
+18(3), 1972, pp. 431–433. .
+[77] G.L. Ritter, H.B. Woodruff, S.R. Lowry, T.L. Isenhour, An algorithm for aselective nearest neighbor decision rule (corresp.), IEEE Trans. Inf. Theory 21
+(6) (1975) 665–669
+.
+[78] R. Wang, S. Kwong, Sample selection based on maximum entropy for support
+vector machines, in: Machine Learning and Cybernetics (ICMLC), 2010
+International Conference on, vol. 3, 2010, pp. 1390–1395. .
+[79] H. Shin, S. Cho, Neighborhood property-based pattern selection for support
+vector machines, Neural Comput. 19 (March 2007) 816–855 .
+[80] X. Jiantao, H. Mingyi, W. Yuying, F. Yan, A fast training algorithm for support
+vector machine via boundary sample selection, in: International Conference210 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+on Neural Networks and Signal Processing, 2003. Proceedings of the 2003
+IEEE, 2003 .
+[81] H. Yu, J. Yang, J. Han, Classifying large data sets using svms with hierarchical
+clusters, KDD (2003) .
+[82] M.A. Awad, L. Khan, F.B. Bastani, I.-L. Yen, An effective support vector
+machines (svms) performance using hierarchical clustering, in: 16th IEEEInternational Conference on Tools with Artiﬁcial Intelligence, 2004, pp. 663–
+667. .
+[83]
+J. Cervantes, X. Li, W. Yu, Support vector machine classiﬁcation based on
+fuzzy clustering for large data sets, in: Lecture Notes in Computer Science,
+Springer, Berlin Heidelberg, 2006, pp. 572–582 .
+[84] R. Collobert, S. Bengio, Svmtorch: support vector machines for large-scale
+regression problems, J. Mach. Learn. Res. 1 (2001). .
+[85] L. Shih, J.D.M. Rennie, Y.-H. Chang, D.R. Karger, Text bundling: Statistics based
+data-reduction, ICML (2003) .
+[86] V. Tresp, A bayesian committee machine, Neural Comput. 12 (Nov 2000)
+2719–2741 .
+[87] M. Doumpos, An experimental comparison of some efﬁcient approaches for
+training support vector machines, Oper. Res. Int. Journal 4 (2004) 45–56,
+https://doi.org/10.1007/BF02941095 .
+[88] N. List, S. Hans-Ulrich, A general convergence theorem for the decomposition
+method, in: COLT, 2004, pp. 363–377. .
+[89] G. Wang, A survey on training algorithms for support vector machine
+classiﬁers, in Proceedings of the 2008 Fourth International Conference on
+Networked Computing and Advanced Information Management – Volume 01,
+vol. 1 of NCM ’08, (Washington, DC, USA), pp. 123–128, IEEE Computer
+Society, sept. 2008. .
+[90] C.W. Hsu, C.J. Lin, A comparison of methods for multiclass support vectormachines, IEEE Trans. Neural Networks (2002)
+.
+[91] J. Platt, Fast training of support vector machines using sequential minimal
+optimization, Adv. Kernel Methods: Support Vector Mach., 1998, pp. 185–
+208. .
+[92] S.-W. Kim, B. Oommen, Enhancing prototype reduction schemes with
+recursion: a method applicable for ‘‘large data sets, IEEE Trans. Syst., Man
+Cybern., Part B (Cybernetics) 34 (jun 2004.) 1384–1397 .
+[93] G. Folino, C. Pizzuti, G. Spezzano, GP ensembles for large-scale data
+classiﬁcation, IEEE Trans. Evol. Comput. 10 (Oct 2006) 604–616 .
+[94] G.-B. Huang, K. Mao, C.-K. Siew, D.-S. Huang, Fast modular network
+implementation for support vector machines, IEEE Trans. Neural Networks
+16 (Nov 2005) 1651–1663 .
+[95] C. Chih-Chung, L. Chih-Jen, Libsvm: A library for support vector machines,
+ACM Trans. Intell. Syst. Technol. 2 (3) (2011) 1–27 .
+[96] R.-E. Fan, P.-H. Chen, C.-J. Lin, Working set selection using second order
+information for training support vector machines, J. Mach. Learn. Res. 6
+(December 2005) 1889–1918 .
+[97] T. Joachims, Making large-scale svm learning practical, Adv. Kernel Methods-
+Support Vector Learn. (1998) 169–184. .
+[98] J.A.K. Suykens, J. Vandewalle, Least squares support vector machine
+classiﬁers, Neural Process. Lett. 9 (June 1999) 293–300 .
+[99] G. Fung, O.L. Mangasarian, Incremental support vector machine classiﬁcation,
+in: 7th ACM SIGKDD International Conference on Knowledge Discovery and
+Data Mining, 2001, pp. 77–86. .
+[100] Y. Jye Lee, O.L. Mangasarian, Rsvm: Reduced support vector machines, in:
+Data Mining Institute, Computer Sciences Department, University of
+Wisconsin, 2001, pp. 00–07. .
+[101] H.P. Graf, E. Cosatto, L. Bottou, I. Durdanovic, V. Vapnik, Parallel support
+vector machines: the cascade svm, in: Advances in Neural Information
+Processing Systems, MIT Press, 2005, pp. 521–528 .
+[102] L. Bao-Liang, W. Kai-An, W. Yi-Min, Comparison of parallel and cascade
+methods for training support vector machines on large-scale problems, in:
+Machine Learning and Cybernetics, 2004. Proceedings of 2004 International
+Conference on, vol. 5, 2004, pp. 3056–3061. .
+[103] R. Collobert, Y. Bengio, S. Bengio, Scaling large learning problems with hard
+parallel mixtures, Int. J. Pattern Recogn. Artif. Intell.(IJPRAI) 17 (3) (2003)349–365
+.
+[104] S. Qiu, T. Lane, Parallel computation of rbf kernels for support vector
+classiﬁers, in: Proc. 5th SIAM International Conference on Data Mining
+(SDM05), 2005, pp. 334–345. .
+[105] T. Seraﬁni, L. Zanni, G. Zanghirati, Some improvements to a parallel
+decomposition technique for training support vector machines, in: B. Di
+Martino, D. Kranzlmller, J. Dongarra (Eds.), Recent Advances in ParallelVirtual Machine and Message Passing Interface, vol. 3666 of Lecture Notes in
+Computer Science, 2005, pp. 9–17. .
+[106] T. Eitrich, B. Lang, On the optimal working set size in serial and parallel
+support vector machine learning with the decomposition algorithm,” in:
+AusDM ’06: Proceedings of the ﬁfth Australasian conference on Data miningand analystics, (Darlinghurst, Australia, Australia), Australian Computer
+Society, Inc., 2006, pp. 121–128..
+[107] F. Poulet, Multi-way distributed svm algorithms, in: Parallel and Distributed
+computing for Machine Learning. In: conjunction with the 14th European
+Conference on Machine Learning (ECML’03) and 7th European Conference onPrinciples and Practice of Knowledge Discovery in Databases (PKDD’03),
+(Cavtat-Dubrovnik, Croatia), 2003. .
+[108]
+G. Zanghirati, L. Zanni, A parallel solver for large quadratic programs in
+training support vector machines, Parallel Comput. 29 (4) (2003) 535–551 .[109] Y. Ming-Hsuan, A. Narendra, A geometric approach to train support vector
+machines, IEEE Computer Society Conference on Computer Vision and
+Pattern Recognition 1 (2000) 1430 .
+[110] Crisp, Burges, A geometric interpretation of t-svm classiﬁers, NIPS 12 (2000)
+244–250 .
+[111] M.E. Mavroforakis, M. Sdralis, S. Theodoridis, A geometric nearest pointalgorithm for the efﬁcient solution of the svm classiﬁcation task, IEEE Trans.
+Neural Networks 18 (sept. 2007.) 1545–1549
+.
+[112] Z. Liu, J.G. Liu, C. Pan, G. Wang, A novel geometric approach to binary
+classiﬁcation based on scaled convex hulls, IEEE Trans. Neural Networks 20
+(July 2009) 1215–1220 .
+[113] E. Osuna, O.D. Castro, Convex Hull in Feature Space for Support Vector
+Machines, in: Proceedings of the 8th Ibero-American Conference on AI:
+Advances in Artiﬁcial Intelligence, IBERAMIA 2002, (London, UK, UK),
+Springer-Verlag, 2002, pp. 411–419. .
+[114] X. Peng, Efﬁcient geometric algorithms for support vector machine classiﬁer,
+in Natural Computation (ICNC), 2010 Sixth International Conference on, vol.
+2, 2010, pp. 875–879. .
+[115] Z.-Q. Zeng, H.-R. Xu, Y.-Q. Xie, and J. Gao, A geometric approach to train
+svm on very large data sets, in: Intelligent System and Knowledge
+Engineering, 2008. ISKE 2008. 3rd International Conference on, vol. 1,
+2008, pp. 991–996. .
+[116] D. DeCoste, K. Wagstaff, Alpha seeding for support vector machines, in:Proceedings of the sixth ACM SIGKDD international conference on
+Knowledge discovery and data mining, KDD ’00, ACM, New York, NY, USA,
+2000, pp. 345–349
+.
+[117] D. Feng, W. Shi, H. Guo, L. Chen, A new alpha seeding method for support
+vector machine training, in: L. Wang, K. Chen, Y. Ong (Eds.), Advances inNatural Computation, vol. 3610 of Lecture Notes in Computer Science,
+Springer, Berlin/, Heidelberg, 2005, p. 418
+.
+[118] J.C.R. Santos, J.S. Aguilar-Ruiz, M. Toro, Finding representative patterns with
+ordered projections, Pattern Recogn. 36 (4) (2003) 1009–1018 .
+[119] Y. Caises, A. González, E. Leyva, R. Pérez, Combining instance selection
+methods based on data characterization: an approach to increase their
+effectiveness, Inf. Sci. 181 (20) (2011) 4780–4798 .
+[120] M. Arun Kumar, M. Gopal, A hybrid svm based decision tree, Pattern
+Recognition, Dec. 43 (2010) 3977–3987 .
+[121] A. Almas, M. Farquad, N. Avala, J. Sultana, Enhancing the performance of
+decision tree: A research study of dealing with unbalanced data, in: Digital
+Information Management (ICDIM), 2012 Seventh International Conferenceon, 2012, pp. 7–10. .
+[122]
+C.-W. Hsu, C.-J. Lin, A comparison of methods for multiclass support vector
+machines, IEEE Trans. Neural Networks 13 (March 2002) 415–425 .
+[123] J.C. Platt, N. Cristianini, J. Shawe-Taylor, Large margin dags for multiclass
+classiﬁcation, NIPS (1999) .
+[124] S. Knerr, L. Personnaz, G. Dreyfus, Single-layer learning revisited: a stepwise
+procedure for building and training a neural network, in: Neurocomputing,1990. .
+[125]
+H.G.K. Ulrich, Pairwise classiﬁcation and support vector machines, Adv.
+Kernel Methods (1999) .
+[126] A.A. Aburomman, M.B. Ibne Reaz, A novel weighted support vector machines
+multiclass classiﬁer based on differential evolution for intrusion detectionsystems, Inf. Sci. (2017)
+.
+[127] E.J. Bredensteiner, K.P. Bennett, Multicategory classiﬁcation by support
+vector machines, Computat. Optim., 1999. .
+[128] L. Tang, Y. Tian, P.M. Pardalos, A novel perspective on multiclass
+classiﬁcation: regular simplex support vector machine, Inf. Sci. 480 (2019)
+324–338 .
+[129] Y.-H. Shao, W.-J. Chen, W.-B. Huang, Z.-M. Yang, N.-Y. Deng, The bestseparating decision tree twin support vector machine for multi-class
+classiﬁcation, Proc. Comput. Sci. 17 (2013) 1032–1038
+.
+[130] L. Zhang, W.-D. Zhou, T.-T. Su, L.-C. Jiao, Decision tree support vector
+machine, Int. J. Artif. Intell. Tools (2007) .
+[131] B. Santosa, Multiclass classiﬁcation with cross entropy-support vectormachines, Proc. Comput. Sci. (2015)
+.
+[132] F. Provost, T. Fawcett, Mach. Learn. 42 (3) (2001) 203–231 .
+[133] J. Cervantes, X. Li, W. Yu, ”Splice site detection in DNA sequences using a fast
+classiﬁcation algorithm,” in 2009 IEEE International Conference on Systems,
+in: 2009 IEEE International Conference on Systems, Man and Cybernetics,
+IEEE, 2009 .
+[134] G. Dror, R. Sorek, R. Shamir, Accurate identiﬁcation of alternatively splicedexons using support vector machine, Bioinformatics 21 (Nov 2004) 897–901
+.
+[135] K. Veropoulos, C. Campbell, N. Cristianini, Controlling the sensitivity of
+support vector machines, IJCAI 1999 (1999) .
+[136] I. Kononenko, Machine learning for medical diagnosis: history, state of the art
+and perspective, Artif. Intell. Med. 23 (Aug 2001) 89–109 .
+[137] F. Sebastiani, Machine learning in automated text categorization, ACM
+Comput. Surveys 34 (Mar 2002) 1–47 .
+[138] S. Tan, Neighbor-weighted k-nearest neighbor for unbalanced text corpus,
+Expert Syst. Appl. 28 (May 2005) 667–671 .
+[139] R.M. Kebeasy, A.I. Hussein, S.A. Dahy, Discrimination between natural
+earthquakes and nuclear explosions using the aswan seismic network, Ann.
+Geophys. 41(1998). .
+[140] N.V. Chawla, K.W. Bowyer, L.O. Hall, W.P. Kegelmeyer, SMOTE: synthetic
+minority over-sampling technique, J. Artif. Intell. Res. 16 (2002) 321–357 .J. Cervantes et al. / Neurocomputing 408 (2020) 189–215 211
+[141] S. Köknar-Tezel, L.J. Latecki, Improving SVM classiﬁcation on imbalanced data
+sets in distance spaces, in: 2009 Ninth IEEE International Conference on Data
+Mining, IEEE, Dec 2009. .
+[142] Z.-Q. Zeng, J. Gao, Improving SVM classiﬁcation with imbalance data set, in:
+Neural Information Processing, Springer, Berlin, Heidelberg, 2009, pp. 389–
+398.
+[143] S. Zou, Y. Huang, Y. Wang, J. Wang, C. Zhou, SVM learning from imbalanced
+data by GA sampling for protein domain prediction, in: 2008 The 9th
+International Conference for Young Computer Scientists, IEEE, 2008. .
+[144] M. Farquad, I. Bose, Preprocessing unbalanced data using support vector
+machine, Decis. Support Syst. 53 (Apr 2012) 226–233 .
+[145] Y. Liu, X. Yu, J.X. Huang, A. An, Combining integrated sampling with SVM
+ensembles for learning from imbalanced datasets, Inf. Process. Manage. 47
+(Jul 2011) 617–631 .
+[146] R. Akbani, S. Kwek, N. Japkowicz, Applying support vector machines to
+imbalanced datasets, in: Machine Learning: ECML 2004, Springer, Berlin
+Heidelberg, 2004, pp. 39–50. .
+[147] X. Yang, Q. Song, A. Cao, Weighted support vector machine for dataclassiﬁcation, in: Proceedings. 2005 IEEE International Joint Conference on
+Neural Networks, IEEE, 2005
+.
+[148] Y.-M. Huang, S.-X. Du, Weighted support vector machine for classiﬁcation
+with uneven training class sizes, in: 2005 International Conference on
+Machine Learning and Cybernetics, IEEE, 2005. .
+[149] J.M. Choi, A Selective Sampling Method for Imbalanced Data Learning on
+Support Vector Machines (Ph.D. thesis), Ames, IA, USA, 2010. AAI3413682..
+[150] S. Garcıa, J. Derrac, I. Triguero, C.J. Carmona, F. Herrera, Evolutionary-based
+selection of generalized instances for imbalanced classiﬁcation, Knowl.-Based
+Syst. 25 (Feb 2012) 3–12 .
+[151] B.X. Wang, N. Japkowicz, Boosting support vector machines for imbalanced
+data sets, Knowl. Inf. Syst. 25 (Mar 2009) 1–20 .
+[152] N.V. Chawla, A. Lazarevic, L.O. Hall, K.W. Bowyer, SMOTEBoost: Improving
+prediction of the minority class in boosting, in: Knowledge Discovery in
+Databases: PKDD 2003, Springer, Berlin Heidelberg, 2003, pp. 107–119. .
+[153] H.M. Nguyen, E.W. Cooper, K. Kamei, Borderline over-sampling for
+imbalanced data classiﬁcation, Int. J. Knowl. Eng. Soft Data Paradigms 3 (1)(2011) 4
+.
+[154] S. Hu, Y. Liang, L. Ma, Y. He, MSMOTE: Improving classiﬁcation performance
+when training data is imbalanced, in: 2009 Second International Workshop
+on Computer Science and Engineering, IEEE, 2009. .
+[155] H. Guo, H.L. Viktor, Learning from imbalanced data sets with boosting anddata generation, ACM SIGKDD Explorations Newsletter 6 (jun 2004.) 30
+.
+[156] G. Wu, E.Y. Chang, Class-boundary alignment for imbalanced dataset
+learning, 2003. .
+[157] G. Wu, E. Chang, KBA: kernel boundary alignment considering imbalanced
+data distribution, IEEE Trans. Knowl. Data Eng. 17 (2005) 786–795 .
+[158] D.A. Cieslak, N.V. Chawla, Learning decision trees for unbalanced data, in:
+Machine Learning and Knowledge Discovery in Databases, Springer, BerlinHeidelberg, pp. 241–256. .
+[159]
+A. Fernández, M.J. del Jesus, F. Herrera, Hierarchical fuzzy rule based
+classiﬁcation systems with genetic rule selection for imbalanced data-sets,
+Int. J. Approximate Reasoning 50 (Mar 2009) 561–577 .
+[160] R. Batuwita, V. Palade, FSVM-CIL: fuzzy support vector machines for classimbalance learning, IEEE Trans. Fuzzy Syst. 18 (2010) 558–571
+.
+[161] R. Batuwita, V. Palade, Efﬁcient resampling methods for training support
+vector machines with imbalanced datasets, in: The 2010 International Joint
+Conference on Neural Networks (IJCNN), IEEE, 2010. .
+[162] N. Rout, D. Mishra, M.K. Mallick, Handling imbalanced data: a survey, in:
+Advances in Intelligent Systems and Computing, Springer Singapore, 2017,
+pp. 431–443. .
+[163] F. Melgani, Y. Bazi, Classiﬁcation of electrocardiogram signals with support
+vector machines and particle swarm optimization, IEEE Trans. Inf Technol.
+Biomed. 12 (2008) 667–677 .
+[164] R. En Fan, P. Hsuen Chen, T. Joachims, Working set selection using second
+order information for training svm, J. Mach. Learn. Res., p. 2005. .
+[165] C.-C. Chang, C.-J. Lin, LIBSVM, ACM Trans. Intell. Syst. Technol. 2 (Apr 2011)
+1–27 .
+[166] C.-C. Chang, C.-J. Lin, Training v-support vector classiﬁers: theory and
+algorithms, Neural Comput. 13 (sep 2001.) 2119–2147 .
+[167] P.-H. Chen, R.-E. Fan, C.-J. Lin, A study on SMO-type decomposition methods
+for support vector machines, IEEE Trans. Neural Networks 17 (2006) 893–
+908.
+[168] N. List, H.U. Simon, A general convergence theorem for the decomposition
+method, in: Learning Theory, Springer, Berlin, Heidelberg, 2004, pp. 363–377 .
+[169] D.G. Luenberger, Y. Ye, Linear and Nonlinear Programming (International
+Series in Operations Research & Management Science Book 116), Springer,
+2008 .
+[170] R. Fletcher, Practical Methods of Optimization, John Wiley & Sons Ltd, 2000 .
+[171] C.-W. Hsu, C.-J. Lin, Mach. Learn. 46 (1/3) (2002) 291–314 .
+[172] E. Osuna, R. Freund, F. Girosi, An improved training algorithm for support
+vector machines, in: Neural Networks for Signal Processing VII. Proceedings
+of the 1997 IEEE Signal Processing Society Workshop, IEEE. .
+[173] R. Topor, K. Salem, A. Gupta, K. Goda, J. Gehrke, N. Palmer, M. Sharaf, A.
+Labrinidis, J.F. Roddick, A. Fuxman, R.J. Miller, W.-C. Tan, A. Kementsietsidis,
+P. Bonnet, D. Shasha, J.F. Roddick, A. Gupta, R. Peikert, B. Ludäscher, S. Bowers,
+T. McPhillips, H. Naumann, K. Voruganti, J. Domingo-Ferrer, B. Carterette, P.G.
+Ipeirotis, M. Arenas, Y. Manolopoulos, Y. Theodoridis, V.J. Tsotras, B.Carminati, J. Jurjens, E.B. Fernandez, M. Kantarcıoglu, J. Vaidya, I. Ray, A.Vakali, C. Sirangelo, E. Pitoura, H. Gupta, S. Chaudhuri, G. Weikum, U. Leser, D.
+W. Embley, F. Giunchiglia, P. Shvaiko, M. Yatskevich, E.Y. Chang, C. Parent, S.
+Spaccapietra, E. Zimányi, G. Anadiotis, S. Kotoulas, R. Siebes, G. Antoniou, D.
+Plexousakis, J. Bailey, F. Bry, T. Furche, S. Schaffert, D. Martin, G. Speegle, K.
+Ramamritham, P.K. Chrysanthis, K.-U. Sattler, S. Bressan, S. Abiteboul, D.Suciu, G. Dobbie, T.W. Ling, D. Suciu, S. Basu, R. Govindan, M.H. Böhlen, C.S.
+Jensen, J. Wang, K. Vidyasankar, A. Chan, S. Mankovski, S. Elnikety, P.
+Valduriez, P. Valduriez, P. Valduriez, Y. Velegrakis, M.A. Nascimento, M.
+Huggett, A.U. Frank, Y. Zhang, G. Xu, C.S. Jensen, R.T. Snodgrass, A. Fekete, M.
+Herzog, K. Morfonios, Y. Ioannidis, E. Wohlstadter, M. Matera, F. Schwagereit,S. Staab, K. Fraser, J. Zhou, M.F. Mokbel, W.G. Aref, M.F. Mokbel, W.G. Aref, M.
+M. Moro, V.J. Tsotras, M. Schneider, P. Kalnis, G. Ghinita, M.F. Goodchild, S.
+Shekhar, J. Kang, V. Gandhi, M. Schneider, Y. Manolopoulos, Y. Theodoridis, V.
+J. Tsotras, N. Mamoulis, B. George, S. Shekhar, M. Scholl, A. Voisard, N.
+Mamoulis, R.H. Güting, Y. Tao, D. Papadias, P. Revesz, G. Kollios, E. Frentzos, Y.
+Theodoridis, A.N. Papadopoulos, B. Thalheim, J. Pehcevski, B. Piwowarski, S.
+Theodoridis, K. Koutroumbas, N. Palmer, G. Karabatis, D. Chamberlin, P.A.Bernstein, M. Böhlen, J. Gamper, C.S. Jensen, R.T. Snodgrass, P. Li, K. Subieta, S.
+Harizopoulos, E. Zhang, Y. Zhang, T. Johnson, K. Morfonios, Y. Ioannidis, H.-A.
+Jacobsen, A. Gupta, S.E. Fienberg, J. Jin, R. Sion, C.D. Paice, N. Hardavellas, I.
+Pandis, E. Rasmussen, K. Voruganti, K. Goda, H. Yoshida, K. Voruganti, K.
+Voruganti, H. Yoshida, H. Yoshida, G. Graefe, K. Goda, H. Yoshida, B. Reiner, K.Hahn, K. Goda, K. Wada, K. Voruganti, H. Yoshida, K. Voruganti, H. Yoshida, T.
+Risch, J. Han, B. Ding, L. Golab, M. Stonebraker, B. Lahiri, S. Tirthapura, E. Vee,
+Y. Ahmad, U. Çetintemel, M. Cherniack, S. Zdonik, A. Fekete, M.P. Consens, M.
+Lalmas, K.-U. Sattler, M. Lalmas, R. Baeza-Yates, D. Hiemstra, R. Baeza-Yates,
+H.-A. Jacobsen, P. Krögerand, A. Zimek, N. Craswell, C.K.-S. Leung, M.Crochemore, T. Lecroq, A. Shoshani, J. Lin, H. Yu, D. Lomet, H. Hinterberger,
+N. Li, P.B. Gibbons, J. Domingo-Ferrer, M. Kacimi, T. Neumann, Support vector
+machine, in Encyclopedia of Database Systems, Springer, US, 2009, pp. 2890–
+2892
+.
+[174] A. Shilton, M. Palaniswami, D. Ralph, A. Tsoi, Incremental training of support
+vector machines, IEEE Trans. Neural Networks 16 (Jan 2005) 114–131 .
+[175] S. Venkateshan, A. Patel, K. Varghese, Hybrid working set algorithm for SVM
+learning with a kernel coprocessor on FPGA, IEEE Transactions on Very Large
+Scale Integration (VLSI) Systems, vol. 23, 2015, pp. 2221–2232. .
+[176] R. Collobert, S. Bengio, Svmtorch, 2001, http://bengio.abracadoudou.com/
+SVMTorch.html ..
+[177] S. Shalev-Shwartz, Pegasos, 2007, https://www.cs.huji.ac.il/shais/code/index.
+html ..
+[178] C.-C. Chang, C.-J. Lin, Libsvm, 2018, https://www.csie.ntu.edu.tw/cjlin/libsvm/
+..
+[179] T. Joachims, Svmlight, 2008, http://svmlight.joachims.org/ ..
+[180] C. Diehl, Isvm, 2006. https://github.com/diehl/Incremental-SVM-Learning-in-
+MATLAB ..
+[181] L.H. Lee, C.H. Wan, R. Rajkumar, D. Isa, An enhanced support vector machineclassiﬁcation framework by using euclidean distance function for text
+document categorization, Appl. Intell. 37 (Aug 2011) 80–99
+.
+[182] J. He, Appl. Intell. 18 (3) (2003) 311–322 .
+[183] E. Leopold, J. Kindermann, Mach. Learn. 46 (1/3) (2002) 423–444 .
+[184] S. Hoi, R. Jin, M. Lyu, Batch mode active learning with applications to textcategorization and image retrieval, IEEE Trans. Knowl. Data Eng. 21 (sep
+2009.) 1233–1248
+.
+[185] M.A. Kumar, M. Gopal, Text categorization using fuzzy proximal SVM and
+distributional clustering of words, in Advances in Knowledge Discovery and
+Data Mining, Springer, Berlin, Heidelberg, 2009, pp. 52–61 .
+[186] G. Dias, T. Honkela, Term weighting in short documents for document
+categorization, keyword extraction and query expansion, 2012. .
+[187] K. Li, J. Xie, X. Sun, Y. Ma, H. Bai, Multi-class text categorization based on LDA
+and SVM, Proc. Eng. 15 (2011) 1963–1967 .
+[188] T. Peng, W. Zuo, F. He, SVM based adaptive learning method for text
+classiﬁcation from positive and unlabeled documents, Knowl. Inf. Syst. 16
+(2007) 281–301 .
+[189] R.H. Pinheiro, G.D. Cavalcanti, I.R. Tsang, Combining binary classiﬁers in
+different dichotomy spaces for text categorization, Appl. Soft Comput. 76
+(Mar 2019) 564–574 .
+[190] B. Al-Salemi, M. Ayob, G. Kendall, S.A.M. Noah, Multi-label arabic text
+categorization: a benchmark and baseline comparison of multi-label learning
+algorithms, Inf. Processing Manage. 56 (Jan 2019) 212–227 .
+[191] J. Verma, M. Nath, P. Tripathi, K.K. Saini, Analysis and identiﬁcation of kidneystone using kth nearest neighbour (knn) and support vector machine (svm)
+classiﬁcation techniques, Pattern Recogn. Image Anal. 27 (Jul 2017) 574–580
+.
+[192] Z. Qiao, X. Kewen, W. Panpan, H. Wang, Lung nodule classiﬁcation using
+curvelet transform, lda algorithm and bat-svm algorithm, Pattern Recogn.
+Image Anal. 27 (Oct 2017) 855–862 .
+[193] S. Aﬁﬁ, H. GholamHosseini, R. Sinha, Dynamic hardware system for cascade
+svm classiﬁcation of melanoma, Neural Comput. Appl., 2018. .
+[194] P. Kaur, H.S. Pannu, A.K. Malhi, Plant disease recognition using fractional-
+order zernike moments and svm classiﬁer, Neural Comput. Appl., 2019. .
+[195] X. Zhang, M.H. Mahoor, S.M. Mavadati, Facial expression recognition using
+lplp-norm mkl multiclass-svm, Mach. Vis. Appl. 26 (May 2015) 467–483 .
+[196] C.-C. Hsieh, D.-H. Liou, Novel haar features for real-time hand gesture
+recognition using svm, J. Real-Time Image Proc. 10 (Jun 2015) 357–370 .
+[197] M.A. Berbar, Three robust features extraction approaches for facial gender
+classiﬁcation, Visual Comput. 30 (Jan 2014) 19–31 .212 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+[198] Y. Tarabalka, M. Fauvel, J. Chanussot, J.A. Benediktsson, Svm- and mrf-based
+method for accurate classiﬁcation of hyperspectral images, IEEE Geosci.
+Remote Sens. Lett. 7 (2010) 736–740. .
+[199] X. Liu, J. Tang, Mass classiﬁcation in mammograms using selected geometry
+and texture features, and a new svm-based feature selection method, IEEE
+Syst. J. 8 (2014) 910–920 .
+[200] J. Wu, Efﬁcient hik svm learning for image classiﬁcation, IEEE Trans. Image
+Process. 21 (Oct 2012) 4442–4453 .
+[201] Z. Yang, H. Xu, J. Deng, C.C. Loy, W.C. Lau, Robust and fast decoding of high-
+capacity color qr codes for mobile applications, IEEE Trans. Image Process. 27
+(Dec 2018) 6093–6108 .
+[202] J.C. Ang, H. Haron, H.N.A. Hamed, Semi-supervised svm-based feature
+selection for cancer classiﬁcation using microarray gene expression data,
+in: M. Ali, Y.S. Kwon, C.-H. Lee, J. Kim, and Y. Kim, (Eds.), Current Approaches
+in Applied Artiﬁcial Intelligence, (Cham), Springer International Publishing,
+2015, pp. 468–477..
+[203] A. Masood, A. Al-Jumaily, K. Anam, Texture analysis based automated
+decision support system for classiﬁcation of skin cancer using sa-svm,” in:C.K. Loo, K.S. Yap, K.W. Wong, A. Teoh, and K. Huang (Eds.) Neural
+Information Processing, (Cham), Springer International Publishing, 2014,
+pp. 101–109..
+[204]
+L. Zhang, W. Zhou, B. Wang, Z. Zhang, F. Li, Applying 1-norm svm with
+squared loss to gene selection for cancer classiﬁcation, Appl. Intell. 48 (Jul2018) 1878–1890
+.
+[205] S.S. Tirumala, A. Narayanan, Classiﬁcation and diagnostic prediction of
+prostate cancer using gene expression and artiﬁcial neural networks,
+Neural Comput. Appl., 2018. .
+[206] J. Li, Z. Weng, H. Xu, Z. Zhang, H. Miao, W. Chen, Z. Liu, X. Zhang, M.Wang, X. Xu, Q. Ye, Support vector machines (svm) classiﬁcation of
+prostate cancer gleason score in central gland using multiparametric
+magnetic resonance images: a cross-validated study, Eur. J. Radiol. 98
+(2018) 61–67
+.
+[207] N. Jafarpisheh, M. Teshnehlab, Cancers classiﬁcation based on deep neural
+networks and emotional learning approach, IET Syst. Biol., 12 (2018) 258–
+263(5). .
+[208] L.H. Vogado, R.M. Veras, F.H. Araujo, R.R. Silva, K.R. Aires, Leukemia diagnosis
+in blood slides using transfer learning in cnns and svm for classiﬁcation, Eng.
+Appl. Artif. Intell. 72 (2018) 415–422 .
+[209] C. Mazo, E. Alegre, M. Trujillo, Classiﬁcation of cardiovascular tissues using
+lbp based descriptors and a cascade svm, Comput. Methods ProgramsBiomed. 147 (2017) 1–10
+.
+[210] M. Moradi, P. Abolmaesumi*, D.R. Siemens, E.E. Sauerbrei, A.H. Boag, P.
+Mousavi, Augmenting detection of prostate cancer in transrectal ultrasound
+images using svm and rf time series, IEEE Trans. Biomed. Eng., 56 (2009)
+2214–2224..
+[211] P.M. Dinesh, R.S. Sabenian, Comparative analysis of zoning approaches for
+recognition of indo aryan language using svm classiﬁer, Cluster Computing,2017. .
+[212]
+N.A. Jebril, H.R. Al-Zoubi, Q. Abu Al-Haija, Recognition of handwritten arabic
+characters using histograms of oriented gradient (hog), Pattern Recogn.
+Image Anal. 28 (Apr 2018) 321–345 .
+[213] G.A. Montazer, M.A. Soltanshahi, D. Giveki, Farsi/arabic handwritten digitrecognition using quantum neural networks and bag of visual words method,
+Opt. Memory Neural Networks 26 (Apr 2017) 117–128
+.
+[214] Y. Gao, L. Jin, C. He, G. Zhou, Handwriting character recognition as a service: a
+new handwriting recognition system based on cloud computing, in: 2011
+International Conference on Document Analysis and Recognition, 2011, pp.
+885–889 .
+[215] D. Bertolini, L.S. Oliveira, R. Sabourin, Multi-script writer identiﬁcation usingdissimilarity, in: in 2016 23rd International Conference on Pattern
+Recognition (ICPR), 2016, pp. 3025–3030
+.
+[216] P. Kumar, N. Sharma, A. Rana, Article: Handwritten character recognition
+using different kernel based svm classiﬁer and mlp neural network (a
+comparison), Int. J. Comput. Appl. 53 (2012) 25–31. Full text available.
+[217] V. Christlein, D. Bernecker, F. Honig, A. Maier, E. Angelopoulou, Writer
+identiﬁcation using gmm supervectors and exemplar-svms, Pattern Recogn.
+63 (2017) 258–267 .
+[218] A. Chahi, I.E. Khadiri, Y.E. Merabet, Y. Ruichek, R. Touahni, Block wise local
+binary count for off-line text-independent writer identiﬁcation, Expert
+Systems with Applications, vol. 93, 2018, pp. 1–14.
+[219] H.-M. Je, D. Kim, S. Yang Bang, Human face detection in digital video using
+svmensemble, Neural Process. Lett. 17 (2003) 239–252. .
+[220] Q.-Q. Tao, S. Zhan, X.-H. Li, T. Kurihara, Robust face detection using local cnn
+and svm based on kernel combination, Neurocomputing 211 (2016) 98–105.
+SI: Recent Advances in SVM. .
+[221] S. Bashbaghi, E. Granger, R. Sabourin, G.-A. Bilodeau, Dynamic ensembles ofexemplar-svms for still-to-video face recognition, Pattern Recogn. 69 (2017)
+61–81
+.
+[222] M. Li, X. Yu, K.H. Ryu, S. Lee, and N. Theera-Umpon, Face recognition
+technology development with gabor, pca and svm methodology under
+illumination normalization condition, Cluster Comput., 2017. .
+[223] L. Shmaglit, V. Khryashchev, Gender classiﬁcation of human face images
+based on adaptive features and support vector machines, Optical Memory
+Neural Networks 22 (Oct 2013) 228–235 .
+[224] J. Zhang, X. Zhang, S. Ha, in: 2008 Fourth International Conference on Natural
+Computation, 2008, pp. 29–33 .[225] S. Kumar, A. Kar, M. Chandra, Svm based adaptive median ﬁlter design for
+face detection in noisy images, in: 2014 International Conference on Signal
+Processing and Integrated Networks (SPIN), 2014, pp. 695–698 .
+[226] D. Wen, H. Han, A.K. Jain, Face spoof detection with image distortion analysis,
+IEEE Trans. Inf. Forensics Secur. 10 (April 2015) 746–761 .
+[227] C.A. Waring, X. Liu, Face detection using spectral histograms and svms, IEEETrans. Syst., Man, Cybern. Part B (Cybernetics) 35 (June 2005) 467–476
+.
+[228] Z. Chen, Y. Wang, H. Liu, Unobtrusive sensor-based occupancy facing
+direction detection and tracking using advanced machine learning
+algorithms, IEEE Sens. J. 18 (Aug 2018) 6360–6368 .
+[229] M.S. Rahman, M.K. Rahman, M. Kaykobad, M.S. Rahman, isGPT: an optimizedmodel to identify sub-golgi protein types using SVM and random forest based
+feature selection, Artif. Intell. Med. 84 (Jan 2018) 90–100
+.
+[230] S.M. Krishnan, Using chou’s general PseAAC to analyze the evolutionary
+relationship of receptor associated proteins (RAP) with various folding
+patterns of protein domains, J. Theor. Biol. 445 (May 2018) 62–74 .
+[231] S. Mei, SVM ensemble based transfer learning for large-scale membrane
+proteins discrimination, J. Theor. Biol. 340 (Jan 2014) 105–110 .
+[232] M. Tahir, A. Khan, Protein subcellular localization of ﬂuorescence microscopy
+images: employing new statistical and texton based image features and SVM
+based ensemble classiﬁcation, Inf. Sci. 345 (2016) 65–80 .
+[233] M.R. Bakhtiarizadeh, M. Moradi-Shahrbabak, M. Ebrahimi, E. Ebrahimie,
+Neural network and SVM classiﬁers accurately predict lipid binding proteins,irrespective of sequence homology, J. Theor. Biol. 356 (2014) 213–222
+.
+[234] M. Routray, S. Vipsita, Remote homology detection using physicochemical
+parameters and physicochemical properties, in: 2017 International
+Conference on Information Technology (ICIT), IEEE, 2017. .
+[235] P. Lovato, M. Cristani, M. Bicego, Soft ngram representation and modeling forprotein remote homology detection, IEEE/ACM Trans. Comput. Biol. Bioinf. 14
+(Nov 2017) 1482–1488
+.
+[236] O. Bedoya, I. Tischer, Reducing dimensionality in remote homology detection
+using predicted contact maps, Comput. Biol. Med. 59 (Apr 2015) 64–72 .
+[237] H.M. Muda, P. Saad, R.M. Othman, Remote protein homology detection and
+fold recognition using two-layer support vector machine classiﬁers, Comput.
+Biol. Med. 41 (2011) 687–699. .
+[238] Z. Bao, Y. Sun, Support vector machine-based multi-model predictive control,
+J. Control Theory Appl. 6 (Aug 2008) 305–310 .
+[239] X. Song, K. Cao, S. Gao, C. Chen, J. Huang, The research of the AUV navigation
+control system based on the LS-SVM, in: 2017 IEEE International Conference
+on Unmanned Systems (ICUS), IEEE, 2017. .
+[240] A. Chakrabarty, G.T. Buzzard, S.H. Zak, Output-tracking quantized explicit
+nonlinear model predictive control using multiclass support vector machines,
+IEEE Trans. Industr. Electron. 64 (May 2017) 4130–4138 .
+[241] F. Chu, B. Dai, W. Dai, R. Jia, X. Ma, F. Wang, Rapid modeling method for
+performance prediction of centrifugal compressor based on model migration
+and SVM, IEEE Access 5 (2017) 21488–21496 .
+[242] L. Zhang, X. Zhang, SVM-based techniques for predicting cross-functionalteam performance: using team trust as a predictor, IEEE Trans. Eng. Manage.
+62 (Feb 2015) 114–121
+.
+[243] L.D. Jalili, A. Morales, J. Cervantes, J.S. Ruiz-Castilla, ”Improving the
+performance of leaves identiﬁcation by features selection with genetic
+algorithms, in: Communications in Computer and Information Science,Springer International Publishing, 2016, pp. 103–114
+.
+[244] J. Cervantes, F. García-Lamont, L. Rodríguez-Mazahua, A.L. Chau, J.S.R. Castilla,
+A.A. Trueba, F. Garcia-Lamont, L. Rodriguez, A. López, J.S.R. Castilla, A.A.
+Trueba, PSO-based method for SVM classiﬁcation on skewed data sets,
+Neurocomputing 228 (2017) 187–197 .
+[245] J. Cervantes, F.G. Lamont, L.R. Mazahua, A.Z. Hidalgo, J.S.R. Castilla, Complex
+identiﬁcation of plants from leaves, in Intelligent Computing Methodologies,Springer International Publishing, 2018, pp. 376–387
+.
+[246] M. Sanderson, P. Clough, ”Plantclef.” https://www.imageclef.org/
+PlantCLEF2019 , 2004. .
+[247] J. Jurgovsky, M. Granitzer, K. Ziegler, S. Calabretto, P.-E. Portier, L. He-Guelton,
+O. Caelen, Sequence classiﬁcation for credit-card fraud detection, Expert Syst.Appl. 100 (2018) 234–245
+.
+[248] N. Carneiro, G. Figueira, M. Costa, A data mining based system for credit-card
+fraud detection in e-tail, Decis. Support Syst. 95 (Mar 2017) 91–101 .
+[249] M. Zareapoor, P. Shamsolmoali, Application of credit card fraud detection:
+Based on bagging ensemble classiﬁer, Procedia Comput. Sci. 48 (2015) 679–
+685.
+[250] S. Bhattacharyya, S. Jha, K. Tharakunnel, J.C. Westland, Data mining for creditcard fraud: a comparative study, Decis. Support Syst. 50 (Feb 2011) 602–613
+.
+[251] A. Hekler, J.S. Utikal, A.H. Enk, C. Berking, J. Klode, D. Schadendorf, P. Jansen, C.
+Franklin, T. Holland-Letz, D. Krahl, C. von Kalle, S. Fröhling, T.J. Brinker,
+Pathologist-level classiﬁcation of histopathological melanoma images with
+deep neural networks, Eur. J. Cancer 115 (Jul 2019) 79–83 .
+[252] S.H. Kassani, P.H. Kassani, A comparative study of deep learning architectures
+on melanoma detection, Tissue Cell 58 (2019) 76–83 .
+[253] S. Aﬁﬁ, H. GholamHosseini, R. Sinha, A system on chip for melanoma
+detection using FPGA-based SVM classiﬁer, Microprocess. Microsyst. 65 (Mar
+2019) 57–68 .
+[254] X. He, G. Mourot, D. Maquin, J. Ragot, P. Beauseroy, A. Smolarz, E. Grall-Maës,
+Multi-task learning with one-class SVM, Neurocomputing 133 (2014) 416–
+426. .
+[255] Y. Ji, S. Sun, Multitask multiclass support vector machines: Model and
+experiments, Pattern Recogn. 46 (3) (2013) 914–924 .J. Cervantes et al. / Neurocomputing 408 (2020) 189–215 213
+[256] A. López Chau, X. Li, W. Yu, Convex and concave hulls for classiﬁcation with
+support vector machine, Neurocomputing 122 (2013) 198–209. .
+[257] A.L. Chau, X. Li, W. Yu, J. Cervantes, Support vector candidates pre selection
+strategy based on non convex hulls, in: Program and Abstract Book - 2010 7th
+International Conference on Electrical Engineering, Computing Science and
+Automatic Control, CCE 2010, 2010, pp. 345–350. .
+[258] A. Reeberg de Mello, M.R. Stemmer, F.G. Oliveira Barbosa, Support vector
+candidates selection via Delaunay graph and convex-hull for large and high-
+dimensional datasets, Pattern Recogn. Lett. (2018) .
+[259] L. Guo, S. Boukir, Fast data selection for SVM training using ensemble margin,
+Pattern Recogn. Lett. 51 (2015) 112–119 .
+[260] C. Liu, W. Wang, M. Wang, F. Lv, M. Konan, An efﬁcient instance selection
+algorithm to reconstruct training set for support vector machine, Knowl.-
+Based Syst. 116 (2017) 58–73 .
+[261] A. López Chau, L. López-Garcia, J. Cervantes, X. Li, W. Yu, Data Selection Using
+Decision Tree for SVM Classiﬁcation, in: IEEE 24th International Conference
+on Tools with Artiﬁcial Intelligence, ICTAI 2012, Athens, Greece, November 7–
+9, 2012, 2012, pp. 742–749. .
+[262] P. Arumugam, P. Jose, Efﬁcient Decision Tree Based Data Selection and
+Support Vector Machine Classiﬁcation, Materials Today: Proceedings 5(1),
+Part 1 (2018) 1679–1685. .
+[263] G. Taskin Kaya, O.K. Ersoy, M.E. Kamasak, Support vector selection and
+adaptation for remote sensing classiﬁcation, IEEE Trans. Geosci. Remote Sens.(2011)
+.
+[264] G.T. Kaya, O.K. Ersoy, M.E. Kamasak, Support vector selection and adaptation
+for classiﬁcation of earthquake images, in: 2009 IEEE International
+Geoscience and Remote Sensing Symposium, vol. 2, Jul 2009, pp. II–851–II–
+854. .
+[265] X. Li, J. Cervantes, W. Yu, Fast classiﬁcation for large data sets via random
+selection clustering and Support Vector Machines, Intell. Data Anal. (2012) .
+[266] S. Ougiaroglou, K.I. Diamantaras, G. Evangelidis, Exploring the effect of data
+reduction on Neural Network and Support Vector Machine classiﬁcation,
+Neurocomputing 280 (2018) 101–110 .
+[267] X.-J. Shen, L. Mu, Z. Li, H.-X. Wu, J.-P. Gou, X. Chen, Large-scale support vector
+machine classiﬁcation with redundant data reduction, Neurocomputing 172(2016) 189–197. .
+[268] J.P. Yeh, C.M. Chiang, Reducing the Solution of Support Vector Machines
+Using Simulated Annealing Algorithm, in: 2017 International Conference on
+Control, Artiﬁcial Intelligence, Robotics Optimization (ICCAIRO), 2017, pp.
+105–108.
+[269]
+J. Nalepa, M. Kawulok, Adaptive memetic algorithm enhanced with data
+geometry analysis to select training data for SVMs, Neurocomputing 185
+(2016) 113–132 .
+[270] S. Shalev-Shwartz, Y. Singer, N. Srebro, A. Cotter, Pegasos: primal estimated
+sub-gradient solver for SVM, Math. Program. (2011) .
+[271] Z. Wang, Y.-H. Shao, L. Bai, C.-N. Li, L.-M. Liu, N.-Y. Deng, Insensitive
+stochastic gradient twin support vector machines for large scale problems,Inf. Sci. 462 (2018) 114–131
+.
+[272] R.D. Morales, Á.N. Vázquez, Improving the efﬁciency of IRWLS SVMs using
+parallel Cholesky factorization, Pattern Recogn. Lett. 84 (2016) 91–98 .
+[273] M.D. de Lima, N.L. Costa, R. Barbosa, Improvements on least squares twin
+multi-class classiﬁcation support vector machine Neurocomputing (2018). .
+[274] M.E. Mavroforakis, S. Theodoridis, A geometric approach to support vector
+machine (SVM) classiﬁcation, IEEE Trans. Neural Networks 17 (3) (2006)
+671–682 .
+[275] J. Liu, R. Danait, Instance Selection in the Projected High Dimensional Feature
+Space for SVM, in: 2018 IEEE 3rd International Conference on Image, Vision
+and Computing (ICIVC), 2018, pp. 575–579 .
+[276] Z.-H. You, J.-Z. Yu, L. Zhu, S. Li, Z.-K. Wen, A MapReduce based parallel SVMfor large-scale predicting protein–protein interactions, Neurocomputing 145
+(2014) 37–43
+.
+[277] A. Bifet, R. Gavaldà, G. Holmes, B. Pfahringer, Machine Learning for Data
+Streams with Practical Examples in MOA, MIT Press, Cambridge, MA, 2018 .
+[278] J. Zheng, F. Shen, H. Fan, J. Zhao, An online incremental learning supportvector machine for large-scale data, Neural Comput. Appl. (2013)
+.
+[279] X. Wang, Y. Xing, An online support vector machine for the open-ended
+environment, Expert Syst. Appl. (2019) .
+[280] Y. Liu, Z. Xu, C. Li, Distributed online semi-supervised support vector
+machine, Inf. Sci. (2018) .
+[281] S. Chan, P. Treleaven, Chapter 5 – Continuous Model Selection for Large-Scale
+Recommender Systems, in: V. Govindaraju, V.V. Raghavan, and C.R. Rao,(Eds.), Big Data Analytics, vol. 33 of Handbook of Statistics, Elsevier, 2015, pp.
+107–124. .
+[282]
+S. Yin, J. Yin, Tuning kernel parameters for SVM based on expected square
+distance ratio, Inf. Sci. (2016) .
+[283] A. Candelieri, I. Giordani, F. Archetti, K. Barkalov, I. Meyerov, A. Polovinkin, A.Sysoyev, N. Zolotykh, Tuning hyperparameters of a SVM-based water
+demand forecasting system through parallel global optimization, Comput.
+Operat. Res. (2018)
+.
+[284] X. Wang, F. Huang, Y. Cheng, Super-parameter selection for Gaussian-Kernel
+SVM based on outlier-resisting, Measur.: J. Int. Meas. Confederation, 2014. .
+[285] F. Friedrichs, C. Igel, Evolutionary tuning of multiple SVM parameters,
+Neurocomputing (2005) .[286] X. Zhang, X. Liu, Z.J. Wang, Evaluation of a set of new ORF kernel functions of
+SVM for speech recognition, Eng. Appl. Artif. Intell. (2013) .
+[287] G. Du, S. Tian, Y. Qiu, C. Xu, Effective and efﬁcient Grassﬁnch kernel for SVM
+classiﬁcation and its application to recognition based on image set, Chaos
+Solitons Fractals (2015) .
+[288] M. Dalponte, L.T. Ene, M. Marconcini, T. Gobakken, E. N æsset, Semi-
+supervised SVM for individual tree crown species classiﬁcation, ISPRS J.
+Photogrammetry Remote Sens. 110 (2015) 77–87 .
+[289] M. Davy, F. Desobry, A. Gretton, C. Doncarli, An online support vector
+machine for abnormal events detection, Signal Processing (2006) .
+[290] H. Cevikalp, V. Franc, Large-scale robust transductive support vectormachines, Neurocomputing (2017)
+.
+[291] Y. Li, Y. Wang, C. Bi, X. Jiang, Revisiting transductive support vector machines
+with margin distribution embedding, Knowl.-Based Syst. (2018) .
+[292] Y. Bengio, A. Courville, P. Vincent, Representation learning: a review and new
+perspectives, IEEE Trans. Pattern Anal. Mach. Intell. 35 (Aug 2013) 1798–
+1828 .
+[293] D. Quang, Y. Chen, X. Xie, DANN: a deep learning approach for annotating thepathogenicity of genetic variants, Bioinformatics 31 (Oct 2014) 761–763
+.
+[294] Y. Tang, ‘‘Deep learning using support vector machines,” ArXiv, vol. abs/
+1306.0239, 2013. .
+[295] P. Liu, K.-K.R. Choo, L. Wang, F. Huang, SVM or deep learning? a comparative
+study on remote sensing image classiﬁcation, Soft. Comput. 21 (Jul 2016)7053–7065
+.
+[296] Y. Chen, Z. Lin, X. Zhao, G. Wang, Y. Gu, Deep learning-based classiﬁcation of
+hyperspectral data, IEEE J. Selected Topics Appl. Earth Observ. Remote Sens. 7
+(2014) 2094–2107. .
+[297] Y. Kim, H. Lee, E.M. Provost, Deep learning for robust feature generation in
+audiovisual emotion recognition, in: 2013 IEEE International Conference on
+Acoustics, Speech and Signal Processing, IEEE, 2013..
+[298] T. Majtner, S. Yildirim-Yayilgan, J.Y. Hardeberg, Combining deep learning and
+hand-crafted features for skin lesion classiﬁcation, in: 2016 Sixth
+International Conference on Image Processing Theory, Tools and
+Applications (IPTA), IEEE, Dec 2016. .
+[299] K. Tomita, R. Nagao, H. Touge, T. Ikeuchi, H. Sano, A. Yamasaki, Y. Tohda, Deep
+learning facilitates the diagnosis of adult asthma, Allergol. Int., 2019. .
+[300] M.-J. Tsai, Y.-H. Tao, I. Yuadi, Deep learning for printed document source
+identiﬁcation, Signal Processing: Image Commun. 70 (Feb 2019) 184–198 .
+[301] J. Riordon, C. McCallum, D. Sinton, Deep learning for the classiﬁcation of
+human sperm, Comput. Biol. Med. 111 (Aug 2019) 103342 .
+[302] N. Codella, J. Cai, M. Abedini, R. Garnavi, A. Halpern, J.R. Smith, Deep learning,
+sparse coding, and SVM for melanoma recognition in dermoscopy images, in
+Machine Learning in Medical Imaging, Springer International Publishing,
+2015, pp. 118–126 .
+[303] S.M. Erfani, S. Rajasegarar, S. Karunasekera, C. Leckie, High-dimensional and
+large-scale anomaly detection using a linear one-class SVM with deep
+learning, Pattern Recogn. 58 (Oct 2016) 121–134 .
+Jair Cervantes received the B.S. degree in Mechanical
+Engineering from Orizaba Technologic Institute, Ver-acruz, Mexico, in 2001 and the M.S degree in AutomaticControl from CINVESTAV-IPN, México, in 2005. In 2009he got a Ph.D. in Computer Science at Centro de Inves-tigación y de Estudios Avanzados del Instituto Politéc-nico Nacional (CINVESTAV-IPN). His research interests
+include support vector machines, pattern classiﬁcation,
+neural networks, fuzzy logic, clustering and geneticalgorithms.
+Farid García-Lamont received a B.Sc. degree in Robotics
+from ESIME-IPN, México in 2000; in 2004 obtained a M.Sc. in Automatic Control from the Centro de Investi-gación y de Estudios Avanzados del IPN (CINVESTAV-IPN), México. In 2010 received a PhD degree in Com-
+puter Science from CINVESTAV-IPN. His research inter-
+ests are pattern recognition, applications of artiﬁcialintelligence and robotics.214 J. Cervantes et al. / Neurocomputing 408 (2020) 189–215
+Lisbeth Rodríguez-Mazahua received the B.S. degree in
+informatic and the M.S. degree in computer science
+from the Instituto Tecnológico de Orizaba, Veracruz,
+Mexico, in 2004 and 2007, respectively. In 2012 she got
+a Ph.D. in Computer Science at Centro de Investigación yde Estudios Avanzados del Instituto Politécnico Nacio-nal (CINVESTAV-IPN). From 2012 to 2014, she was aProfessor of computer science at Universidad Autónomadel Estado de México, Centro Universitario UAEM Tex-coco. Since February 2014 she is doing a postdoctoralresearch at Instituto Tecnológico de Orizaba. Her cur-
+rent research interests include distribution design of
+databases, database theory, autonomic database systems, multimedia databases,data mining and Big Data.
+Asdr úbal L ópez-Chau , received his B.S. degree in
+Communications and electronics from ESIME-IPN,
+Mexico, in 1997; in 2000, received his M.S. the degree
+in Computer Engineering from CIC-IPN, Mexico; in
+2013, his Ph.D. degree in Computer Science fromCINVESTAV-IPN, Mexico. Since 2009, he is a computerscience researcher at Universidad Autonoma del Estadode Mexico, CU UAEM Zumpango, Mexico.J. Cervantes et al. / Neurocomputing 408 (2020) 189–215 215

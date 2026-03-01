@@ -1,0 +1,1427 @@
+Date of publication xxxx 00, 0000, date of current version XXXX 00, 0000.
+Digital Object Identifier 10.1 109/ACCESS.2024.0429000
+Imbalanced Data problem in Machine Learning: A
+review
+MANAHEL ALTALHAN1, ABDULMOHSEN ALGARNI2, and Monia TURKI-HADJ ALOUANE3,
+(Member, IEEE)
+1Department of Computer Science, King Khalid University, Abha-61421, Saudi Arabia (e-mail: 445816339@kku.edu.sa)
+2Department of Computer Science, King Khalid University, Abha-61421, Saudi Arabia (e-mail: a.algarni@kku.edu.sa)
+3Department of Computer Science, King Khalid University, Abha-61421, Saudi Arabia (e-mail: malouane@kku.edu.sa)
+Corresponding author: Manahel Altalhan (445816339@kku.edu.sa).
+The authors extend their appreciation to the Deanship of Research and Graduate Studies at King Khalid University for funding this work
+through small group research under grant number RGP1/71/45.
+ABSTRACT One of the prominent challenges encountered in real-world data is an imbalance, characterized
+by unequal distribution of observations across different target classes, which complicates achieving accurate
+model classifications. This survey delves into various machine learning techniques developed to address
+the difficulties posed by imbalanced data. It discusses data-level methods such as oversampling and
+undersampling, algorithm-level solutions including ensemble learning and specific algorithm adjustments,
+cost-sensitive algorithms, and hybrid strategies that combine multiple approaches. Moreover, this paper
+emphasizes the crucial role of evaluation methods like Precision, F1 Score, Recall, G-mean, and AUC in
+measuring the effectiveness of these strategies under imbalanced conditions. A detailed review of recent
+research articles helps pinpoint persistent gaps in generalizability, scalability, and robustness across these
+methods, underscoring the necessity for ongoing improvements. The survey seeks to offer an extensive
+overview of current approaches that improve the efficiency and effectiveness of machine learning models
+dealing with imbalanced datasets, thus equipping researchers with the insights needed to develop robust and
+effective models ready for real-world application.
+INDEX TERMS Imbalanced data, Machine learning, Balance techniques, Evaluation methods.
+I. INTRODUCTION
+IMBALANCED data poses a major challenge in machine
+learning. This occurs when the class distribution within
+a dataset is uneven, resulting in what is referred to as im-
+balance [1]. It means that one data class is significantly
+larger than the others. Most instances are part of the dom-
+inant class (the negative or majority class), with only a
+small number represented in the other classes (the positive
+or minority class) [2]. It causes a fundamental problem in
+machine learning, as when classifiers are trained on this
+type of data in which the distribution is unbalanced, the
+classifier’s conduct becomes biased in favor of the dominant
+class, often overlooking the lesser class [3]. This results in
+misclassifying instances within the minority class, which is
+usually exceedingly critical due to the affected part they want
+to discover constantly occurring in a few examples compared
+to all examples [2]. Imbalanced datasets present four key
+challenges: bias, overlap, feature vector size, and dataset
+size [4]. This scenario is prevalent across various domains
+such as healthcare like diabetes diagnosis [5] and skin lesionclassification [6], Finance like credit fraud detection [7],
+Engineering like fault detection in wind turbines [8], and
+recognition rotting or dead tree [9] [10] and others.
+The consequences of imbalanced data are far-reaching. In
+situations such as medical diagnosis, where accurately iden-
+tifying rare diseases is vital, models that favor the majority
+class may lead to overlooked diagnoses and compromised
+patient care [11]. Similarly, in fraud detection, the machine
+learning model tends to exhibit bias towards the predomi-
+nant class, causing a decrease in True Positives (TP) and
+an increase in False Positives (FP) [12], allowing fraudulent
+activities to go undetected. Thus, addressing imbalanced data
+is imperative for building reliable and effective ML systems.
+Now, the importance and seriousness of this problem have
+become clear to us.
+Over the years, researchers have developed numerous
+methods to counteract the effects of class imbalance, encom-
+passing three primary classifications: data-level techniques,
+algorithm-level techniques, and integrated methods [7] [13].
+VOLUME 11, 2023 1This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+Data-level techniques involve modifying the dataset before
+the classifier is trained, including under-sampling the dom-
+inant class, over-sampling the minor class, or creating syn-
+thetic data [7] [14]. Conversely, algorithm-level techniques
+modify the learning algorithms to manage imbalanced data
+more efficiently without compromising the data itself, of-
+ten through cost-sensitive learning, ensemble methods, or
+algorithm-specific adjustments [13].
+While data-level and algorithm-level techniques offer valu-
+able strategies for addressing imbalanced data, they each have
+limitations. Data-level techniques may discard potentially
+useful information or introduce noise through synthetic data
+generation [15]. Algorithm-level techniques, while effective,
+may not fully exploit the available data or may require com-
+plex adjustments for different algorithms [13].
+Data-level and algorithm-level techniques [7], these hybrid
+approaches aim to leverage each category’s strengths while
+mitigating their weaknesses. Examples include combined
+sampling techniques, algorithmic resampling strategies, and
+ensembles of resampled datasets. Evaluation metrics like
+accuracy and precision may not adequately capture model
+performance in imbalanced datasets. Hence, metrics such
+as AUC (area under the precision-recall (PR) curve) and
+AUC (area under the receiver operating characteristic (ROC)
+curve), and the F1-score have been proposed and shown to
+be effective in classifying tasks with imbalanced data [16].
+Additionally, researchers have introduced class-weighted
+evaluation frameworks that accommodate arbitrary skews
+in class cardinalities and importance, effectively addressing
+challenges presented by imbalanced datasets.
+The subsequent sections of the paper will follow this
+structure. Section II outlines the review strategy, including
+the research questions that guide the survey. Next, Sec-
+tion III delves into the foundational techniques of oversam-
+pling and undersampling, providing an overview of their role
+in addressing data imbalance. Section IV explores a broad
+spectrum of balance strategies, categorized into data-level,
+algorithm-level, and hybrid approaches, with each subsection
+detailing methods to enhance model performance when deal-
+ing with imbalanced datasets. In Section V, the limitations
+of each technique are discussed, along with justifications for
+their inclusion. Following this, Section VI examines various
+evaluation methods essential for assessing the effectiveness of
+models handling imbalanced data, highlighting metrics like
+F1 Score, AUC, and others to provide a nuanced understand-
+ing of model efficacy. Finally, Section VII synthesizes these
+insights to offer a conclusive summary of the current tech-
+niques for managing imbalanced data in machine learning,
+pinpointing existing gaps in each approach.
+II. REVIEW STRATEGY
+This survey investigates the imbalanced data problem in ma-
+chine learning by reviewing studies from various databases,
+including Google Scholar, IEEE, Springer, Elsevier, MDPI,and others. Emphasis is placed on recent advancements,
+with most reviewed studies published between 2020 and
+2024, ensuring the latest methodologies and insights are in-
+cluded. The search process utilized specific keywords such
+as "imbalanced data," "class imbalance," "machine learn-
+ing," "data-level techniques," "algorithm-level solutions,"
+"oversampling," "undersampling," "SMOTE," "cost-sensitive
+learning," "Ensemble methods," and "hybrid approaches."
+This review has investigated 40 studies, and most of the
+papers are from journals ranked in Q1 and Q2 categories,
+ensuring high-quality and impactful contributions. The se-
+lected references encompass foundational approaches, inno-
+vative techniques, and domain-specific solutions, providing
+a comprehensive analysis of the field. This strategy offers a
+deep understanding of current approaches to addressing data
+imbalance challenges while identifying research gaps that
+indirectly illuminate potential future directions.
+This review aims to address key questions that encompass all
+aspects of the imbalanced data problem in machine learning:
+1- Q1: How effective are fundamental approaches, such
+as oversampling and undersampling, in addressing class
+imbalance across applications?
+2- Q2: What are the findings and limitations of data-
+level, algorithm-level, and hybrid techniques in achiev-
+ing class balance?
+3- Q3: How do these limitations limit the overall perfor-
+mance of the balancing techniques?
+4- Q4: Which evaluation metrics best assess the success of
+balancing techniques in ML and DL tasks?
+The first section of the review focuses on answering
+the first question, providing a foundational understand-
+ing. The second section elaborates on the second ques-
+tion, offering detailed insights. The third question is
+addressed by analyzing the limitations and shortcomings
+of various techniques, as discussed in the third section
+of the review. Finally, the fourth part provides a concise
+and clear response to the fourth question, wrapping up
+the review comprehensively.
+III. FUNDAMENTAL APPROACHES TO CLASS
+DISTRIBUTION BALANCING
+This section delves into the fundamental methods to mitigate
+class imbalance in ML: oversampling and undersampling,
+which the figure 1 shows. Class imbalance is critical in pre-
+dictive modeling, often resulting in biased model outcomes
+that favor the majority class disproportionately. Addressing
+this imbalance is essential to foster fair and precise mod-
+els. Over/Under sampling are two key techniques that adjust
+the arrangement of classes in training datasets to create a
+more balanced environment for model training. A thorough
+exploration of these foundational techniques prepares the
+groundwork for the advanced balancing methods detailed in
+subsequent sections of this survey.
+2 VOLUME 11, 2023This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+FIGURE 1. Basic approaches to class distribution balance
+A. OVERSAMPLING
+Oversampling targets enhancing the minority class’s repre-
+sentation within a dataset, bringing its frequency up to par-
+ity with the majority class. This adjustment can be realized
+by simply duplicating existing instances or creating new,
+synthetic ones through methodologies like SMOTE (Syn-
+thetic Minority Oversampling Technique) [17]. SMOTE and
+its derivatives, such as Borderline-SMOTE and ADASYN,
+synthesize new samples by interpolating between minority
+class instances that connect via line segments to their nearest
+neighbors within the same class. These approaches operate
+primarily in the feature space, thereby injecting a higher
+degree of diversity into the lesser class and supporting the
+model’s capability to generalize from limited data [18].
+Advantages:
+•Increases the model’s generalization abilities by intro-
+ducing a more comprehensive range of variability within
+the minority class, thus preparing the model for broader
+scenarios.
+•Safeguards against the loss of essential information in
+minority class instances, which is particularly vital in
+datasets where each example holds significant value.
+Disadvantages:
+•There is a risk of overfitting, as models might begin to
+memorize the noise inherent in the synthetically gen-
+erated samples rather than learn to generalize from the
+actual data.
+•Elevates the computational burden, especially when em-
+ploying sophisticated synthetic instance generation tech-
+niques, which can be resource-intensive.
+B. UNDERSAMPLING
+In contrast to oversampling, undersampling aims to balance
+class allocation by reducing the size of the majority class, of-
+ten achieved through the random deletion of its instances [17].
+More refined techniques such as Cluster Centroids, Tomek
+Links, or Near Miss are utilized to maintain the statistical
+integrity of the majority class while minimizing its quan-
+tity [19]. These methods enhance model performance by
+eliminating instances that are either redundant or less infor-
+mative, thereby creating a more balanced dataset that stops themodel from being dominated by the traits of the predominant
+class.
+Advantages:
+•Significantly reduces the time required for model train-
+ing by decreasing the dataset size, simplifying the learn-
+ing process.
+•Reduces the likelihood of model bias toward the major-
+ity class, promoting more fair and balanced decision-
+making.
+Disadvantages:
+•There is a danger of losing essential data, as the removal
+process may inadvertently discard crucial instances to
+understand the predominant class comprehensively.
+•May lead to underfitting, especially if the diversity
+within the majority class is not fully captured, potentially
+impairing the model’s ability to generalize effectively.
+C. STRATEGIC CONSIDERATIONS FOR CHOOSING
+BETWEEN OVERSAMPLING AND UNDERSAMPLING
+Choosing between oversampling and undersampling requires
+careful consideration of multiple aspects, such as dataset
+size, data characteristics, available computing resources, and
+the significance of minority class instances. Typically, over-
+sampling is preferred in scenarios where the minority class
+includes critical, rare events that are essential to capture
+accurately, such as in fraud detection or diagnosing rare
+medical conditions. Conversely, undersampling is often more
+advantageous for extremely large datasets, where reducing
+the volume of data can significantly enhance computational
+efficiency and where there is enough data redundancy to
+minimize the risk of losing important information [20].
+To achieve the best of both worlds, hybrid approaches that
+merge elements of both oversampling and undersampling are
+becoming more prevalent. Methods like SMOTEEN, combin-
+ing SMOTE with Edited Nearest Neighbors, or various en-
+semble techniques incorporating different resampling strate-
+gies within a single classifier framework can provide a more
+balanced dataset [21]. These hybrid methods help ensure that
+models are not only efficient but also retain the integrity and
+diversity of data, thus enhancing overall model performance
+without sacrificing detail or computational speed.
+IV. BALANCE TECHNIQUES
+Many dataset characteristics determine the most suitable tech-
+niques for addressing imbalance (data-level, algorithm-level,
+or hybrid ). One key factor is the percentage of imbalance,
+which varies from dataset to dataset. Knowing it gives a clear
+understanding of the distribution of classes in the dataset,
+whether high or moderate. The percentage of imbalance
+is critical for effectively handling imbalanced datasets and
+building reliable ML models.
+A. DATA-LEVEL TECHNIQUES
+Data level techniques focus on aligning class distributions by
+adjusting the size of training datasets through resampling,
+VOLUME 11, 2023 3This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+have become widely adopted [22], which aims to equalize
+the class distribution through two methods: Undersampling
+and Oversampling [23]. Although resampling directly bal-
+ances the training set, it introduces two main challenges:
+oversampling may lead to overfitting and reduced gener-
+alization on the test set, whereas undersampling may re-
+sult in a significant loss of knowledge from the majority
+class [13]. Standard undersampling methods include Random
+Undersampling, Tomek Links, and Cluster Centroids [24].
+Typically, to prevent the substantial depletion of instances
+from the predominant class, oversampling techniques are
+often preferred [4]. Prominent oversampling methods in-
+clude SMOTE, ADASYN (Adaptive Synthetic Sampling),
+and Borderline-SMOTE [24].
+SMOTE represents a commonly adopted oversampling
+method [25]. It identifies instances near within the feature
+space, establishes connections between them, and generates
+new samples along those connections. Nonetheless, generat-
+ing synthetic examples without accounting for the majority
+class can create ambiguous instances, especially when there
+is significant overlap between classes, which is a notable
+drawback of this approach [13].
+Many hybrid-sampling methods and SMOTE variants
+shown in table 1 have been proposed to address these
+challenges. Modify SMOTE-N (Synthetic Minority Over-
+sampling Technique for nominal data) to suit the nomi-
+nal attributes of the data [25]. SMOTEENN (combining
+SMOTE-N with Edited Nearest Neighbors) aims to rectify
+class imbalance by oversampling the minority class and
+enhancing dataset quality through the elimination of noisy
+samples, and SMOTE-Tomek (combining SMOTE-N with
+Tomek links) to simultaneously create synthetic samples for
+the lesser class and undersample the greater class, effec-
+tively rebalancing the dataset and improving classification
+outcomes [26]. Distance-based SMOTE (D-SMOTE) regu-
+lates class overlap through a distance parameter, creating
+synthetic samples that better represent the minority class. Bi-
+phasic SMOTE (BP-SMOTE), on the other hand, overcomes
+traditional SMOTE’s shortcomings by enhancing the over-
+sampling procedure through instance selection, guaranteeing
+the inclusion of only pertinent instances in the resultant train-
+ing dataset [4]. CDSMOTE combines (class decomposition
+and synthetic minority oversampling); it starts by dividing
+the majority class into subclasses and then using SMOTE
+to increase the sample size of the minority class. This ap-
+proach strives to attain a balanced data distribution while
+retaining crucial information [27]. Radius Synthetic Minor-
+ity Oversampling Technique (RSMOTE) is unlike traditional
+SMOTE, which connects minority samples to create synthetic
+instances along line segments; it identifies the nearest samples
+from the majority class within a specified radius to generate
+synthetic data points, aiding in the creation of more diverse
+and realistic synthetic samples [28]. The SASMOTE (a self-
+inspected adaptive SMOTE approach) overcomes traditional
+SMOTE limitations by prioritizing visible neighbors and
+eliminating low-quality samples. Integrating adaptive nearestneighborhood selection and self-inspection for uncertainty
+evaluation elevates the quality of resampled data, particu-
+larly beneficial for highly imbalanced healthcare classifica-
+tion tasks [29]. Borderline-SMOTE is a sampling technique
+employed in managing imbalanced datasets, particularly in
+situations such as fraud detection in credit card transactions.
+It generates synthetic samples for the underrepresented class
+by targeting instances close to the decision boundary between
+classes, often known as borderline instances [30]. The Ori-
+ented Oversampling with Spatial Information Method (OOSI)
+tackles challenges in imbalanced and noisy datasets through
+a robust and adaptive approach that includes three critical
+phases: Oriented Information Sampling, Spatial Information
+Quantification, and Adaptive Data Space Partitioning [31].
+The Synthetic and Dependent Wild Bootstrapped Oversam-
+pling Method (SDWBOTE) helps overcome the challenges
+of skewed data in fault detection and localization tasks within
+wind turbine systems. It considers temporal dependencies and
+relationships among samples [8].
+GAN-based methods, leveraging Generative Adversarial
+Networks (GANs) composed of a generator and a discrimina-
+tor, are gaining traction. These techniques generate synthetic
+samples by understanding the inherent data distribution and
+producing new samples that closely resemble actual data.
+For instance, the GAN-based Data Augmentation Method
+introduced by [6] seeks to improve the classification accuracy
+of imbalanced skin lesion datasets. Another study explores
+the (GANs) to address challenges associated with imbalanced
+datasets in machine learning. Focusing on three real-world
+datasets—Car Evaluation, Human Activity Recognition, and
+Bank datasets—the research aims to enhance minority class
+representation through data augmentation. The GAN-based
+approach generates synthetic data to balance the dataset, im-
+proving classification accuracy and model performance. This
+study underscores the potential of GANs as an effective tool
+for data augmentation and boosting model robustness across
+diverse applications [33]. An innovative Active Balancing
+Mechanism (ABM) is proposed to tackle the challenges of
+imbalanced medical data, focusing on myocardial infarction
+(MI) detection using electrocardiogram (ECG) signals. The
+ABM incorporates Gaussian naïve Bayes and entropy to en-
+hance classification accuracy and reliability. Additionally, a
+modified convolutional neural network (MCNN) is developed
+to further optimize performance, showcasing the method’s
+potential for real-time monitoring and decision-making in
+clinical settings [32].
+B. ALGORITHM-LEVEL TECHNIQUES
+Algorithmic strategies enhance learning in the minority class
+by immediately altering the training process of the classifier
+or modifying algorithms to address challenges associated
+with imbalanced data effectively [34]. Common strategies
+encompass:
+4 VOLUME 11, 2023This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+TABLE 1. Effectiveness and limitations of Hybrid-sampling techniques
+Paper Technique Finding Limitation
+[26] SMOTE-Tomek and SMOTE-ENN It can significantly improve model
+performance, particularly in terms
+of recall.May not perform optimally where
+there is a high overlapping or noise
+in the dataset.
+[4] D-SMOTE Reducing noise and irrelevant
+features in the synthetic data,
+leading to more accurate predictive
+models.Can lead to increased
+computational complexity,
+especially in high-dimensional
+datasets, impacting efficiency.
+[4] BP-SMOTE Enhance the caliber of synthetic
+data and boost the efficiency of
+predictive models.Its iterative nature may require
+significant computational
+resources, especially for large
+datasets, affecting scalability.
+[27] CD-SMOTE Delivers results that are on par with
+leading-edge methods and are
+effective in handling class
+imbalance in data classification
+tasks.Its sensitivity to the quality of
+initial class decomposition, which
+can impact the effectiveness of
+oversampling the minority class.
+[28] R-SMOTE Improving classifier performance
+and reducing boundary
+disturbances between classes.It may require parameter tuning,
+and its computational cost may
+vary depending on the dataset,
+affecting its scalability.
+[29] SASMOTE Generation of higher quality
+synthetic samples, improve the
+prediction performance, handle
+highly imbalanced healthcare
+datasets.Need for careful tuning of
+hyperparameters, to achieve
+optimal performance. It has
+challenges in broader application
+scenarios.
+[30] Borderline-SMOTE Enhancing the equilibrium and
+refining the classification models,
+particularly in cases where the
+minority class is inadequately
+represented.It may lead to potential overlap
+with the majority class. It affects
+the model’s generalization
+performance where classes are not
+well-separated.
+[31] OOSI Enhancing the learning capability
+of underrepresented classes while
+minimizing overfitting.It might not achieve optimal
+runtime performance with some
+complex datasets.
+[8] SDWBOTE Enhances the performance of fault
+detection and localization models,
+such as (CNN) classes, while
+reducing overfitting.Its potential to propagate noise and
+biases if not accurately capture
+characteristics, impacting reducing
+classifier performance.
+[6] GAN-based Data Augmentation Enhancing information gain and
+providing a comprehensive
+framework for processing
+imbalanced datasets.It requires significant
+computational resources and time
+for training and may suffer from
+mode collapse.
+[32] ABM boosts processing efficiency and
+achieves high accuracy with SVMs
+and modified CNNs.Risk of losing critical information
+and requiring further validation on
+diverse datasets.
+1) Cost sensitive learning
+Cost-sensitive learning entails allocating varying weights or
+costs to classes during the training process, prioritizing the
+penalization of misclassifications of the minority class [35].
+MetaCost is a cost-sensitive classification algorithm that cre-
+ates multiple classification models from the original dataset
+and computes the class probability for each sample. It then
+applies a conditional risk formula to assign a cost to each
+sample, subsequently re-labeling the training set based on
+these costs. Still, it is less suitable for handling imbalanced
+data in multi-class scenarios [36]. The adaptive cost-sensitive
+learning (ACL) method, effective under large imbalance ra-
+tios, dynamically adapts the sample cost throughout the entiretraining process. The model is trained using weighted losses
+in a manner that harmonizes the contribution of each class
+to the model parameter updates, preventing the dominance
+of majority classes in imbalanced data during training. Cal-
+culating the costs for samples considers the sample number
+distribution, the convergence trend of classes, and the con-
+vergence trend of samples [37]. Another study employs cost-
+sensitive learning to dynamically adjust class-specific costs
+within deep neural networks, thereby improving the recogni-
+tion of minority classes. This approach is particularly useful
+in applications such as medical diagnosis and fraud detec-
+tion, where accurately identifying underrepresented classes
+is critical [35]. An innovative adaptive cost-sensitive learning
+VOLUME 11, 2023 5This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+method is proposed to tackle the challenges of imbalanced
+data in industrial fault diagnosis. This approach dynami-
+cally calculates sample costs based on sample distribution
+and convergence trends, effectively reducing the dominance
+of majority classes during training. By ensuring adequate
+representation of minority classes, the method significantly
+enhances the performance of intelligent diagnostic models,
+particularly in scenarios with high imbalance ratios [38].
+2) Algorithm-specific adjustments
+Adjustments specific to algorithms entail customizing meth-
+ods like decision trees, random forests, and SVMs to handle
+imbalanced data more effectively, as demonstrated in adap-
+tive cost-sensitive learning, which enhances the performance
+of intelligent diagnosis models in such conditions. A Sup-
+port Vector Machine (SVM) equipped with Multiple Kernel
+Learning (MKL) allows the SVM to integrate different kernel
+functions and fine-tune their weights, thus improving its abil-
+ity to classify imbalanced datasets more accurately [39]. The
+Stratified Sampling-Based Deep Neural Network (SSDNN)
+approach tackles imbalanced data challenges by employing
+a stratified sampling technique, enhancing prediction accu-
+racy. Partitioning the dataset into non-duplicated groups with
+balanced class representation increases computational com-
+plexity due to the stratified sampling method [9]. GENDA
+(Generative Neighborhood-based Deep Autoencoder) is a
+novel generative model to address the imbalance, particu-
+larly for image and time-series data [13]. By learning latent
+representations of the data and generating synthetic samples
+for minority classes, its flexibility allows for application in
+various domains where original data usage is restricted. It pro-
+vides advantages over algorithm-level techniques by incor-
+porating data augmentation and addressing imbalance clas-
+sification without making distribution assumptions. A novel
+deep-learning-based model is introduced to address data im-
+balance in medical image classification. Acknowledging the
+underrepresentation of many medical conditions in datasets,
+the authors propose an innovative approach that utilizes ef-
+fective perturbation operations to extract relevant features
+from single-class samples [40]. Another study conducts an
+in-depth exploration of adapting class-balanced loss functions
+for Gradient Boosting Decision Trees (GBDT) across diverse
+tabular classification tasks, including binary, multi-class, and
+multi-label classifications. The research highlights the effec-
+tiveness of these loss functions in addressing class imbalance
+challenges common in real-world applications. Additionally,
+the study introduces a Python package that simplifies the
+integration of these loss functions into GBDT workflows,
+making advanced techniques more accessible to researchers
+and practitioners [41].
+3) Ensemble methods
+Ensemble methods entail merging multiple base classifiers or
+models to forge a more robust learner to address the imbal-
+ance problem [42]. Table 2 mentions some ensemble meth-
+ods, their findings, and their limitations. These approachesleverage various algorithms or versions of the same algorithm
+to bolster predictive performance on imbalanced datasets. It
+mitigates the impact of class imbalance by blending predic-
+tions from multiple models, thus enhancing the classifier’s
+overall performance. Boosting refers to a group of machine
+learning techniques that successively train a sequence of
+weak learners. Each learner aims to rectify the errors of its
+predecessors by assigning higher importance to misclassified
+cases. This iterative process enables boosting to construct a
+resilient ensemble model capable of making accurate predic-
+tions, which is particularly beneficial in scenarios with class
+imbalance or noisy data. AdaBoost, a renowned boosting
+algorithm, continuously adjusts the weights of misclassified
+instances to improve the model’s overall performance [43].
+Bagging, or Bootstrap Aggregating, generates multiple train-
+ing dataset instances via bootstrap sampling, training individ-
+ual base learners on each sample. The predictions of these
+base learners are subsequently aggregated, usually through
+averaging, to generate the final prediction. This process aims
+to enhance machine learning models’ overall performance
+and stability by mitigating variance and overfitting. Con-
+currently, it indirectly aids in addressing imbalanced data
+issues [44]. Random forests, a widely favored ensemble
+learning technique, amalgamate numerous decision trees to
+enhance predictive accuracy. Every tree in the forest is con-
+structed from a randomized subset of features in the training
+data, and the ultimate prediction is formed by aggregating
+the predictions from all the trees [45]. Gradient Boosting
+optimizes weak learners, typically decision trees, to improve
+predictive accuracy. This algorithm functions through itera-
+tively constructing decision trees to rectify the errors made by
+preceding trees. It achieves this by assigning greater weights
+to misclassified samples in each iteration [46]. A stacked deep
+learning algorithm leverages ensemble methods to manage
+imbalanced data adeptly. It integrates techniques such as
+Stacked CNN (Convolutional Neural Networks) and Stacked
+RNN ( Recurrent Neural Networks), employing both to iden-
+tify intricate patterns and temporal interdependencies [4].
+C. HYBRID APPROACHES
+Hybrid approaches amalgamate various strategies, frequently
+blending data-level and algorithm-level techniques as shown
+in figure 2. These methodologies provide a comprehensive
+solution to tackle class imbalance challenges, enhancing ma-
+chine learning models’ resilience, effectiveness, and reliabil-
+ity. By integrating multiple methods, they aim to alleviate is-
+sues like overfitting, information loss, and poor performance
+in minority classes, thus enhancing the overall effectiveness
+of machine learning models in managing class disproportion-
+ality. Table 3 highlights the hybrid techniques employed in
+recent years. Common hybrid approaches include:
+1) Data-pre-processing with Algorithm-adjustments
+Data preprocessing incorporating algorithm adjustments: in-
+volves using techniques like over-sampling, under-sampling,
+or SMOTE to prepare the data before applying algorithm-
+6 VOLUME 11, 2023This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+TABLE 2. Effectiveness and limitations of Ensemble methods
+Paper Technique Finding Limitation
+[39] SVM with (MKL) Improve classification
+accuracy,enhancement model
+flexibility and performance.Increase computational complexity
+due to optimizing kernel weights,
+reduce model interpretability.
+[43] AdaBoost Improving the classification of
+difficult instancesIts sensitivity to noisy data and
+outliers, which may cause overfit
+to these noisy instances.
+[44] Bagging Enhances the stability and accuracy
+of machine learning models.Increase training time and resource
+requirements, may not effectively
+address class imbalance alone.
+[45] Random Forests Robust predictions on imbalanced
+datasets.May still shows bias towards the
+majority class in severely
+imbalanced datasets and requires
+meticulous parameter tuning.
+[46] Gradient Boosting Strong predictive model achieves
+high levels of accuracy.Overfitting if the number of trees is
+too high, leading to decreased
+generalization performance on
+unseen data.
+[4] Stacked deep learning Improve predictive accuracy and
+reliability by leveraging ensemble
+techniques with deep-learning
+models.Potential for overfitting due to the
+complexity of combining multiple
+deep learning models.
+FIGURE 2. Approaches to handle imbalanced data problem
+level adjustments. The Enhanced Generative Adversarial Net-
+work (E-GAN) technique amalgamates features from both
+(GANs) and (CNNs), which are shortcuts to generative ad-
+versarial networks and convolutional neural networks, respec-
+tively. This fusion leverages the data generation prowess of
+GANs and the classification capabilities of CNNs [11]. A
+recent study that tackles the challenge of imbalanced spectral
+data in materials science through a Generative Adversarial
+Network (GAN)-based data augmentation method. This ap-
+proach uses joint optimization between the GAN’s generator
+and a classifier, allowing for the creation of synthetic samples
+that are both realistic and effectively distinguishable across
+material phases [47]. By employing transfer learning and do-
+main adaptation techniques, explicitly using Maximum Mean
+Discrepancy (MMD), this approach addresses the issue of
+imbalanced data in detecting Return-Oriented Programming(ROP) attacks. It leverages balanced data from a source do-
+main to train a model while minimizing the MMD to align
+the distributions of the source and target domains [48]. The
+integration of Genetic Algorithm (GA) with Support Vector
+Machine (SVM) seeks to optimize SVM parameters while us-
+ing targeted sampling techniques to manage class imbalance
+effectively [49].
+2) Algorithmic ensemble with Data-level techniques
+Integrating algorithmic ensemble with data-level techniques
+involves generating multiple models by employing diverse re-
+sampled dataset versions and consolidating their predictions.
+SMOTEBoost and RUSBoost exemplify these techniques,
+with SMOTEBoost combining the SMOTE algorithm with
+boosting to enhance predictions in imbalanced datasets. It
+overcomes the constraints of traditional boosting algorithms
+such as AdaBoost, boosts learning by creating synthetic ex-
+amples for the minority class and adjusting the training distri-
+bution to focus on these instances [50], and RUSBoost com-
+bines Random UnderSampling (RUS) with boosting entails
+undersampling the majority class and subsequently boosting
+the classifier on the balanced dataset [51]. Integrating (DB-
+SLSMOTE) with (Random Forest) tackles class imbalance
+by augmenting the minority class through oversampling by
+synthetic samples generated from density distribution. Sub-
+sequently, Random Forest harnesses this balanced dataset to
+construct a resilient ensemble model, enhancing classification
+effectiveness [52]. Before applying the MCNN-LSTM model,
+the Tomek-Links technique is utilized as an undersampling
+method to manage imbalanced data.
+The MCNN-LSTM model is a hybrid framework where
+Convolutional Neural Networks (CNN) are effective in text
+VOLUME 11, 2023 7This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+TABLE 3. Effectiveness and limitations of Hybrid approaches to handle imbalanced data
+Paper Technique Finding Limitation
+[11] E-GAN Improved classification accuracy in
+imbalanced medical datasets.Limitations may arise in terms of
+computational complexity and
+overfitting.
+[47] GAN-based Data Augmentation
+with Joint Optimizationproducing realistic,
+phase-distinguishable samples for
+better balance.Requires intensive computation;
+shows limitations with high phase
+similarity in benchmarks.
+[48] Transfer Learning and MMD enhanced FPR and DR across
+scenarios, with optimal results
+when using proftpd as the source
+and vsftpd as the target;
+performance depended on the
+source domain choice.Needs minority class samples for
+validation, high-quality source
+data, and careful selection of
+optimal source domain programs.
+[49] Genetic Algorithm with SVM Achieved 97% improvement over
+baseline with enhanced minority
+class classification.Potential high computational cost
+and risk of overfitting if GA is not
+well-tuned.
+[52] DB-SLSMOTE with Random
+ForestOutperformed competing methods
+in classification performance,
+particularly on imbalanced
+datasets.Potentially resulting in longer
+training times and higher resource
+demands.
+[53] Tomek-Links before
+MCNN-LSTM modelOutperformed traditional
+algorithms, achieving better results
+in multiple categories.Potentially limiting the model’s
+generalizability and performance.
+[4] D-SMOTE and BP-SMOTE +
+Stacked CNN and RNNAccuracies reach 96-97%
+compared to individual classifiers.Overfitting due to the complexity
+of the combination of models.
+Challenges in model
+interpretability.
+[54] DCGAN and CNN Shows promise in addressing
+imbalanced data challenges and
+improving classification accuracy.Computational complexity, risk of
+overfitting, and generalization
+issues are potential limitations.
+[55] SMOTE and US + PSO +
+MetaCostMetaCost increased sensitivity;
+SMOTE boosted AUC, and US
+enhanced both F1 scores and
+sensitivity in high-class imbalance
+ratio data.Limiting generalizability to diverse
+medical data scenarios.
+[7] Tomek Links+BIRCH
+Clustring+Borderline SMOTEAchieving an F1-score of 85.20%,
+surpassing that of baseline
+sampling techniques.computational complexity,
+parameter sensitivity, and noise
+sensitivity, which can affect
+performance. It risks overfitting,
+may not fully eliminate class
+imbalance.
+[56] ATOMIC method Decreasing learning and testing
+efforts by 95 compared to
+contemporary methods.Need for further exploration into
+expanding the range of
+hyperparameters utilized in
+constructing meta-models.
+[57] Hybrid Ensemble The study highlighting the need for
+advanced modeling techniques
+tailored to medical data.Poor performance of existing
+classifiers on minority classes.
+data when capturing local features and patterns. In contrast,
+Long Short-Term Memory (LSTM) networks are tailored for
+text classification tasks, instrumental in situations with imbal-
+anced data. This integration addresses the inherent challenges
+of imbalanced data in text classification endeavors [53]. Inte-
+grating oversampling techniques with ensemble deep learning
+models involves merging modified oversampling methods
+like (D-SMOTE) Distance-based SMOTE and (BP-SMOTE)
+Bi-phasic SMOTE with Stacked CNN and Stacked RNN.
+It enhances predictive accuracy and robustness in handlingimbalanced datasets [4]. In [54], authors combined Deep
+Convolutional Generative Adversarial Networks(DCGAN)
+for generating synthetic samples and Convolutional Neural
+Networks (CNN) for classification and feature extraction.
+The research by [55] integrates resampling techniques like
+SMOTE and US to rebalance class distributions. Moreover, it
+employs Particle Swarm Optimization (PSO) for attribute se-
+lection to improve sensitivity and reduce data dimensionality.
+At the same time, MetaCost is utilized as an algorithm-level
+approach to address class imbalances effectively. Another
+8 VOLUME 11, 2023This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+investigation employs a blend of undersampling using Tomek
+Links, clustering via BIRCH, and oversampling through Bor-
+derline SMOTE to address the imbalance in credit card trans-
+action datasets and by removing noise with Tomek Links,
+clustering the data with BIRCH and generating synthetic
+instances for the underrepresented class through Borderline
+SMOTE, this approach seeks to equalize the dataset effec-
+tively [7]. The ATOMIC approach represents an automated
+machine-learning method explicitly designed for imbalanced
+classification tasks. It addresses the challenges posed by im-
+balanced datasets through a combination of the algorithmic
+ensemble, which optimizes the selection of learning algo-
+rithms, and data-level techniques, which optimize resam-
+pling strategies and hyperparameters [56]. A study exam-
+ines the challenges of classifying minority classes in imbal-
+anced datasets, with a focus on cerebral stroke prediction and
+bankruptcy risk in financial data. By evaluating the perfor-
+mance of various machine learning algorithms, the research
+underscores the limitations of traditional resampling methods
+like SMOTE in clinical contexts. It highlights the critical
+role of understanding dataset characteristics, as these factors
+greatly impact the effectiveness of predictive models [57].
+3) Real-World Applications of Hybrid Approaches
+Hybrid approaches have effectively addressed class imbal-
+ance across various real-world domains. Enhancing model
+performance and reliability has become essential in critical
+fields such as healthcare, fraud detection, cybersecurity, ma-
+terials science, telecommunications, and others. Each appli-
+cation utilizes hybrid techniques to tackle the unique chal-
+lenges posed by imbalanced datasets, improving predictive
+accuracy and decision-making capabilities. Table 4 shows the
+applications and datasets used in each study discussed.
+In healthcare, techniques such as D-SMOTE and BP-
+SMOTE with Stacked CNN and RNN enhance predictive
+analytics for the early diagnosis of critical conditions like
+cardiovascular diseases and breast cancer [4]. Similarly, E-
+GAN improves disease detection accuracy for conditions
+such as breast cancer, diabetes, and chronic kidney disease
+by addressing imbalanced datasets effectively [11]. The DB-
+SLSMOTE with Random Forest method proves particularly
+valuable in detecting rare diseases by enhancing classification
+accuracy in datasets with limited positive cases [52]. DCGAN
+and CNN generate synthetic samples for medical imaging to
+mitigate class imbalances, supporting the accurate diagnosis
+of diseases like malaria [54]. Additionally, the integrated
+approach of SMOTE, Undersampling, PSO, and MetaCost
+optimizes the classification of underrepresented medical data,
+aiding healthcare professionals in making more informed
+decisions [55].
+Fraud detection leverages methods like DB-SLSMOTE
+with Random Forest, enhancing models’ reliability for identi-
+fying fraudulent financial transactions [52]. The Tomek Links
++ BIRCH Clustering + Borderline SMOTE technique fur-
+ther improves fraud detection accuracy by addressing imbal-
+ances in transaction datasets [7]. Additionally, the ATOMICMethod automates the creation of machine learning solutions
+designed for imbalanced data, facilitating the detection of
+fraudulent activities in financial systems [56].
+In cybersecurity, Transfer Learning with Domain Adap-
+tation using MMD is utilized to enhance the detection of
+Return-Oriented Programming (ROP) attacks, a complex ex-
+ploit technique [48]. This approach leverages transfer learn-
+ing to address dataset imbalances, improving the accuracy
+and reliability of deep learning models for identifying such
+attacks.
+In materials science, the GAN-Based Data Augmenta-
+tion Method tackles the classification of material phases in
+imbalanced spectral datasets. Generating synthetic samples
+supports experimental design and materials characterization,
+as demonstrated in case studies involving hydrogels such as
+Pluronic F-127 and Alpha-Cyclodextrin [47].
+In automated text classification, the Tomek Links Be-
+fore MCNN-LSTM method categorizes news articles into
+diverse topics such as Politics, Sports, and Lifestyle [53].
+This approach enhances content organization and retrieval for
+media organizations, ensuring improved representation and
+handling of underrepresented categories.
+For telecommunications, the Genetic Algorithm with
+SVM improves user classification in systems such as Non-
+Orthogonal Multiple Access (NOMA) networks. By address-
+ing class imbalances, this method ensures efficient resource
+allocation and optimized communication management [49].
+The ATOMIC Method is applicable across various do-
+mains, such as anomaly detection, healthcare diagnostics,
+fraud detection, and credit scoring. Automating model opti-
+mization for imbalanced data simplifies analytical processes,
+enhancing decision-making and resource allocation in these
+critical areas [56].
+The study presenting a Hybrid Ensemble focuses on cere-
+bral stroke prediction by enhancing the reliability of machine
+learning models and assessing the effectiveness of SMOTE in
+clinical datasets [57].
+V. DISCUSSION OF THE LIMITATIONS
+This section provides a justification for the limitations of each
+technique. Data-level , the (SMOTE-Tomek and SMOTE-
+ENN) these techniques face difficulties with datasets featur-
+ing high-class overlap or noise. SMOTE-generated synthetic
+samples may resemble the majority of instances, causing clas-
+sifier confusion. Additionally, cleaning methods can uninten-
+tionally remove valuable minority samples or miss noisy ma-
+jority instances, reducing effectiveness [26]. Distance-based
+SMOTE (D-SMOTE) requires high computational resources
+for distance calculations in high-dimensional spaces, leading
+to longer processing times. The "curse of dimensionality" in
+such datasets can diminish the relevance of distance met-
+rics, affecting synthetic sample quality and efficiency [4].
+Bi-Phasic SMOTE (BP-SMOTE), its iterative process, with
+multiple SMOTE applications and instance selection phases,
+can be resource-intensive. As dataset size grows, processing
+time and resource demands increase, reducing scalability
+VOLUME 11, 2023 9This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+TABLE 4. Applications of Hybrid approaches
+Paper Application Datasets
+[4] [11] [52] [54] [55] [57] Healthcare Framingham, Wisconsin, Brest canser
+Wisconsin, Coronavirus 2019, Diabetes,
+Chronic Kidney Disease(CKD),
+Malaria(Imbalance and Balance), AIDS, Indian
+Liver Patient(ILPD), Cervical cancer, Thoracic
+Surgery, Thyroid Disease, and Cerebral Stroke.
+[52] [7] [56] Fraud detection PaySim, Credit Card Fraud Detection.
+[48] Cybersecurity Source Domain, Target Domain.
+[47] Materials Science Pluronic F-127 Hydrogel Spectral Data,
+Alpha-Cyclodextrin (-CD) Hydrogel Spectral
+Data.
+[53] Text Classification News headlines and short description from
+HuffPost.
+[49] [56] General Applications abalone19, abalone9-18, ecoli4, glass2, glass5,
+page-blocks-1-3vs4, shuttle-c0-vs-c4, vowel0,
+yeast5, and yeast6, and datasets were sourced
+from OpenML and were selected based on
+criteria such as being suitable for binary
+classification, having a specific range of
+instances (200 to 10,000), and maintaining an
+adequate imbalance ratio.
+for real-world applications [4]. Class-decomposition SMOTE
+(CD-SMOTE) effectiveness relies on accurately decompos-
+ing the majority class into subclasses. Inaccurate decom-
+position can produce poorly defined subclasses, diminish-
+ing the impact of oversampling and potentially biasing the
+model toward the majority class [27]. Radius-SMOTE (R-
+SMOTE) performance depends heavily on correctly tuning
+parameters like radius distance for defining boundaries in
+synthetic sample generation. Poor tuning can cause excessive
+overlap with majority samples or inadequate minority sample
+generation. Additionally, dataset size and complexity increase
+computational costs, limiting scalability [28]. Self-Inspected
+Adaptive SMOTE (SASMOTE) requires precise hyperparam-
+eter tuning for optimal results. Its design for specific case
+studies limits generalizability across healthcare applications,
+suggesting a need for adaptation to broader contexts [29].
+(Borderline-SMOTE) generates synthetic samples near deci-
+sion boundaries, which may overlap with the majority class,
+creating ambiguous regions. This overlap can confuse the
+classifier and reduce generalization performance, particularly
+with poorly separated classes [30]. Oriented Oversampling
+with Spatial Information (OOSI) may face runtime challenges
+on complex datasets due to high dimensionality and intricate
+distributions. Adaptive spatial partitioning requires intensive
+computation, affecting scalability and efficiency, especially
+with noisy datasets [31]. SMOTE with Tomek Links + Bor-
+derline SMOTE (SDWBOTE) If temporal dependencies be-
+tween samples aren’t accurately captured, SDWBOTE may
+carry over noise and bias from the original dataset, poten-
+tially resulting in poor real-world classifier performance and
+misrepresentation of minority classes [8]. (GAN-Based Data
+Augmentation) demands substantial computational resourcesfor training due to the complexity of adversarial optimization
+between the generator and discriminator. Additionally, GANs
+are susceptible to mode collapse, where the generator fails
+to cover the entire data space, limiting sample diversity and
+quality of augmentation [6]. The limitations of (ABM) are
+summarized in the risk of traditional under-sampling leading
+to the loss of valuable minority class information and the
+reliance on validation with a single dataset, which restricts
+its generalizability to diverse clinical scenarios [32].
+Algorithm-level , in (SVM with Multiple Kernel Learn-
+ing (MKL)) optimizing multiple kernel functions increases
+computational demands, potentially limiting scalability in
+real-time applications. Extensive parameter tuning is also
+needed for optimal results, which can be time-consuming
+and may reduce model interpretability—a key factor in fields
+like healthcare [39]. (AdaBoost) emphasis on misclassified
+instances can make it highly sensitive to noisy data, increasing
+the risk of overfitting. The algorithm may over-focus on these
+points in the presence of outliers or noise, reducing its ability
+to generalize effectively to unseen data [43]. (Bagging) is
+computationally intensive, as it trains multiple models for
+each bootstrap sample. Additionally, it may not adequately
+address class imbalance on its own, as bootstrap sampling
+can maintain the original imbalance, resulting in poor perfor-
+mance on minority classes [44]. (Random Forests) may show
+bias toward the majority class in imbalanced datasets, as train-
+ing often prioritizes majority class accuracy. The model also
+requires careful hyperparameter tuning to prevent increased
+bias or overfitting, making balanced performance across
+classes challenging to achieve [45]. In (Gradient Boosting)
+Decision Trees (GBDT) with additional trees, GBDT can
+become overly fitted to the training data, capturing noise and
+10 VOLUME 11, 2023This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+outliers instead of actual patterns, which leads to overfitting.
+Effective regularization is crucial to prevent performance
+loss on unseen data [46]. (Stacked Deep Learning) models
+are complex due to the integration of multiple architectures,
+raising the risk of overfitting. This complexity may lead the
+model to capture noise instead of general patterns, resulting in
+poor generalization, particularly with smaller or less diverse
+datasets [4].
+Hybrid-level , in (D-SMOTE and BP-SMOTE with
+Stacked CNN and RNN), the complexity of combining mul-
+tiple deep learning architectures increases the risk of overfit-
+ting, complicating generalization. Additionally, interpretabil-
+ity is reduced, making it challenging to understand model
+decisions, especially in sensitive fields like healthcare [4]. (E-
+GAN with CNN) combined GAN and CNN model demands
+substantial computational resources and time, particularly
+for large datasets. Additionally, synthetic samples may lead
+to overfitting if they do not accurately reflect the minority
+class distribution [11]. (DB-SLSMOTE with Random Forest)
+generating synthetic samples can add to training complexity
+and the risk of overfitting, with Random Forest training being
+especially resource-intensive for large datasets [52]. (Tomek-
+Links Before MCNN-LSTM) the model’s dependence on a
+specific dataset (Indonesian news) limits its generalizability,
+and the lack of transfer learning prevents it from utilizing
+larger datasets to enhance performance [53]. (DCGAN and
+CNN) requires substantial computational resources for adver-
+sarial training, and synthetic samples may lead to overfitting,
+affecting the model’s generalization on unseen data [54].
+(SMOTE + US + PSO + MetaCost) concentrating on spe-
+cific methods may restrict broader insights into alternative
+approaches. Furthermore, conclusions may lack generaliz-
+ability if datasets do not include diverse medical character-
+istics [55]. (Tomek Links + BIRCH Clustering + Borderline
+SMOTE) the approach’s complexity and parameter sensitivity
+necessitates careful tuning, and its sensitivity to noise may
+leave residual noise, impacting model accuracy [7]. ATOMIC
+Method (Meta-Learning) ATOMIC’s handling of imbalanced
+data could be enhanced by a broader exploration of hyper-
+parameters and algorithms, improving its performance and
+adaptability across different datasets [56]. (Genetic Algo-
+rithm with SVM) the iterative nature of Genetic Algorithms
+results in high computational costs and a risk of overfitting
+if hyperparameters, such as population size and mutation
+rate, are not carefully optimized [49]. (Transfer Learning and
+MMD) the high-quality source data is crucial for transfer
+learning, and limited validation data can reduce detection
+effectiveness. Careful model selection is essential to ensure
+consistent results [48]. (GAN-based Data Augmentation with
+Joint Optimization) is computationally intensive due to the
+dual optimization between the generator and classifier, and
+it struggles with high phase similarity, which limits distinct
+sample generation and effective class separation [47]. In the
+(Hybrid Ensemble) approach, classifiers face challenges in
+accurately predicting minority classes in medical datasets,
+and SMOTE’s theoretical validation may fail to align withreal-world clinical applications [57].
+VI. EVALUATION METHODS
+When handling imbalanced datasets in machine learning,
+choosing the appropriate evaluation metrics is crucial for
+precisely assessing model performance. This section explores
+various evaluation techniques particularly beneficial for ad-
+dressing imbalanced data. It highlights the advantages of
+each method and its effectiveness in evaluating the model’s
+performance, particularly concerning accurately predicting
+outcomes for the minority class.
+Accuracy is a fundamental assessment criterion utilized in
+machine learning and data mining. However, accuracy can
+result in misaddressing if used with an unbalanced dataset.
+A model may still achieve high overall accuracy even if its
+classification performance for minority categories is poor
+as long as it performs well in the majority categories. For
+example, if 99% of the testing data are negative samples,
+we can get a 99% accuracy by simply classifying all the
+testing data as a negative sample. So, the accuracy cannot
+be chosen as an evaluation index in imbalanced learning.
+The evaluation indicators relating to imbalanced learning are
+shown in Table 5.
+In Table 5, most evaluation metrics are derived from the
+confusion matrix (CM), a critical tool for visually represent-
+ing an algorithm’s performance. It’s particularly critical when
+dealing with imbalanced datasets as it delineates the count
+of accurate and inaccurate predictions for each class. This
+detailed breakdown is crucial for understanding the model’s
+effectiveness across the predominant and underrepresented
+classes. The main components of the confusion matrix are:
+•(TP) True Positives: Accurately identified positive ob-
+servation.
+•(TN)True Negatives: Accurately identified negative ob-
+servation.
+•(FP) False Positives: Incorrectly identified as positive.
+•(FN) False Negatives: Incorrectly identified as negative.
+Metrics like AUC and G-mean are commonly used because
+they remain unaffected by class distribution imbalances. AUC
+is based on the entire ROC curve, while G-mean incorpo-
+rates different parts of the confusion matrix, ensuring a more
+balanced model performance evaluation. This makes them
+suitable for dealing with situations where there are large dif-
+ferences in the number of positive and negative class samples.
+The Receiver Operating Characteristic curve and the Area
+Under the Curve are valuable for assessing the quality of
+classifier outputs. These metrics are particularly adept at eval-
+uating performance across different threshold settings, offer-
+ing robustness against class imbalance. The AUC condenses
+the ROC curve’s insights into a single value, expressing the
+likelihood that a classifier will prioritize a randomly chosen
+positive instance over a negative one. The ROC curve graphs
+TPR (TruePositive Rate) against FPR (False Positive Rate)
+across different threshold configurations. AUC is the area
+under the ROC curve. The Geometric Mean computed by
+extracting the square root of (Recall and Specificity) product
+VOLUME 11, 2023 11This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+TABLE 5. Evaluation metrics for imbalance classification.
+Metrics Formulas
+Precision
+TP
+TP+FP(1)
+Recall
+TP
+TP+FN(2)
+F1-Score
+2×Precision ×Recall
+Precision +Recall(3)
+AUC
+1 +TPr−FPr
+2(4)
+G-mean
+p
+sensitivity ×specificity (5)
+G-mean for multiclass
+G mean = CY
+i=1Recall i!1
+C
+(6)
+guarantees that enhancements in one class’s efficiency do
+not adversely impact the other. This balance is crucial for
+effectively evaluating models where it is essential not to
+overlook the minority class, which is often of higher interest
+in imbalanced datasets. For multiclass imbalance problems,
+the G-mean evaluation metric is often preferred as it offers
+a unified measurement approach, eliminating the need to
+assess each class separately. And for highly imbalanced Big
+Data, the Area under the Precision-Recall Curve (AUPRC)
+is a more effective metric for evaluating the performance of
+classifiers. In highly imbalanced Big Data, the AUC metric
+fails to capture information about precision scores and false
+positive counts that the AUPRC metric reveals. The F1 Score
+denotes the harmonic mean of precision and recall, which is
+valuable in situations requiring a balance between the two and
+is common in datasets with imbalanced class distributions.
+The F1 Score provides more context than accuracy in situa-
+tions with uneven class distribution. In the formulas for AUC
+and F1-score, Precision denotes accuracy [58] [59].
+Considering these evaluation methods ensures a thorough
+understanding of a model’s performance on imbalanced
+datasets, guiding the development of efficient and equitable
+models.
+VII. CONCLUSION
+This paper highlights the crucial importance of addressing
+class imbalance in machine learning initiatives. It begins bydiscussing basic strategies for balancing class distribution,
+which paves the way for a comprehensive exploration of
+techniques categorized into data-level, algorithm-level, or
+hybrid strategies. Additionally, this work examines the lim-
+itations inherent in each technique, providing justifications
+for their shortcomings, to offer a nuanced understanding
+of their practical challenges and opportunities for improve-
+ment.Subsequently, it underscores the importance of evalu-
+ation methods in assessing the efficacy of these strategies
+under imbalanced data conditions, examining metrics like F1
+Score, AUC, and G-mean, among others. These metrics are
+vital for evaluating how various techniques fare, especially in
+accurately predicting outcomes for the minority class.
+Recent studies have identified several gaps in addressing
+imbalanced data across data-centric, algorithmic, and blended
+approaches. At the data level, there is a pressing need for scal-
+able techniques that can manage large imbalanced datasets
+and maintain their effectiveness across different domains.
+Algorithm-level challenges revolve around strengthening the
+resilience of methods against the evolving threats inherent
+in imbalanced data scenarios. Meanwhile, hybrid approaches
+face scalability, generalizability, and robustness issues, high-
+lighting the necessity for methods that can effectively scale,
+function across diverse settings, and resist evolving threats in
+imbalanced data contexts.
+These challenges underline the continuous push to develop
+12 VOLUME 11, 2023This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+more effective and flexible imbalanced data classification
+methods. Moreover, the balance between model complexity
+and generalization remains a significant hurdle, emphasizing
+the need for ongoing research. Understanding the strengths
+and limitations of each approach, including essential evalua-
+tion methods, equips researchers to develop machine-learning
+models that are effective, robust, and ready for real-world
+application. These models are purposefully crafted to manage
+the intricacies linked with data imbalance adeptly.
+REFERENCES
+[1] S. Haykin, Neural networks: a comprehensive foundation . Prentice Hall
+PTR, 1998.
+[2] S.-M. Chen, Data science and big Data An Environment of Computational
+Intelligence . Springer, 2017.
+[3] J. L. Leevy, T. M. Khoshgoftaar, R. A. Bauder, and N. Seliya, ‘‘A survey on
+addressing high-class imbalance in big data,’’ Journal of Big Data , vol. 5,
+no. 1, pp. 1–30, 2018.
+[4] A. M. Sowjanya and O. Mrudula, ‘‘Effective treatment of imbalanced
+datasets in health care using modified smote coupled with stacked deep
+learning algorithms,’’ Applied Nanoscience , vol. 13, no. 3, pp. 1829–1840,
+2023.
+[5] M. M. Chowdhury, R. S. Ayon, and M. S. Hossain, ‘‘An investigation of
+machine learning algorithms and data augmentation techniques for diabetes
+diagnosis using class imbalanced brfss dataset,’’ Healthcare Analytics ,
+vol. 5, p. 100297, 2024.
+[6] Q. Su, H. N. A. Hamed, M. A. Isa, X. Hao, and X. Dai, ‘‘A gan-based
+data augmentation method for imbalanced multi-class skin lesion classifi-
+cation,’’ IEEE Access , 2024.
+[7] M. Alamri and M. Ykhlef, ‘‘Hybrid undersampling and oversampling for
+handling imbalanced credit card data,’’ IEEE Access , 2024.
+[8] N. Jiang and N. Li, ‘‘A wind turbine frequent principal fault detection and
+localization approach with imbalanced data using an improved synthetic
+oversampling technique,’’ International Journal of Electrical Power &
+Energy Systems , vol. 126, p. 106595, 2021.
+[9] J. Sadaiyandi, P. Arumugam, A. K. Sangaiah, and C. Zhang, ‘‘Stratified
+sampling-based deep learning approach to increase prediction accuracy of
+unbalanced dataset,’’ Electronics , vol. 12, no. 21, p. 4423, 2023.
+[10] S. Briechle, P. Krzystek, and G. Vosselman, ‘‘Silvi-net–a dual-cnn ap-
+proach for combined classification of tree species and standing dead trees
+from remote sensing data,’’ International Journal of Applied Earth Obser-
+vation and Geoinformation , vol. 98, p. 102292, 2021.
+[11] T. Suresh, Z. Brijet, and T. Subha, ‘‘Imbalanced medical disease dataset
+classification using enhanced generative adversarial network,’’ Computer
+Methods in Biomechanics and Biomedical Engineering , vol. 26, no. 14, pp.
+1702–1718, 2023.
+[12] G. Y. Wong, F. H. Leung, and S.-H. Ling, ‘‘A novel evolutionary pre-
+processing method based on over-sampling and under-sampling for im-
+balanced datasets,’’ in Iecon 2013-39th annual conference of the ieee
+industrial electronics society . IEEE, 2013, pp. 2354–2359.
+[13] E. Troullinou, G. Tsagkatakis, A. Losonczy, P. Poirazi, and P. Tsakalides,
+‘‘A generative neighborhood-based deep autoencoder for robust imbal-
+anced classification,’’ IEEE Transactions on Artificial Intelligence , 2023.
+[14] M. Koziarski, M. Woźniak, and B. Krawczyk, ‘‘Combined cleaning and
+resampling algorithm for multi-class imbalanced data with label noise,’’
+Knowledge-Based Systems , vol. 204, p. 106223, 2020.
+[15] A. Singh, R. K. Ranjan, and A. Tiwari, ‘‘Credit card fraud detection under
+extreme imbalanced data: a comparative study of data-level algorithms,’’
+Journal of Experimental & Theoretical Artificial Intelligence , vol. 34,
+no. 4, pp. 571–598, 2022.
+[16] H. Wasswa, T. Lynar, and H. Abbass, ‘‘Enhancing iot-botnet detection
+using variational auto-encoder and cost-sensitive learning: a deep learning
+approach for imbalanced datasets,’’ in 2023 IEEE Region 10 Symposium
+(TENSYMP) . IEEE, 2023, pp. 1–6.
+[17] P. Kaur and A. Gosain, ‘‘Comparing the behavior of oversampling and
+undersampling approach of class imbalance learning by combining class
+imbalance problem with noise,’’ in ICT Based Innovations: Proceedings of
+CSI 2015 . Springer, 2018, pp. 23–30.[18] D. Elreedy, A. F. Atiya, and F. Kamalov, ‘‘A theoretical distribution anal-
+ysis of synthetic minority oversampling technique (smote) for imbalanced
+learning,’’ Machine Learning , pp. 1–21, 2023.
+[19] S. Mundra, S. Vijay, A. Mundra, P. Gupta, M. K. Goyal, M. Kaur, S. Khai-
+tan, and A. K. Rajpoot, ‘‘Classification of imbalanced medical data: An
+empirical study of machine learning approaches,’’ Journal of Intelligent &
+Fuzzy Systems , vol. 43, no. 2, pp. 1933–1946, 2022.
+[20] T. Wongvorachan, S. He, and O. Bulut, ‘‘A comparison of undersampling,
+oversampling, and smote methods for dealing with imbalanced classifica-
+tion in educational data mining,’’ Information , vol. 14, no. 1, p. 54, 2023.
+[21] R. Malhotra and K. Lata, ‘‘An empirical study on predictability of software
+maintainability using imbalanced data,’’ Software Quality Journal , vol. 28,
+no. 4, pp. 1581–1614, 2020.
+[22] M. Khushi, K. Shaukat, T. M. Alam, I. A. Hameed, S. Uddin, S. Luo,
+X. Yang, and M. C. Reyes, ‘‘A comparative performance analysis of data
+resampling methods on imbalance medical data,’’ IEEE Access , vol. 9, pp.
+109 960–109 975, 2021.
+[23] K. M. Hasib, M. S. Iqbal, F. M. Shah, J. A. Mahmud, M. H. Popel, M. I. H.
+Showrov, S. Ahmed, and O. Rahman, ‘‘A survey of methods for managing
+the classification and solution of data imbalance problem,’’ arXiv preprint
+arXiv:2012.11870 , 2020.
+[24] V. Werner de Vargas, J. A. Schneider Aranda, R. dos Santos Costa, P. R.
+da Silva Pereira, and J. L. Victória Barbosa, ‘‘Imbalanced data prepro-
+cessing techniques for machine learning: a systematic mapping study,’’
+Knowledge and Information Systems , vol. 65, no. 1, pp. 31–57, 2023.
+[25] N. V. Chawla, K. W. Bowyer, L. O. Hall, and W. P. Kegelmeyer, ‘‘Smote:
+synthetic minority over-sampling technique,’’ Journal of artificial intelli-
+gence research , vol. 16, pp. 321–357, 2002.
+[26] G. E. Batista, R. C. Prati, and M. C. Monard, ‘‘A study of the behavior
+of several methods for balancing machine learning training data,’’ ACM
+SIGKDD explorations newsletter , vol. 6, no. 1, pp. 20–29, 2004.
+[27] E. Elyan, C. F. Moreno-Garcia, and C. Jayne, ‘‘Cdsmote: class decomposi-
+tion and synthetic minority class oversampling technique for imbalanced-
+data classification,’’ Neural computing and applications , vol. 33, pp. 2839–
+2851, 2021.
+[28] G. A. Pradipta, R. Wardoyo, A. Musdholifah, and I. N. H. Sanjaya,
+‘‘Radius-smote: a new oversampling technique of minority samples based
+on radius distance for learning from imbalanced data,’’ IEEE Access , vol. 9,
+pp. 74 763–74 777, 2021.
+[29] T. Kosolwattana, C. Liu, R. Hu, S. Han, H. Chen, and Y. Lin, ‘‘A self-
+inspected adaptive smote algorithm (sasmote) for highly imbalanced data
+classification in healthcare,’’ BioData Mining , vol. 16, no. 1, p. 15, 2023.
+[30] F. De La Bourdonnaye and F. Daniel, ‘‘Evaluating resampling methods on
+a real-life highly imbalanced online credit card payments dataset,’’ arXiv
+preprint arXiv:2206.13152 , 2022.
+[31] Y. Deng and M. Li, ‘‘An adaptive and robust method for oriented over-
+sampling with spatial information for imbalanced noisy datasets,’’ IEEE
+Access , 2023.
+[32] H. Zhang, H. Zhang, S. Pirbhulal, W. Wu, and V. H. C. D. Albu-
+querque, ‘‘Active balancing mechanism for imbalanced medical data in
+deep learning–based classification models,’’ ACM Transactions on Mul-
+timedia Computing, Communications, and Applications (TOMM) , vol. 16,
+no. 1s, pp. 1–15, 2020.
+[33] S. Ayoub, Y. Gulzar, J. Rustamov, A. Jabbari, F. A. Reegu, and S. Turaev,
+‘‘Adversarial approaches to tackle imbalanced data in machine learning,’’
+Sustainability , vol. 15, no. 9, p. 7097, 2023.
+[34] J. Zheng, X. Wang, D. Wei, B. Chen, and Y. Shao, ‘‘A novel imbalanced
+ensemble learning in software defect predication,’’ IEEE Access , vol. 9, pp.
+86 855–86 868, 2021.
+[35] S. H. Khan, M. Hayat, M. Bennamoun, F. A. Sohel, and R. Togneri, ‘‘Cost-
+sensitive learning of deep feature representations from imbalanced data,’’
+IEEE transactions on neural networks and learning systems , vol. 29, no. 8,
+pp. 3573–3587, 2017.
+[36] P. Domingos, ‘‘Metacost: A general method for making classifiers cost-
+sensitive,’’ in Proceedings of the fifth ACM SIGKDD international confer-
+ence on Knowledge discovery and data mining , 1999, pp. 155–164.
+[37] Z. Ren, Y. Zhu, W. Kang, H. Fu, Q. Niu, D. Gao, K. Yan, and J. Hong,
+‘‘Adaptive cost-sensitive learning: Improving the convergence of intelligent
+diagnosis models under imbalanced data,’’ Knowledge-Based Systems , vol.
+241, p. 108296, 2022.
+[38] ——, ‘‘Adaptive cost-sensitive learning: Improving the convergence of
+intelligent diagnosis models under imbalanced data,’’ Knowledge-based
+systems , vol. 241, p. 108296, 2022.
+VOLUME 11, 2023 13This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/
+M. ALTALHAN et al. : Imbalanced Data in Machine Learning
+[39] S. Saeed and H. C. Ong, ‘‘Performance of svm with multiple kernel
+learning for classification tasks of imbalanced datasets.’’ Pertanika Journal
+of Science & Technology , vol. 27, no. 1, 2019.
+[40] L. Gao, L. Zhang, C. Liu, and S. Wu, ‘‘Handling imbalanced medical image
+data: A deep-learning-based one-class classification approach,’’ Artificial
+intelligence in medicine , vol. 108, p. 101935, 2020.
+[41] J. Luo, Y. Yuan, and S. Xu, ‘‘Improving gbdt performance on imbalanced
+datasets: An empirical study of class-balanced loss functions,’’ arXiv
+preprint arXiv:2407.14381 , 2024.
+[42] R. M. Mathew and R. Gunasundari, ‘‘A review on handling multiclass
+imbalanced data classification in education domain,’’ in 2021 International
+Conference on Advance Computing and Innovative Technologies in Engi-
+neering (ICACITE) . IEEE, 2021, pp. 752–755.
+[43] R. E. Schapire et al. , ‘‘A brief introduction to boosting,’’ in Ijcai, vol. 99,
+no. 999. Citeseer, 1999, pp. 1401–1406.
+[44] L. Breiman, ‘‘Bagging predictors,’’ Machine learning , vol. 24, pp. 123–
+140, 1996.
+[45] ——, ‘‘Random forests,’’ Machine learning , vol. 45, pp. 5–32, 2001.
+[46] P. Sheng, L. Chen, and J. Tian, ‘‘Learning-based road crack detection using
+gradient boost decision tree,’’ in 2018 13th IEEE Conference on Industrial
+Electronics and Applications (ICIEA) . IEEE, 2018, pp. 1228–1232.
+[47] J. Chung, J. Zhang, A. I. Saimon, Y. Liu, B. N. Johnson, and Z. Kong,
+‘‘Imbalanced spectral data analysis using data augmentation based on the
+generative adversarial network,’’ Scientific Reports , vol. 14, no. 1, p. 13230,
+2024.
+[48] H. Wang, A. Singhal, and P. Liu, ‘‘Tackling imbalanced data in cybersecu-
+rity with transfer learning: A case with rop payload detection,’’ Cyberse-
+curity , vol. 6, no. 1, p. 2, 2023.
+[49] H. Shamsudin, U. K. Yusof, Y. Haijie, and I. S. Isa, ‘‘An optimized support
+vector machine with genetic algorithm for imbalanced data classification,’’
+Jurnal Teknologi , vol. 85, no. 4, pp. 67–74, 2023.
+[50] N. V. Chawla, A. Lazarevic, L. O. Hall, and K. W. Bowyer, ‘‘Smoteboost:
+Improving prediction of the minority class in boosting,’’ in Knowledge Dis-
+covery in Databases: PKDD 2003: 7th European Conference on Principles
+and Practice of Knowledge Discovery in Databases, Cavtat-Dubrovnik,
+Croatia, September 22-26, 2003. Proceedings 7 . Springer, 2003, pp. 107–
+119.
+[51] C. Seiffert, T. M. Khoshgoftaar, J. Van Hulse, and A. Napolitano, ‘‘Rus-
+boost: A hybrid approach to alleviating class imbalance,’’ IEEE trans-
+actions on systems, man, and cybernetics-part A: systems and humans ,
+vol. 40, no. 1, pp. 185–197, 2009.
+[52] Q. Han, R. Yang, Z. Wan, S. Chen, M. Huang, and H. Wen, ‘‘Imbalanced
+data classification based on db-slsmote and random forest,’’ in 2020 Chi-
+nese Automation Congress (CAC) . IEEE, 2020, pp. 6271–6276.
+[53] K. M. Hasib, S. Azam, A. Karim, A. Al Marouf, F. J. M. Shamrat,
+S. Montaha, K. C. Yeo, M. Jonkman, R. Alhajj, and J. G. Rokne, ‘‘Mcnn-
+lstm: Combining cnn and lstm to classify multi-class text in imbalanced
+news data,’’ IEEE Access , 2023.
+[54] L. M. Shoohi and J. H. Saud, ‘‘Dcgan for handling imbalanced malaria
+dataset based on over-sampling technique and using cnn.’’ Medico-Legal
+Update , vol. 20, no. 1, 2020.
+[55] Y.-C. Wang and C.-H. Cheng, ‘‘A multiple combined method for rebal-
+ancing medical data with class imbalances,’’ Computers in Biology and
+Medicine , vol. 134, p. 104527, 2021.
+[56] N. Moniz and V. Cerqueira, ‘‘Automated imbalanced classification via
+meta-learning,’’ Expert Systems with Applications , vol. 178, p. 115011,
+2021.
+[57] S. Gholampour, ‘‘Impact of nature of medical data on machine and deep
+learning for imbalanced datasets: Clinical validity of smote is question-
+able,’’ Machine Learning and Knowledge Extraction , vol. 6, no. 2, pp. 827–
+841, 2024.
+[58] S. Riyanto, S. S. Imas, T. Djatna, and T. D. Atikah, ‘‘Comparative analysis
+using various performance metrics in imbalanced data for multi-class text
+classification,’’ International Journal of Advanced Computer Science and
+Applications , vol. 14, no. 6, 2023.
+[59] J. T. Hancock, T. M. Khoshgoftaar, and J. M. Johnson, ‘‘Evaluating clas-
+sifier performance with highly imbalanced big data,’’ Journal of Big Data ,
+vol. 10, no. 1, p. 42, 2023.
+MANAHEL ALTALHAN received a bachelor’s de-
+gree from King Khalid University (KKU), Abha,
+Saudi Arabia, in 2022. She worked as a coopera-
+tor with the KKU Computer Science department
+for the second semester of 2023. She is currently
+pursuing a master’s degree in computer science
+at KKU. Her research interests include artificial
+intelligence, Data Mining, and Machine Learning
+particularly focusing on handling imbalanced data.
+ABDULMOHSEN ALGARNI received the Ph.D.
+degree from Queensland University of Technol-
+ogy, Australia, in 2012. He was a Research As-
+sociate with the School of Electrical Engineering
+and Computer Science, Queensland University of
+Technology, in 2012. He is currently an Associate
+Professor with the College of Computer Science,
+King Khalid University. His research interests in-
+clude artificial intelligence, data mining, text min-
+ing, machine learning, information retrieval, and
+information filtering
+M. TURKI-HADJ ALOUANE received the Ph.D.
+Diploma in electrical engineering from the Na-
+tional Engineering School of Tunis (ENIT), in
+1997. She is currently a Professor at the College of
+Computer Science, King Khalid University, KSA.
+In September 1997, she was recruited as an Assis-
+tant Professor of electrical engineering at ENIT.
+In June 2007, she received the National Tenure
+Diploma in Telecommunications from ENIT. In
+December 2007, she was promoted to Associate
+Professor of telecommunications at ENIT. From 2010 to 2012, she was
+a Visiting Associate Professor at the Electricity Department, Polytechnic
+School of Tunisia (EPT). Since 2012, she has been a Full Professor of
+telecommunications at the Information and Communication Technologies
+(ICT) Department, ENIT. She has coordinated internationally sponsored
+research projects. Since 1997, she has led more than 20 research master theses
+and 8 Ph.D. theses. She published more than 70 papers in impacted journals
+and conferences. Her research interests include signal processing (speech,
+image, and video), machine learning, deep learning, and evolutionary algo-
+rithms.
+14 VOLUME 11, 2023This article has been accepted for publication in IEEE Access. This is the author's version which has not been fully edited and 
+content may change prior to final publication. Citation information: DOI 10.1109/ACCESS.2025.3531662
+This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/

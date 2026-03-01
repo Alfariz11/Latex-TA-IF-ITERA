@@ -1,0 +1,1260 @@
+ 
+ 
+ 
+Doi: 10.48161/ Issn.2709 -8206  
+ 
+ 
+This is an open access article distributed under the Creative Commons Attribution License    81 
+ Machine Learning Applications based on SVM 
+Classification: A Review  
+ 
+1st Dakhaz Mustafa Abdullah  
+Technical College of Informatics,  Akre  
+Duhok Polytechnic University  
+Duhok, Iraq  
+dakhaz.abdullah@dpu.edu.kud    
+ 
+ 
+ 
+https://doi.org/10.48161/qaj.v1n2a5 0  2nd  Adnan Mohsin Abdulazeez  
+Research C enter of  Duhok Polytechnic 
+University   
+Duhok Polytechnic University  
+Duhok, Iraq  
+adnan.mohsin@dpu.edu.krd  
+Abstract —Exte nding t echnologies and data development 
+culminated in the need for quicker and more reliable 
+processing of massive data sets. Machine  Learning techniques 
+are used excessively. This paper , therefore,  attempts to deal 
+with data processing , using a suppor t vector ma chine (SVM) 
+algorithm in different fields since  it is a reliable, efficient 
+classification method in the area of machine learnin g. 
+Accordingly, many  works  have been explored in this paper  to 
+cover  the use of SVM  classifier . Classification based on S VM 
+has been used in many fields like fa ce recognition, disease s 
+diagnostics, text recognition, sentiment analysis, plant disease 
+identi fication and intrusion detection system for network 
+security applica tion.  Based on this study,  it can be concluded 
+that S VM clas sifier has obtained high accuracy results in most 
+of the applications , specifically , for face recognition and 
+disease s identific ation applications . 
+ 
+Keywords —ML, Classification, SVM, Applications . 
+I. INTRODUCTION  
+for any action to be carried out by any  living  being, it is 
+important to have expertise. Each day -to-day task, beginning 
+in the morning, humans easily distinguish the object from 
+another object. Several techniques  have been developed to 
+make a computer as capable as human. However, for all 
+types of da ta set, no single classification approach has been 
+found to provide the best accuracy [1 ,2]. Machine learning 
+(ML) is defined as  a kind of artificial intelligence (AI)  that 
+composed of accessible machines with the productivity to be 
+trained without truly p rogrammed  [3]. Machine Learning 
+algorithms were used for solving different types of problems 
+in data classification [ 4,5,6,7]. Machine learning technology 
+has grown so quickly in recent years and has been 
+extensively used in many scientific fields [ 8,9,10]. ML 
+algorithms are loosely divided into three groups, namely 
+supervised learning, unsupervised learning and 
+reinforcement learn ing, as seen in Fig.1. [11,12,13]. 
+ 
+ 
+ 
+ 
+  
+Fig.1. Machine Learning and  its Types [ 8] 
+There are many good classification tec hniques  in the 
+literature including artificial neural networks, k -nearest -
+neighbo rs classifier, decision trees, Bayesian classifier and  
+Support Vector Machine (SVM) algorithm. From these 
+techniques, SVM is one of the best -known techniques to 
+optimize the e xpected  solution [ 14].  
+ 
+SVM  algorithm is one of  supervised machine learning 
+algorit hms based on statistical learning theory [ 15]. It selects 
+from the training samples a set of characteristic subsets so 
+that the classification of the character subset is eq uivalen t to 
+the division of the entire dataset.  the SVM ha s been used to 
+solve diffe rent classification problems successfully in many 
+applications [ 16,17]. So, the application scope is very broad 
+due to its excellent learning ability. For example, intrusio n 
+detec tion, classification of facial expression, prediction of 
+time series, speech recognition, image recognition, signal 
+processing, detection of genes , text classification, recognition 
+of fonts, diagn osis of faults, chemical analysis, recognition of 
+images and  other fields. In solving classification problems, 
+the SVM algorithm has certain obvious advantages.  It's got a 
+shorter predicti on time  [18][19]. The accuracy of the target 
+detection classifier ca n be guaranteed by the global optimal 
+solution. But t here ar e some drawbacks, such as the model of 
+detection is long -established. When processing large -scale 
+data, time complexity and spac e complexity incre ase linearly 
+with the increase in data [ 20,21]. In comparison, SVM is 
+more capable of solving smaller s amples,  nonlinearity and 
+high dimensionality problems compared with other 
+classification algorithms [ 22,23]. In which case SVM is an 
+
+82 
+ excellent technique for both linear and non -linear relations 
+mode lling. The time for measurement is relatively short 
+compar ed to o ther nonparametric methods, such as ANN. 
+Wider training data sets are a challenge when it comes to 
+mechanical training, but SVM continue s to generalize itself 
+even with minimal training know -how [ 24,25]. 
+This paper aim s to evaluate SVM's recent appl ication s. This 
+analysis includes articles that used SVM in various fields 
+written from 2016 to 2020. As follows, the remainder of the 
+paper is structured. Section 2 includes a short overview of 
+the SVM. The SVM apps are mentioned in Section 3. A 
+variety of  effect ive SVM implementations for real -world 
+problems are reviewed in Section 4. A discussion and review 
+of SVM  implementations is provided in Section 5. a 
+conclusion about the work is provided in Secti on 6.  
+ 
+II. SUPPORT VECTOR MACHINE (SVM)   
+Vapnik is introd uced Su pport Vector Machine [ 26,27]. 
+SVM is an algorithm for supervised learning, used for 
+classification and regression [ 28,29,30]. SV M's aim is to find 
+the individual hyperplane with the highest margin  that can 
+divide the classes linearly, as seen in (Fi g2). Th e goal of 
+supporting vector machine learning is to identify data sets 
+where the number of training data is limited and wher e the  
+optimal solution cannot be ensured by the normal use of 
+large numbe rs of statistics [ 31,32,33] 
+Fig2: Margin and Support  Vector s. Left: small margin between 2 classes  
+Right: large margin between 2 classes [ 31] 
+In the input space, when the linear sepa ration becomes 
+easier in the kernel functionality, the training data are 
+projected to a feature space of a higher dimension. In order  
+to find a hyperplane that better divides data into its groups, 
+SVM utilizes different kernel functions such as the radial 
+base function (RBF) or polynomial kernel and, when used 
+for minimal train ing sets, has good classification 
+performance [ 34]. Therefor e, in order to  correctly evaluate 
+hyperplanes and reduce classification errors, the SVM 
+algorithm requires a proper kernel funct ion. The fundamental 
+aspect of the SVM technique is the kernel form used.[ 35,36 ] 
+The performance of the SVM depends mainl y on t he size of 
+the kernel, and the smooth surface similarity depends on the 
+higher density of the kernel. [37,38,39]. And unlike some  
+other machine learning methods, the choice of the kernel 
+function i s a crucial and demanding operation. The power of 
+the SVM a lgorithm is th erefore the potential to refine itself 
+by modifying its kernel feature and therefore adjusting the 
+dimensionality o f the problem to support SVM segregation 
+will also be computationall y taxing based on the 
+dimensionality of the problem concern ing other algo rithms 
+for machine learning [40,41,42]. In many practical fields, many researchers have studied 
+and applied SVM. As  the number of training vectors 
+increases, the number of training ve ctors requiring 
+computing and  storage increases, and this i s demonstrated  in 
+various practical problems beyond their reach  [31,43]. 
+III. APPLICATIONS OF SUPPORT VECTOR MACHINE 
+(SVM)  
+ The main a im of SVM is to classify  unseen data 
+correctly. there  are many appli cations in several fields. SVM 
+applications are:  
+• Face  detec tion and recognition — parts of the image 
+can be classified using SVM classifier as a face and 
+non-face then creating a square bo undary around the 
+face [ 44-51]. 
+• Disease diagnosis — SVM Classifiers may make a 
+major contribution to the medical field by  offer ing a 
+reliable and rapid diagnosis of diseases. Since the 
+most critical role in the area of  health care is the 
+detection of illne ss. When an infection is detected 
+early, several lives will be spare d [52-61]. 
+• Text Recognition —Character recognition in  the a rea 
+of image processing and machine learning has 
+become a difficult and fascinating topic. The most 
+common strategies used in dif ferent forms of pattern 
+recognition are SVM. The identification of l etters, 
+numbers, figures such as people is never a si mple j ob 
+for a machine.  Many techniques in this area were also 
+proposed  [62-69]. 
+• Sentiment Analysis Classifications - several types of 
+research  have produced forums with SVM Classifier 
+using sentimental analysis where one could easily 
+distinguish optimisti c, neg ative or neutral opinions. 
+The outcome of the opinion analysis is focused o n 
+various inquiries such as politics, crime, economics , 
+foreign relations, film, fashion, justice, humanity. 
+Social networ king is the primary way of gathering 
+people's thought s and emotions regarding a different 
+trend. Sentiment analysis is still the most commonly 
+employed study subject [ 70-77]. 
+• Intrusion Det ection System - In the area of 
+information security, identifying and  avoiding 
+network intrusion has been an essential mat ter. T he 
+successful method of intrusion detection will reduce 
+the system's false positive rate and increase the 
+accuracy of the classif ication. Therefore, several 
+SVM -based methods of intrusion detection  have been 
+proposed [ 78-84]. 
+• Identification of plant diseas es - Machine learning 
+techniques including (SVM) can be used for the 
+identification of diseases since they only relate to data 
+and prioritize the effects of such activities. This 
+enables diagnosis of the stage of general veget able 
+diseases [ 85-89]. 
+IV. LITERAT URE REVIEW  
+Recently, many works have been implemented using SVM 
+classifier in different fields. So, in this section, some of thes e 
+works will be elaborated as follows:  
+
+83 
+ A. Literature on Face Detection and Recognition  
+Starting from face detection, many re search ers [44-51] 
+implemented algorithms for face detection and recognition. 
+More specifically, Tao et al. [ 44] and Kumar et al. [ 45] 
+Proposed face detection techniques based SVM classifier . 
+ 
+Where, Kuma r et al. [45] Median filter used for noise 
+reduction in a s pecific image.by focusing  on several facial 
+recognition techniques used for facial identification by the 
+Correlogram, the Discret e Wavelet Transformation (DWT), 
+the Edge Histogram (EH). With t he co mbination of DWT, 
+EH and Correlogram multi facial det ection  (MFD), a facial 
+vector i s used to identify input faces as single or several, then 
+the SVM classifier.  On the standard BAO and Ca rnegie 
+Mellon University (CMU) datasets, the suggested algorithm 
+was tested, and the precision reached up to 90 percent. From 
+the experiment, it is obse rved that the SVM classifier more 
+correctly identified the facial images of the previous 
+classifiers. An  average precision of identification of 89 
+percent was obtained for SVM.  
+Kumar et al [ 46] proposed automated live facial 
+expres sion detection (FED) such  that support for radial 
+baseline function is used for the extraction and classification 
+of RBF -SVM feat ures by Haar Wavelet Transform (HWT). 
+Genetic algorithm and fuzzy -C-means are used to detect the 
+edges of the face image.  The C ohn-Kanade (CK+) database  
+and the JAFEE facial expression database were included in 
+the experimental results.  The other databases  used for face 
+recognition are  CMU+MIT , LFW -a, FEI and its own site.  
+Finally, 95.6% and 88.08% of the CK+ and JAFEE data sets 
+produced a better performance for both datasets. Dino & 
+Abdulrazzaq  [47] implemented another automated 
+framework for the identific ation of fac ial expression, which 
+can identify all eight essential f acial expressions. The 
+experimental findings revealed  that the presen ted approach 
+offers 93.53% of the identification rate in the use of the SVM 
+classification, 82.97% for the use of the M LP classification, 
+and 79.97% for the KNN classification. The paper concludes 
+that the approach provides stronger outcome s by u tilizing t he 
+SVM as a classifier.  
+Azzopardi et al.  [48] suggested a system utilizing a 
+fusion of SVM classifiers for gender ident ification from face 
+pictures. The process, which involves changes in  gestures, 
+facial characteristics, context and lighti ng, wa s tested on the 
+latest GENDER -FERET dataset. There are  different kinds of 
+features in each classifier, including HOG (shape), LBP  
+(texture) and raw pixel values. For the latter functions, we 
+use an  SVM with a linear kernel and we use histogram 
+inters ection  kernel SVMs for the two former ones. The 
+writers come  to a consensus by fusing the three classifiers 
+with a plurality vote. In a  new dataset that was derived from 
+FERET, they illustrated the feasi bility of their method. They 
+reached 92.6% precision,  which  exceeded the Face++ and 
+Luxand commercial goods . 
+Shi et al. [ 49], Dad i & Pillutla  [50] and Chen & Haoyu 
+[51] proposed face recog nition methods based on SVM. 
+Were , Dad i & Pillutla [50] for both tes t and training image  
+extracted Histogram of Oriented Gradie nt (HOG) features 
+and gave them to the SVM classifier. The  Eigen feature -
+based face recognition algorithm was  compared with the algorithm. using  8 different datasets, the  suggested algorithm 
+and PC A was verified. The  results showed that the proposed 
+algori thm showed a higher face recognition rate in all face 
+datasets compared to the traditional face recognition 
+algorithm based on th e Eigen feature. In comparison to the 
+PCA -based face recognition alg orithm, there is an 8.75 
+percent improvement in the f ace re cognition rate.  However, 
+Chen & Haoyu [ 51] implements an SVM -based facial 
+recognition algorithm in conjunction with the Visual 
+Geometry Community (VGG). The algorithm can not only 
+reliably remove f acial characteristics but can also reduce 
+image measu rement s and avoid irrelevant attributes.  the 
+fram ework of the proposed algorithm can be demonstrated in 
+figure 3, the. The tests are pe rformed using 400 -dimensional 
+feature data on the Labeled Faces in t he Wild (LFW) dataset. 
+The results showed that the al gorith m proposed reached 
+97.47 percent, which is the state -of-the-art level.  
+Figure 3: overall framework of the proposed method [ 51] 
+ 
+B. Literature -based Disease diagnosis applications.  
+Regarding the appli cation of diagnosing diseases, 
+various works [ 52-61] have b een implemented using 
+machine learning techniques.  Where, techniques of machine 
+learning classification it is very useful in the medical field 
+that provid es a quick diagnosis of diseases and accura te, an 
+approach  for segmentation of MRI, CT and Ultra sound 
+images was proposed  by Asuntha et al. [ 55] cancer cell 
+identification is performed by analyzing the required 
+characteristics for the two images extracted. To detect the 
+validity of this device, ult rasound images as well. The 
+collection of features is  also used with the use of th e 
+algorithm of PSO, Genetic Optimization and SVM, giving an 
+accuracy of about 89.5 percent with a reductio n in the false -
+positive rate.  Also,  the algorithm that can identify liver 
+Cancer as benign or malignant was implemented b y Vada li 
+et al. [ 56] The proj ect has been tested on a real image of the 
+CT liver. Each module is tested and successfully discovered. 
+SVM is developed and tested to characterize the tumor using 
+known data  and irregular obscure data. The consequences of 
+the propos ed strategy show that t he tumor is accurately 
+recognized and organized as malignant or benign . The 
+accuracy ratio of the framewor k proposed is 86.7 percent.  
+ 
+Alam et al. [ 57] have suggested an appr opriate algorithm for 
+the identification and predicti on of lung cancer using a multi -
+class SVM classifier. For cancer detection, multi -stage 
+classification has been used. The likelihood of  lung cancer 
+can also be predicted by this system. In each phase, 
+enhancement and segmentation of the classification imag e 
+have  been done separatel y. A 97 percent accuracy for cancer 
+
+84 
+ identification and 87 percent for cancer prediction w as 
+achieved by the p roposed algorithm.  
+Dolatabadi et al.  [58], on the other side, sugges ted a 
+technique for the automated detection of regula r and 
+coronary artery dis ease disorders utilizing electrocardiogram -
+derived heart rate variability (HRV) signal (ECG). The 
+features are  obtained in time, frequency and nonlinear 
+domains from the HRV sign al. The key component analysis 
+(PCA) is implemented t o decr ease the size of th e extracted 
+properties and to expose the secret details underlaid in the 
+results. In conclusion, using the ext racted characteristics, the 
+Vector Classification Support Machine (S VM) was used to 
+classify two classes of data. This th esis o ptimizes the SVM 
+parameters for enhanced accuracy. The findings revealed a 
+precision of 99.2 percent in detecting normal -class CA D 
+using the proposed algorithm.  
+Furthermore, Qiao et al.[ 59] propos e a genetic algorithm -
+based SVM classifier for featur e weig hting and cataract 
+detection. A cataract is one of the most serious illnesses that 
+can cause blindness. The classifier is applied  to the detection 
+and evaluation of cataracts and achieves higher cl assification 
+accuracy than in previous researches . The prac tical usage of 
+the enhanced classifier is a major step forward. The 
+algorithm skips the traditional algorithm's redundant 
+measure s involving pre -process fundus pictures, extracts and 
+calculates the  features directly from original images, as 
+shown  in Figure  4. This encourages the precision of the 
+original photos of the fund to  
+Fig.4: Flow chart of cataract classification [ 59] 
+be reta ined as much as practicable. In order to create the 
+best weight rang e between the features in the algorithm, the 
+genetic algori thm is used to achieve the best classification 
+result for the classifier.  
+C. Literature -based Text Recognition applications  
+Text Det ection, which has fascinated several 
+researchers[ 62-69], is another application of SVM. More 
+specifically, Wei et al.[ 64] propo sed utilizing two traditional 
+predictive coding machine learning algorithms: logistic 
+regression (LR) and support vector machines  (SVM). The 
+authors carried out tests on the four datasets of actual  legal 
+problems to equate  deep learning effects with observ ations 
+obtained using an SVM algorithm. Their results found that 
+with a larger amount of dataset preparation, CNN worked 
+better a nd could be a suitable method in the text 
+classification of the lega l industry.  Also , Hassan & Kadhm 
+[65] introduces an e xtreme ly precise handwriting text recognition method. With the SVM polynomial kernel, the 
+computer used 70 percent of the training data set and 30 
+percent for research and obtained strong accuracy. There are 
+multiple phases invol ved in the proposed system: 
+prepro cessing, extraction of characteristics, classification and 
+recognition, as seen in Figure 5. The high precision obtained 
+by sever al variables, starting with the use of the Otsu 
+approach from the ef fective preprocessing sta ge, Then with 
+the planned ef fectiv e segmentation and extraction methods 
+DCT, HOG and finally with a more reliable identification 
+classifier.  The system reached 96, 317% highest precision, 
+depending on the methodology and the SVM cla ssification.  
+Besides , Ismayilov [ 66] suggests another  chara cter 
+recognition algorithm focused on the principle of self -
+learning. The proposed study used the SVM bi -class and 
+multi -class ch aracter recognition schemes. Different 
+characteristics are extracted  which help to train t he proposed 
+system. These featu res ar e selected to ensure that the device 
+gains an optimum understanding of the characters and thus 
+achieves high precision. Thus, in addition to the usage of 
+prototypes, the suggested algorithm has the  benefit of self -
+learn ing for character recognition a nd thu s improves 
+versatility and recognition. In comparison, the findings 
+revealed that the SVM classification for soft features reache s 
+the maximum precision ratio.  
+Figure 5. The Proposed Work [ 63] 
+ 
+Finally, it is simpler for medical practitioners to ide ntify 
+patient symptoms more effectively and to render smart 
+prediction feasible in the future by collecting information 
+from clinical t ext. Lin et al.  [67] suggest a multilabel 
+organized Support Vector M achine (SVM) approach to 
+condition identification. A multi -label approach is 
+implemented that can be used in specific entities 
+identification activities. In which three groups of tests are  
+carried out to test the new model. The results indicate that 
+not on ly can the di sorder mentions in contiguous or 
+discont inuous  terms be recognized by the suggested multi -
+label process, but also mentions the duration of which 
+overlap with each other. In ad dition, the results found that 
+the proposed SVM hierarchical multi -label model 
+outperformed the random condition field (C RF) mo del for 
+the disease identification mission.  
+D. Literature -based Sentiment analysis applications.  
+Sentimental Analysis refers to Natu ral Language 
+Processing's role of defining if a text contains subjec tive 
+information and what information it communicates , i.e., 
+whether it is positive, negative or neutral in the attitude 
+behind the text. Many works [ 67-74] have therefore been 
+proposed fo r this purpose.  More specifically, Wawre et al.  
+[70] Proposed an approach to classifying text feedback on 
+the grounds of the em otions present in such reviews. The 
+
+85 
+ 
+findings revealed that standard machine learning 
+classification algorithms do not work so wel l with text 
+sentiment analysis relative to their success with the su bject -
+based classification.  Also, the Naive Bayes Alg orithm  
+performed better than SVM Algorithm where the ratios of 
+accuracy for Naive Bayes was  65.57% while for SVM was 
+45.71%. Another re search has been conducted by Singla et 
+al. [71] for Sentiment analys is of ratings of cell phones and 
+classification of re views into negative  and positive feelings . 
+Three classification models were used to classif y reviews  
+after combining the data with an a lmost equal ratio of 
+positive and negative reviews.  On contrary to t he results that 
+have been obtained by Wawre et al. [ 70], the authors Singla 
+et al. [ 71] proved that predictive accuracy of SVM was better 
+than other classifiers, i.e., Decision Tree and Naïve Bayes . 
+The results accuracy has been cross -validated and among t he 
+three models, the maximum precision value was obta ined 
+81.75 percent for SVM.     
+Also,  Rahat et al. [ 72] used Naïve Bayes and SVM 
+machine learning algorithms for the airline reviews' 
+sentiment classification. The proposed work would be used 
+to carry out  an appraisal measure on the comments received 
+from p asseng ers. Good flight is positive sentiment and “ Late 
+flight!" is a negative sentiment, as an example. In addition, 
+this positive and negative split statement is used to determine 
+the airline's results.  The experimental analysis showed that 
+almost 83 perc ent ac curacy was given by the SVM classifier, 
+which s urpassed the Naïve Bayes classifier, which achieved 
+77 percent accuracy.  
+Another w ork for analyzing the sentiments and in opinion 
+mining has been cond ucted by  Bhavitha  et al.  [73] which 
+also focused on s everal  machine learning techniques.  Where 
+the authors  presented a detailed survey of different 
+techniques of machine learning and then compared each 
+technique with their accuracy, benefits and limitation s. On 
+comparing, they showed that accuracy supervised  machi ne 
+learning technique such as SVM provided accu racy higher 
+than that of unsupervised learning techniques.  Another 
+research used a utomated techniques of text classification by 
+Abro et al . [74] to cl assify the feedback of the restaurant 
+according to as pect a nd polarity. Also, this review contrasted 
+two approaches for engineering functions and five ML 
+algorithms to perform three tasks,  such as a) classification of 
+restaurant reviews according to  the type of entity, b) 
+classification of restaurant reviews  accor ding to their 
+characteristics, and c) classification of restaurant reviews 
+according to their polarities.  
+In addition, the experi mental results showed that when 
+used with the SVM algorithm, the wor d2vec features 
+outperformed other classifiers; NB, LR , RF, and Ensemble 
+by giving task A, task B, and Task C respectively 76 percent, 
+72 percent, and 79 percent off overall accuracy.  
+ 
+E.   Literature -based Intrusion Detection Techniques . 
+The nature of network  topology is becoming more 
+complicated with the expon ential  development of the 
+Internet, rendering it very challenging to monitor network 
+attacks. The traditional solution to passive defen ce was 
+insufficient to meet the need for network in formation 
+securit y. How to successfully track and prevent network 
+interferen ce has been a critical problem in the field of data security. Therefore, many experiments have been carried out 
+to accomplish thi s goal utilizing machine learning 
+techniques[ 78-84]. If the successf ul intrusion detection 
+device is able to reduce the f alse-positive rate of the system 
+and increase the classification accuracy. The findings 
+obtained with the GF -SVM model increased the ov erall 
+detection precision.  Also, Lei proposes an ef ficient network 
+anomaly traffic detection algorithm. [ 78].  Where six types of 
+network features are used in this work, such as Number  of 
+source s IP address, Number  of the source port, Number  of 
+destination  IP address, Number  of the destination port, 
+Number  of types  of a packet, and Number of separate 
+packets of the same size  as de scribed in Figure 6. The 
+authors then discussed how to generate normalized entropy 
+for the features used in the traffic detection  of network 
+anomalies. The network traffic an omaly detection problem  is 
+then converted to a classification problem, and t o solv e it, a 
+hybrid PSO -SVM model is suggested.  
+ 
+Fig. 6 Framework of the network anomaly traffic detection system [ 78] 
+ 
+Finally, prel iminary findings indicate that different 
+networ k traffic anomaly pat terns may be detected with high 
+precision by the sugg ested procedure.  The machine learning 
+approach is commonly used to avoid phishing attacks. Jupin 
+et al.  [79] can thus find four feature s in the detection of 
+phishing attacks, including URL, domain -based,  page -based, 
+and content -based features. Phishing det ection  may be 
+considered a classification of a data breach, and utilizing ML 
+methods, phishing attacks may be identified. Six widely us ed 
+methods for ML classification, in which the mechanisms of 
+methods , strengths and weaknesses were discussed, were 
+propo sed an d examined in detail in this analysis. NB, SVM, 
+DT, RF, k -means and ANN are the chosen techniques. It  is 
+challenging to determine  the solution is best based on the 
+discussion of the ML approaches, as each strategy has its 
+advantages.  The selection of  the s olution is based upon the 
+dilemma and the functionality chosen since no one method 
+performs well in a ll situations.  As well Emadi  & Mazinani  
+[80] solved another problem of anomaly detection in 
+Wire less Sensor Networks (WSNs) using machine learning 
+techniqu es. Where, in these networks, the detection of 
+anomalies faces many difficulties. One of these challe nges is 
+using a powerful cla ssification algorithm SVM to separate 
+normal data from anomalies. Besides , Network data is 
+86 
+ clustered using the DBSCAN (de nsity -based spatial 
+clustering of noise applications) algorithm. By comparing 
+temperature, humidity, and vo ltage in different dimension s 
+simultaneously, this approach improved the precision of 
+detection compared with previous methods. Therefore, the 
+advant age of  the proposed algorithm over previous 
+algorithms is the use of soft computing techniques, easy 
+implem entation, and the simultaneo us analysis of these three 
+features to improve detection accuracy.  
+F. Literature -based plant disease Identification.  
+One of the  most important concerns of agriculture is pe st 
+and disease control in open -air (Arab farming) and 
+greenhouse situations. The most comm only used practice in 
+pest and disease control is to spray pesticide s uniformly over 
+the cropping area.  This practice has  a high financial and 
+significant environment al cost, although it is successful.  
+Residues in crop products, side effects on contaminati on of 
+groundwater, impacts on local wildlife and ecosystems, and 
+so on, can have environmental impacts. ML is a n integrat ed 
+part of the management of precision farmin g, where the input 
+of agrochemicals is targeted in terms of time and location. 
+For the det ection of diseases, machine learning approaches 
+can be used because they primarily refer to data itself and 
+give preferen ce to the results of some tasks.  Therefore, 
+several studies in this area have been carried out [ 85-89]. 
+More precisely, Shruthi et al. [85] are conducting a 
+comparative analysis on five forms of machine learning 
+classification techniques for plan t disease identification. The 
+five forms are SVM, ANN, KNN, CNN, and Fuzzy.  
+ 
+ 
+ When compared to other classifiers, SVM is used by 
+many authors fo r disease classification. However, the 
+findings showed that more dis eases with high precision were 
+identified by t he CNN classifier.  
+Another plant disease is also Bak ana disease or stupid 
+seedling that is a seed -borne rice disease. Infected plants, 
+resulti ng in a loss of grain yield, can produce or perish empty 
+panicles. T herefore, Chung et al.  [86] used a technique to 
+ident ify contaminated plants that should be screen ed at the 
+early stages of growth. This work suggests an approach to 
+non-destructively iden tifying contaminated and healthy 
+seedlings at the age of 3 weeks usi ng machine vision. For the  
+differentiation of infecte d and healthy seedlings, support 
+vector machi ne (SVM) classifiers have been developed. In 
+order to pick critical traits and optimal mod el parameters, a 
+genetic algorithm was used for the SVM classifiers.  Infected 
+and stable seedl ings were classified by the  proposed method 
+with an accuracy of 87.9 per cent and a positive predictive 
+value of 91.8 percent.  
+Ebrahimi et al.  [87] suggest a furth er automatic 
+identification of pests for detecting thrips by utilizi ng the 
+SVM process on cano py images for crops. Thrips  are one of 
+the most dangerous plagues to the  greenhouses of 
+strawberry. The SVM approach with differential kernel 
+feature was used for  parasite classification and thrip 
+identification. The ratio of majo r to a small diameter as t he 
+geographic index and the  Hue, Saturation and Intensification 
+ratios a s the color index ha s been used to construct the SVM 
+layout. Also, a mean square error (MS E), medium square 
+error root (RMSE), a medium absolute error (MAE) a nd a 
+medium percent error (MPE) were used to determin e the 
+classification. The findings demonstrat ed the strongest 
+classification with less than 2.25% mean percent error with 
+the SVM -syste m field index and its intensification as a color  
+index.  
+TABLE 1: COMPARISON AMONG RECENT WOR KS OF SVM  APPLICATIONS    Ref. Years recent wor ks of SVM  applications     
+Application  Problem s Method s Dataset s Results  
+Kumar et 
+al.[45] 2019  Face Detection   It is not easy for 
+computer as human 
+to detect Multiple 
+faces in a picture.   
+ 
+ multiple face detection 
+technique which used 
+the Correlogram, 
+DWT , and EH as well 
+as SVM Class ifier for 
+face recognition   Two databases, 
+specifically BAO 
+database and CMU 
+database, are  utilized  
+to assess the proposed 
+framework.  The SVM 
+classifier 
+recognized the 
+facial images 
+more accurately 
+from the 
+previous 
+classifiers.  An 
+average 
+recognition 
+accuracy of 89% .  
+ 
+Chen & 
+Haoy u [51] 2019  Face  Recognition  The problem that 
+the dimension o f 
+facial features is too 
+large  can be solved 
+using   
+VGG network 
+model extracting 
+facial features that 
+reduce feature 
+dimensions.  Face recognition 
+algorithm based on 
+SVM combined with 
+VGG network model  
+for extracting facial 
+features . the algorithm of this 
+work has been tested 
+on the CelebA and 
+LFW datasets  The accuracy of 
+the proposed 
+algorithm has 
+reached 97.47%  
+87 
+  
+ 
+ 
+Vadali  et al. 
+[56] 2019  Disease 
+diagnosis  Liver segmentation and 
+classificati on of tumor is 
+pivotal during treatment 
+stage.  The propose d 
+algorithm  using 
+SVM Classifier  can 
+identify the liver 
+Cancer as be nign or 
+malignant  Image Source  for this 
+work was t he UCI 
+machine learning 
+repository  The accuracy 
+rate of the 
+framework 
+proposed is 86.7 
+percent.  
+ 
+Alam et al. 
+[57] 2018  Disease 
+diagnosis  Recognition and 
+prediction of lung cancer 
+in the  earliest reference 
+point stage can be very 
+useful to improve the   
+The s urvival rate of 
+patients . Multi -stage SVM 
+classification  for 
+lung cancer 
+detection  UCI machine learning 
+database  is used for this 
+work  The proposed 
+algorithm 
+achieved a 
+precision of 97% 
+for cancer 
+identif ication 
+and 87% for 
+cancer 
+prediction . 
+Wei et al.[ 64] 2018  Text 
+Recognition  Predictive coding can  be 
+used in legal matters to 
+find relevant or privileged 
+documents in large sets of 
+electr onically stored 
+information.  two common 
+machine learning 
+algorithms to are 
+used in predictive 
+coding; LR and 
+SVM  SVM algo rithm  is tested  
+on the four datasets of 
+real legal matters.  The findings 
+showed that 
+CNN performed 
+better and it is a 
+suitable tool for  
+the legal 
+industry's text 
+classification  
+Ismayilov [ 66] 2018  Text 
+Recognition  Azerbaijani hand -printed 
+recognition cann ot be 
+considered a n ‘ended’ task 
+problem.   Hand-printed 
+character 
+recognition system 
+created on the base 
+of pattern features 
+and bootst rap 
+resampling SVM 
+method.   Recognition database 
+expressed by Azerba ijani 
+hand -printed character 
+examples, digits and 
+special symbols  
+is utilized by this work  The res ults 
+showed that the 
+highest accuracy 
+ratio is obtained 
+by SVM 
+classifier using 
+soft featu res. 
+Abro  et al. 
+[74] 2020  Sentiment 
+analysis  Regardless of the 
+extensive amount of work, 
+it remains difficult to 
+compar e the performance 
+of these approaches to 
+classify hotel reviews text.  Automated text 
+classification 
+techniques to 
+classify the 
+restaura nt’s revie ws 
+using five ML 
+Algorithms:  SVM, 
+NB, LR, RF, and 
+Ensembl e classifier.   the SemEval dataset is 
+utilized for a ssessing the 
+five ML Algorithms.  The SVM 
+algorithm 
+outperformed by 
+giving 76%, 
+72%, and 79% 
+off overall 
+accuracies.  
+Rahat  et al. 
+[72]  2019  Sentiment 
+analysis   Using sentiment analysis, 
+it is required to build a 
+platform where one can 
+easily identify the  
+opinions that are either 
+positive or negativ e or 
+neutral.  used Naïve Bayes 
+and SVM machine 
+learning algorithms 
+for the airline 
+reviews ' senti ment 
+classification  The dataset is collected 
+from the Review dataset 
+using Twitter API.  the SVM 
+classifier, which 
+surpassed the 
+Naïve Bayes 
+classifier, which 
+achieved 77 
+percent accuracy  
+Jupin et al. 
+[79] 2019  Intrusion 
+Detection  . Phishing detecti on can be 
+considered as a 
+classification of a security 
+breach . six p opular and 
+widely used 
+classification 
+methods of ML 
+have been utilized 
+are; NB, SVM, DT, 
+RF, k -means 
+clustering, and ANN  2,000 datasets  is used for 
+testing  where  1,000 URLs 
+consisted of legitimate 
+and 1,000 phishing 
+URLs.  It is hard to 
+determine which 
+meth od is the  
+best since there 
+is no single 
+method t hat 
+works best on 
+every problem.  
+Emadi & 
+Mazinani  [80] 2018  Intrusion 
+Detection  the problem of anomaly 
+detection in  Wireless 
+Sensor Network s (WSNs ) The network data 
+are clustered using 
+the DBSCAN 
+algorithm. It also 
+analyzes the 
+accuracy  
+Using SVM 
+Classifier  the IRLB  
+the dataset has been used 
+by this wor k The proposed 
+method 
+increased the 
+accuracy as 
+compared with 
+other previous 
+works.  
+Shrut hi et al. 
+[85] 2019  plant disease 
+Identification  One major effect on  low 
+crop yield is a disease 
+caused by bacteria, viru s 
+and fungus. which  can be 
+prevented by using  plant 
+diseases detection 
+techniques  A comparati ve 
+study is carried out 
+on five types of M L: 
+SVM , ANN, KNN, 
+CNN, and Fuzzy  
+classifier  Annotated Dataset which 
+is a Knowledge based 
+dataset that is created for 
+captured images with 
+different classes are used  
+ The result s 
+showed that 
+CNN classifier 
+detected  more 
+diseases with 
+high accuracy.  
+88 
+  
+ 
+ 
+ 
+V. DISCUSSION  
+It can be observed from the previous section that the 
+researchers have utilized S VM Classifier  in different fields. 
+Researcher s have identified key points related to their plans' 
+comparison.  Table 1 shows  a compariso n among  the 
+investigations mentioned in the previous  section. Where 
+the comparison  is implemented in terms  of Used Method s, 
+problem, application, utilized data set an d the m ain findings.   
+SVM's have been successfully used to analyze real -world 
+data, often providing better results than other techniques.  It 
+can be observed  that SVM has played a significant role in the 
+recognit ion of patterns, which is a highly popular an d activ e 
+research field among researchers. A significant advantage of 
+the SVM method is It  typically provides sparse solutions to 
+problems with classification  and regression: only a few 
+samples are involved. in deciding the functions of 
+classification or r egressi on. This reality makes it easier to 
+apply SVMs to issues requiring a huge quantity of data, such 
+as processing  image,  text and tasks in bioinformatics . This 
+has been proved in this study, where, i t can be  noticed  from 
+Table 1 that SVM classifier obt ained well results in some 
+applications such as facial recognition, text reco gnition, and 
+Disease diagnosis in which  the highest accuracy obtained in 
+facial r ecognition applicatio n was 97.47% by [ 51]. Also, for 
+Disease diagnosis , the best-obtained accuracy  was 97% in 
+cancer identification by [ 57]. However , for Sentiment 
+analysis the highest obt ained accuracy was 77% by [72] 
+which is not as high as other previou s applications.  While, 
+for other applications such as  intrusion detection a pplications 
+and plant disease identification, it has been inferred that 
+CNN classifier  achieved higher accuracy i n detecting 
+diseases than other traditional classifiers.  
+ 
+VI. CONCLUSION S 
+This paper explored active approaches that are 
+implemented using SVM classifier in different res earch 
+fields. These fields comprise face detection and  recognition, 
+Text Recognition, Dise ase diagnosing, sentiment Analysis, 
+plant disease Identification , Intrusion Detection  and many 
+more . Additionally, in all  these fields, researchers tried to 
+either us e SVM alone for classification or use more than one 
+classification method like NB, LR, RF,  and Ensemble 
+classifier in addition to SVM . Where, in most cases, t he 
+researche rs proved that SVM classifier  outperforme d other 
+classifiers in terms of Accuracy. Hen ce, based on our 
+investigation, we can conclude  that SVM classifier can be used successful ly in most applications especially for the 
+fields of facial recognit ion in which the highest accuracy 
+obtained was 97.47%  and the same for and diseases 
+diagnostic s where  the best -obtained accuracy was 97% in 
+cancer identification. However, for Sentiment an alysis the 
+highest obtained accuracy was 77% which is not as  high as  
+other previous applications.  
+REFERENCES  
+[1]  Chandra , M. A., & Bedi, S. S. (2018). Survey on SVM and their 
+application in image classification.  International Journal of 
+Information Techno logy, 1-11. 
+[2]  Zeebaree, Diyar Qader, Habibollah Haron, Adnan Moh sin Abdulazeez, 
+and Dilovan Asaad Zebari. "Trainable Model Based on New Uniform 
+LBP Feature to  Identify the Risk of the Breast Cancer." In 2019 
+International Conference on Advanced Science  and Engineering 
+(ICOASE), pp. 106 -111. IEEE, 2019.  
+[3]  Zeebaree, D iyar Qader, Habibollah Haron, Adnan Mohsin 
+Abdulazeez , and Dilovan Asaad Zebari. "Machine lear ning and 
+Region Growing for Breast Cancer Segmentation." In 2019 
+International Conference on A dvanced Science and Engineering 
+(ICOASE), pp. 88 -93. IEEE, 2019.  
+[4]  Khorshid, S. F., & Abdulazeez, A. M. (2021). BREAST  CANCER 
+DIAGNOSIS BASED ON K -NEAREST NEIGHBORS: A REVIEW. 
+PalArch's Journal of Archaeology of Egypt/Egyptology, 18(4), 1927 -
+1951.  
+[5]  Zebari, Dilovan Asaad , Diyar Qader Zeebaree, Adnan Mohsin 
+Abdulazeez , Habibollah Haron, and Haza Nuzly Abdull Hamed. 
+"Imp roved Threshold Based and Trainable Fu lly Automated 
+Segmentation for Breast Cancer Boundary and Pectoral Muscle in 
+Mammogram Images." I EEE Access 8 (2020): 203097 -203116.  
+[6]    Zantalis, F., Koulouras, G., Karabetsos, S., & Kandris, D. (2019). A 
+review of  machine learning and IoT in smart tra nsportation. Future 
+Internet, 11(4), 94.  
+[7] Adnan.M.  Abdulazeez, Sulaiman, M. A. Diyar Q.Zeebaree (2020). 
+Evaluating Data Mining Classification Methods Performance  in 
+Internet of Things Applications.  Journal of Soft Computing and Data 
+Mining , 1(2), 11 -25. 
+[8] Wei, H., Shan, C., Hu, C., Sun, H. , & Lei, M. (2018). Software defect 
+distribu tion prediction model based on NPE -SVM.  China 
+Communications,  15(5), 173 -182. 
+[9]   Al-jaboriy, S. S., Sjarif, N. N. A., Chuprat, S.,  & Abduallah, W. M. 
+(2019). Acute lymphoblastic leukemia segmentation using lo cal pixel 
+information. Pattern Recognition Letters, 125, 85 -90. 
+[10] Abdullah, D. M., & Ahmed, N. S. (2021). A Review of mos t Recent 
+Lung Cancer Detection Techniques using Machi ne 
+Learning.  International Journal of Science and Busines s, 5(3), 159 -
+173. 
+[11] Jahwar, A. F., & Abdulazeez, A. M. (2020). Meta -Heuristic 
+Algorithms For K -Means Clustering: A Review. PalArch's Journal of  
+Archaeology of Egypt/Egyptology, 17(7), 12002 -12020. . 
+[12] Somvanshi, M., Chavan, P., Tam bade, S., & Shinde, S. V. (2016, 
+August).  A review of machine learning techniques using decision tree 
+and support vector machine. In 2016 International Conference on 
+Computing Communication Control and automation (ICCUB EA) (pp. 
+1-7). IEEE.  Ebra himi et al. 
+[87] 2017  plant disease 
+Identification  It is necessary t o 
+find a way for  
+greenhouse 
+monitoring against 
+pest a ttacks.  Where, 
+one of the  more 
+harmful pests that 
+threaten strawberry 
+greenh ouses is 
+thrips  Detecting thrips on the 
+crop canopy images 
+using SVM 
+classification method . Near 100 sample 
+images were capture d 
+and obtained from a 
+strawberry greenhouse 
+at the  Faculty of 
+Agricultural 
+Engineering, Tarbiat 
+Modares University,  Results show ed 
+that using SVM 
+method made  the 
+best 
+classification 
+with MPE of less 
+than 2.25%.  
+ 
+89 
+ [13]  Sulaiman, D . M., Abdulazeez, A. M., Haron, H., & Sadiq, S. S. (2019, 
+April). Unsupervised Learning Approach -Based New Optimization 
+K-Means Clustering for Finger Vein Image Loc alization. In  2019 
+International Conference on Advanc ed Science and Engin eering 
+(ICOASE)  (pp. 82-87). IEEE.  
+[14] Charbuty, B., & Abdulazeez, A. (2021). Classification Based on 
+Decision Tree Algorithm for Machine Learning. Journal of Applied 
+Science and Te chnology Trends, 2(01), 20 -28. 
+[15]  Wendong, Y., Zhe ngzheng, L.,  & Bo, J . (2017, June). A multi -factor 
+analysis model of quantitative investment based on GA and SVM. In 
+2017 2nd International Conference on Image, Vision and Computing 
+(ICIVC) (pp. 1152 -1155). IEEE.  
+[16] Kareem, F. Q., & Abdula zeez, A. M. Ul trasound Medical Ima ges 
+Classification Based on Deep Learning Algorithms: A Review.  
+[17]- Zeebaree, Diyar Qader, Habibollah Haron, and Adnan Mohsin 
+Abdulazeez.  "Gene selection and classification of microarray dat a 
+using convolutional neural network." In  2018 International 
+Conference on Advanced Science and Engineering (ICOASE), pp. 
+145-150. IEEE, 2018.  
+[18] Abdulqader, Dildar Masood, Adnan Mohsin Abdulazeez, and  Diyar 
+Qader Zeebaree. "Machine Learning Supervised A lgorithms of Gene 
+Selection: A Review." Mach ine Learning 62, no.  03 (2020).  
+[19] Zebari, R., Abdulazeez, A., Zeebaree, D., Zebari, D., & Saeed, J. 
+(2020). A Comprehensive Review of Dimensionality Reducti on 
+Techniques f or Feature Selection and Feature Extra ction.  Journal of 
+Applied Science and Techno logy Trends,  1(2), 5 6-70. 
+[20] Dai, H. (2018, March). Research on SVM improved algorithm for 
+large data classification. In  2018 IEEE 3rd International Conference 
+on Big Data Analysis (ICBDA)  (pp. 181 -185). IEEE.  
+[21]  Haji, S. H., & Abdulazeez, A. M. (2021). COMPARISON OF 
+OPTIMIZ ATION TECHNIQUES BASED ON GRADIENT 
+DESCENT ALGORITHM: A REVIEW. PalArch's Journal of 
+Archaeology of Egypt /Egyptology, 18(4), 2715 -2743.  
+[22]  Tao, P., Sun, Z., & Sun, Z. (2018). An improv ed intrusion detection 
+algorithm based on GA  and SVM. Ieee Access, 6,  13624 -13631.  
+[23] Chauhan, V. K., Dahiya, K., & Sharma, A. (2019). Problem 
+formulations and solvers in linear SVM: a review . Artificial 
+Intelligence Review, 52(2), 803 -855. 
+[24] Ademujimi, T. T., Brundage, M. P., & Prabhu, V. V.  (2017, 
+September). A review of curren t machine learning techniques used in 
+manufacturing diagnosis. In  IFIP International Conference on 
+Advances in Pr oduction Management Systems  (pp. 407 -415). 
+Springer, Cham.  
+[25]  D. Q. Zeebaree, A. M. Abdulazeez, D. A. Zebari, H. Haron and H. 
+Nuzly , "Multi -level fusion in ultrasound for cancer detection based on 
+uniform lbp features," Computers, Materials & Continua, vol. 66, 
+no.3, pp. 3363 –3382, 2021.  
+[26]  Vapnik, V. N. (1999). An overview of statistical learning 
+theor y. IEEE transactions on neural network s, 10(5), 988 -999. 
+[27]  Yan, X., & Jia, M. (2018). A novel optimized SVM classification 
+algorithm with multi -domain feature and its application to fault 
+diagnosis of rolling bearing. Neurocomputing, 313, 47 -64. 
+[28] Wang, C., Zhang, Y., Song, J., L iu, Q. , & Dong, H. (2019). A novel 
+optimized SVM algorithm based on PSO with saturation and mixed 
+time-delays for classification of oil pipeline leak detection. Systems 
+Science & Control Engineering, 7(1), 75 -88. 
+[29]  Fan, M., Wei, L., He, Z., Wei, W., & L u, X. (2016). Defect inspection 
+of solder bumps using the scanning acoustic microscopy and fuzzy 
+SVM algorithm. Microelectronics Reliability, 65, 192 -197. 
+[30]  Long, S., Huang, X., Chen, Z., Pardhan, S., & Zheng, D. (201 9). 
+Automatic detection of hard exud ates in color retinal images using 
+dynamic threshold and SVM classification: algorithm development 
+and evaluation.  BioMed research international,  2019.  
+[31]  Abd Elkarim, I. S., & Agbinya, J. (2019). A Review of Paralle l 
+Support Vector Machines (PSVMs) for Big Data classification. 
+Australian Journal of Basic and Applied Sciences, 13(12), 61 -71. 
+[32]  Li, Q., Du, X., Zhang, H., Li, M., & Ba, W. (2018, May). Liquid 
+pipeline leakage detection based on moving windows LS -SVM 
+algorithm. In 2018 33rd Youth Academic  Annual Conference of 
+Chinese Association of Automation (YAC) (pp. 701 -705). IEEE.  
+[33]  Dai, C., Yang, J., Qin, Y., & Liu, J. (2016, October). Physical layer 
+authentication algorithm based on SVM. In 2016 2nd IEEE International Conference on Computer and Com munications (ICCC) 
+(pp. 1597 -1601). IEEE.  
+[34]  Sun, Z., Hu, K., Hu, T., Liu, J., & Zhu, K. (2018). Fast multi -label 
+low-rank linearized SVM classification algorithm based on 
+approximate extreme points. IEEE Access, 6, 42319 -42326.  
+[35]  Batool, M., Jalal, A. , & Kim, K. (2019, August). Sensors 
+Technologies for Human Activity Analys is Based on SVM Optimized 
+by PSO Algorithm. In 2019 International Conference on Applied and 
+Engineering Mathematics (ICAEM) (pp. 145 -150). IEEE.  
+[36] Maulud, D., & Abdulazeez, A. M. (2020). A Review on Linear 
+Regression Comprehensive in Machine Learning.  Journal of Applied 
+Science and Technology Trends , 1(4), 140 -147. 
+[37]  Talukdar, S., Singha, P., Mahato , S., Pal, S., Liou, Y. A., & Rahman, 
+A. (2020). Land -Use Land -Cover Classification by Machine Learning 
+Classifiers for Satellite Observations —A Review. R emote Sensing, 
+12(7), 1135.  
+[38] Al-Zebari, A., & Sengur, A. (2019, November). Performance 
+Comparison o f Machine Learning Techniques on Diabetes Disease 
+Detection. In 2019 1st International Informatics and Software 
+Engineering Conference (UBMYK) (pp. 1 -4). IEEE.  
+[39]  Yi, Q., Wang, H., Guo, R., Li, S., & Jiang, Y. (2017). Laser ultrasonic 
+quantitative recogn ition based on wavelet packet fusion algorithm and 
+SVM. Optik, 149, 206 -219. 
+[40]  Graser, J., Kauwe, S. K., & Sparks, T. D. (2018). Machine learning 
+and ene rgy minimization approaches for crystal structure predictions: 
+A review and new horizons. Chemistry o f Materials, 30(11), 3601 -
+3612.  
+[41]  Khalaf, B. A., Mostafa, S. A., Mustapha, A., Mohammed, M. A., & 
+Abduallah, W. M. (2019). Comprehensive review of arti ficial 
+intelligence and statistical approaches in distributed denial of service 
+attack and defense meth ods. IEEE Access, 7, 51691 -51713.  
+[42]  Zhang, Y., Ni, M., Zhang, C., Liang, S., Fang, S., Li, R., & Tan, Z. 
+(2019, May). Research and application of adaboost algorithm based 
+on svm. In 2019 IEEE 8th Joint International Information Technology 
+and Artificial Intelligence Conference (ITAIC ) (pp. 662 -666). IEEE.  
+[43]  Dhabhai, A., & Gupta, Y. K. (2016). Empirical study of image 
+classification techniques to classify the image using svm: A review. 
+International Journal of Innovative Research in Computer and 
+Communication Engineering, 4(10).  
+[44]  Tao, Q. Q., Zhan, S., Li, X. H., & Kurihara, T. (2016). Robust face 
+detection using local CNN and SVM based on kernel combination. 
+Neurocomputing, 211, 98 -105. 
+[45]  Kumar, S., Singh, S., & Kumar, J. (2019). Multipl e face detection 
+using hybrid featu res with SVM classifier. In Data and 
+Communication Networks (pp. 253 -265). Springer, Singapore.  
+[46]  Kumar, S., Singh, S., & Kumar, J. (2018). Automatic live facial 
+expression detection using genetic algorithm with haar wavelet 
+features and SVM. Wireless Personal Communications, 103(3), 2435 -
+2453.  
+[47]  Dino, H. I., & Abdulrazzaq, M. B. (2019, April). Fac ial expression 
+classification based on SVM, KNN and MLP classifiers. In 2019 
+International Conference on Advanced Science and Engineering 
+(ICOASE) (pp. 70 -75). IEEE.  
+[48]  Azzopardi, G., Greco, A., & Vento, M. (2016, July). Gender 
+recognition from face image s using a fusion of svm classifiers. In 
+International Conference on Image Analysis and Recognition (pp. 
+533-538). Springer, Cham.  
+[49]  Shi, L., Wang, X ., & Shen, Y. (2020). Research on 3D face 
+recognition method based on LBP and SVM. Optik, 220, 165157.  
+[50]  Dadi, H. S., & Pillutla, G. M. (2016). Improved face recognition rate 
+using HOG features and SVM classifier. IOSR Journal of Electronics 
+and Commun ication Engineering, 11(4), 34 -44. 
+[51]  Chen, H., & Haoyu, C. (2019, May). Face Recognition Algorithm 
+Based o n VGG Network Model and SVM. In Journal of Physics: 
+Conference Series (Vol. 1229, No. 1, p. 012015). IOP Publishing.  
+[52]  Aljanabi, M., Qutqut, H . M., & Hijjawi, M. (2018). Machine learning 
+classification techniques for heart disease prediction: A review. 
+International Journal of Engineering & Technology, 7(4), 5373 -5379.  
+[53]  Caballé, N. C., Castillo -Sequera, J. L., Gómez -Pulido, J. A., Gómez -
+Pulido, J. M., & Polo -Luque, M. L. (2020). Machine learning applied 
+to diagnosis of human diseases: A systematic revi ew. Applied 
+Sciences, 10(15), 5135.  
+90 
+ [54]  Mahajan, S., Bangar, G., & Kulkarni, N. (2020). Machine Learning 
+Algorithms for Classification of Va rious Stages of Alzheimer's 
+Disease: A review. Machine Learning, 7(08).  
+[55]  Asuntha, A., Brindha, A., Indirani, S., & Srinivasan, A. (2016). Lung 
+cancer detection using SVM algorithm and optimization techniques. J. 
+Chem. Pharm. Sci, 9(4), 3198 -3203.  
+[56]  Vadali, S., Deekshitulu, G. V. S. R., & Murthy, J. V. R. (2019). 
+Analysis of liver cancer using data mining SVM algori thm in 
+MATLAB. In Soft Computing for Problem Solving (pp. 163 -175). 
+Springer, Singapore.  
+[57]  Alam, J., Alam, S., & Hossan, A. (2018, F ebruary). Multi -stage lung 
+cancer detection and prediction using multi -class svm classifie. In 
+2018 International Conferen ce on Computer, Communication, 
+Chemical, Material and Electronic Engineering (IC4ME2) (pp. 1 -4). 
+IEEE.  
+[58]  Dolatabadi, A. D., Khadem , S. E. Z., & Asl, B. M. (2017). Automated 
+diagnosis of coronary artery disease (CAD) patients using optimized 
+SVM. Computer  methods and programs in biomedicine, 138, 117 -
+126. 
+[59]  Qiao, Z., Zhang, Q., Dong, Y., & Yang, J. J. (2017, October). 
+Application of SVM based on genetic algorithm in classification of 
+cataract fundus images. In 2017 IEEE International Conference on 
+Imagin g Systems and Techniques (IST) (pp. 1 -5). IEEE.  
+[60]  Nilashi, M., Ahmadi, N., Samad, S., Shahmoradi, L., Ahmadi, H., 
+Ibrahim, O.,  ... & Yadegaridehkordi, E. (2020). Disease Diagnosis 
+Using Machine Learning Techniques: A Review and Classification. 
+Journal of Soft Computing and Decision Support Systems, 7(1), 19 -
+30. 
+[61]  Nindrea, R. D., Aryandono, T., Lazuardi, L., & Dwiprahasto, I. 
+(2018). Diagnostic accuracy of different machine learning algorithms 
+for breast cancer risk calculation:  a meta -analysis. Asian Pacific 
+journal of cancer prevention: APJCP, 19(7), 1747.  
+[62]  Li, H. (2020). Text recognition and classification of english te aching 
+content based on SVM. Journal of Intelligent & Fuzzy Systems, 
+(Preprint), 1 -11. 
+[63]  Francis, L. M.,  & Sreenath, N. (2020). TEDLESS –Text detection 
+using least -square SVM from natural scene. Journal of King Saud 
+University -Computer and Information S ciences, 32(3), 287 -299. 
+[64]  Wei, F., Qin, H., Ye, S., & Zhao, H. (2018, December). Empirical 
+study of dee p learning for text classification in legal document 
+review. In 2018 IEEE International Conference on Big Data (Big 
+Data) (pp. 3317 -3320). IEEE.  
+[65]  Hassan, A. K. A., & Kadhm, M. S. (2016). Arabic handwriting text 
+recognition based on efficient segmentat ion, DCT and HOG features. 
+International Journal of Multimedia and Ubiquitous Engineering, 
+11(10), 83 -92. 
+[66]  Ismayilov, E. A. (2018). APPLICATION OF SVM AND SOFT 
+FEATURES TO AZERBAIJANI TEXT RECOGNITION. ICTACT 
+Journal on Image & Video Processing, 9(2).  
+[67]  Lin, W., Ji, D., & Lu, Y. (2017). Disorder recognition in clinical texts 
+using multi -label structured SV M. BMC bioinformatics, 18(1), 75.  
+[68]  Hassan, A. K. A., Mahdi, B. S., & Mohammed, A. A. (2019). Arabic 
+handwriting word recognition based on sc ale invari ant feature 
+transform and support vector machine.  Iraqi Journal of Science, 381 -
+387.  
+[69]  Sharma, S ., Sasi, A., & Cheeran, A. N. (2017, May). A SVM based 
+character recognition system. In 2017 2nd IEEE International 
+Conference on Recent Trends i n Electronic s, Information & 
+Communication Technology (RTEICT) (pp. 1703 -1707). IEEE.  
+[70]  Wawre, Suchita V., and Sachin N. Deshmukh. (2016)"Sentiment 
+classification using machine learning techniques." International 
+Journal of Science and Research (IJSR) 5.4: 819 -821. 
+[71]  Singla, Z., Randhawa, S., & Jain, S. (2017, June). Sentiment analysis 
+of customer product r eviews using machine learning. In  2017 
+International Conference on Intelligent Computing and Control 
+(I2C2)  (pp. 1 -5). IEEE.  
+[72]  Rahat, A. M., Kahir, A., & Masum , A. K. M. (2019, November). 
+Comparison of Naive Bayes and SVM Algorithm based on sentiment 
+analysis using review dataset. In 2019 8th International Conference 
+System Modeling and Advancement in Research Trends (SMART) 
+(pp. 266 -270). IEEE . 
+[73]  Bhavitha, B.  K., Rodrigues, A. P., & Chiplunkar, N. N. (2017, 
+March). Comparative study of machine lear ning techniques in 
+sentimental analysis. In 2017 International Conference on Inventive Communication and Computational Technologies (ICICCT) (pp.  216-
+221). IEEE.  
+[74]  Abro, S., Shaikh, S., Abro, R. A., Soomro, S. F., & Malik, H. M. 
+(2020). Aspect Based Se ntimental Analysis of Hotel Reviews: A 
+Comparative Study. Sukkur IBA Journal of Computing and 
+Mathematical Sciences, 4(1), 11 -20. 
+[75]  Ahmad, M. , Aftab, S., Muhammad , S. S., & Ahmad, S. (2017). 
+Machine learning techniques for sentiment analysis: A review.  Int. J. 
+Multidiscip. Sci. Eng, 8(3), 27.  
+[76]  Elmurngi, E., & Gherbi, A. (2017, August). An empirical study on 
+detecting fake reviews using mac hine learning technique s. In 2017 
+seventh international conference on innovative computing technology 
+(INTECH) (pp. 107 -114). IEEE.  
+[77]  Polpinij, J., Srikanjanapert, N., & Sopon, P. (2017, July). Word2Vec 
+approach for sentiment classification relating to  hotel reviews. In 
+Intern ational Conference on Computing and Information Technology 
+(pp. 308 -316). Springer, Ch am. 
+[78]  Lei, Y. (2017, October). Network anomaly traffic detection algorithm 
+based on SVM. In 2017 International Conference on Robots & 
+Intelli gent System (ICRIS) (pp. 21 7-220). IEEE.  
+[79]  Jupin, J. A., Sutikno, T., Ismail, M. A., Mohamad, M. S., Kasim,  S., 
+& Stiawan, D. (2019). Review of the machine learning methods in the 
+classification of phishing attack. Bulletin of Electrical Engineering 
+and Informatics, 8(4), 1545 -1555.  
+[80]  Emadi, H. S., & Mazinani, S. M. (2018). A novel anomaly detection 
+algorit hm using DBSCAN and SVM in wireless sensor networks. 
+Wireless Personal Communications, 98(2), 2025 -2035.  
+[81]  Gharaee, H., & Hosseinvand, H. (20 16, September). A new fea ture 
+selection IDS based on genetic algorithm and SVM. In 2016 8th 
+International Sympo sium on Telecommunications (IST) (pp. 139 -
+144). IEEE.  
+[82]  Yavanoglu, O., & Aydos, M. (2017, December). A review on cyber 
+security datasets for machine learning algorithms . In 2017 IEEE 
+International Conference on Big Data (Big Data) (pp. 2186 -2193). 
+IEEE . 
+[83]  Wang, C., Zheng, J., & Li, X. (2017, October). Research on DDoS 
+attacks detection based on RDF -SVM. In  2017 10th International 
+Conference  on Intelligent Computation T echnology and Automation 
+(ICICTA)  (pp. 161 -165). IEEE.  
+[84]  Tan, B., Tan, Y., & L i, Y. X. (2016). Research on Intrusion Detection 
+System Based on Improved PSO -SVM Algorithm. Chemical 
+Engineering Transactions, 51, 583 -588. 
+[85]  Shruthi, U., Nagaveni, V., & Raghavendra, B. K. (2019, March). A 
+review on machine learning classification te chniques for plant disease 
+detection. In 2019 5th International Conference on Advanced 
+Computing & Communication Systems (ICACCS) (pp. 281 -284). 
+IEEE.  
+[86]  Chung, C. L., Huang, K. J., Chen, S. Y., Lai, M. H., Chen, Y. C., & 
+Kuo, Y. F. (2016). Detecting Ba kanae disease in rice seedlings by 
+machine vision.  Computers and electronics in agriculture , 121, 404 -
+411. 
+[87] Ebrahimi, M. A., Khoshtaghaza, M.  H., Minaei, S., & Jamshidi, B. 
+(2017). Vision -based pest detection based on SVM classification 
+method.  Compute rs and Electronics in Agriculture , 137, 52-58. 
+[88]  Liakos, K. G., Busato, P., Moshou, D., Pearson, S., & Bochtis, D. 
+(2018). Machine learning i n agriculture: A review. Sensors, 18 (8), 
+2674.  
+[89]  Silva, J. C. F., Teixeira, R. M., Silva, F. F., Brommonsch enkel, S. H., 
+& Fontes, E. P. (2019). Machine learning approaches and their current 
+application in plant molecular biology: A systematic review. Plant 
+Science, 284, 37 -47. 
+ 
+ 
+ 
+ 

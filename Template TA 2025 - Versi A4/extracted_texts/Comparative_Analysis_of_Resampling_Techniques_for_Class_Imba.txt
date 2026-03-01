@@ -1,0 +1,1044 @@
+Academic Editors: Vasilios
+N. Katsikis, Xinwei Cao, Shuai Li,
+Dimitris Balios and Theodore
+E. Simos
+Received: 6 June 2025
+Revised: 2 July 2025
+Accepted: 2 July 2025
+Published: 4 July 2025
+Citation: Hou, G.; Tong, D.L.; Liew,
+S.Y.; Choo, P .Y. Comparative Analysis
+of Resampling Techniques for Class
+Imbalance in Financial Distress
+Prediction Using XGBoost.
+Mathematics 2025 ,13, 2186. https://
+doi.org/10.3390/math13132186
+Copyright: © 2025 by the authors.
+Licensee MDPI, Basel, Switzerland.
+This article is an open access article
+distributed under the terms and
+conditions of the Creative Commons
+Attribution (CC BY) license
+(https://creativecommons.org/
+licenses/by/4.0/).
+Article
+Comparative Analysis of Resampling Techniques for Class
+Imbalance in Financial Distress Prediction Using XGBoost
+Guodong Hou1,2
+, Dong Ling Tong1,*
+, Soung Yue Liew1
+and Peng Yin Choo1
+1Faculty of Information and Communication Technology, University Tunku Abdul Rahman, Kampar Campus,
+Kampar 31900, Perak, Malaysia; houguodong@1utar.my (G.H.); syliew@utar.edu.my (S.Y.L.);
+choopy@utar.edu.my (P .Y.C.)
+2School of Business, Shandong Agriculture and Engineering University, Jinan 250100, China
+*Correspondence: tongdl@utar.edu.my
+Abstract
+One of the key challenges in financial distress data is class imbalance, where the data are
+characterized by a highly imbalanced ratio between the number of distressed and non-
+distressed samples. This study examines eight resampling techniques for improving distress
+prediction using the XGBoost algorithm. The study was performed on a dataset acquired
+from the CSMAR database, containing 26,383 firm-quarter samples from 639 Chinese A-
+share listed companies (2007–2024), with only 12.1% of the cases being distressed. Results
+show that standard Synthetic Minority Oversampling Technique (SMOTE) enhanced F1-
+score (up to 0.73) and Matthews Correlation Coefficient (MCC, up to 0.70), while SMOTE-
+Tomek and Borderline-SMOTE further boosted recall, slightly sacrificing precision. These
+oversampling and hybrid methods also maintained reasonable computational efficiency.
+However, Random Undersampling (RUS), though yielding high recall (0.85), suffered from
+low precision (0.46) and weaker generalization, but was the fastest method. Among all
+techniques, Bagging-SMOTE achieved balanced performance (AUC 0.96, F1 0.72, PR-AUC
+0.80, MCC 0.68) using a minority-to-majority ratio of 0.15, demonstrating that ensemble-
+based resampling can improve robustness with minimal impact on the original class
+distribution, albeit with higher computational cost. The compared findings highlight that
+no single approach fits all use cases, and technique selection should align with specific
+goals. Techniques favoring recall (e.g., Bagging-SMOTE, SMOTE-Tomek) are suited for
+early warning, while conservative techniques (e.g., Tomek Links) help reduce false positives
+in risk-sensitive applications, and efficient methods such as RUS are preferable when
+computational speed is a priority.
+Keywords: class imbalance; SMOTE; ADASYN; Borderline-SMOTE; SMOTE-Tomek;
+SMOTE-ENN; RUS; Tomek Links; Bagging-SMOTE; XGBoost
+MSC: 68T09
+1. Introduction
+In recent years, the application of machine learning to financial distress prediction has
+attracted increasing attention, owing to its powerful capabilities in feature extraction and
+nonlinear modeling, which significantly enhance the ability to capture complex patterns
+in financial data and improve predictive accuracy. However, a core challenge remains:
+the severe class imbalance inherent in financial datasets. In practice, distressed samples
+constitute only a small fraction of all listed companies, causing models to be biased toward
+Mathematics 2025 ,13, 2186 https://doi.org/10.3390/math13132186
+Mathematics 2025 ,13, 2186 2 of 21
+the majority class (non-distressed samples) during training. This often results in high
+overall accuracy but poor recall for the minority class (distressed samples), which greatly
+undermines the practical value of predictive systems in financial risk management.
+Under such circumstances, classification metrics such as accuracy, recall, and preci-
+sion often fail to reflect a model’s true ability to identify distressed samples. Therefore,
+effectively addressing the class imbalance problem has become a critical issue in financial
+distress prediction. Resampling techniques are among the most widely adopted solutions,
+as they adjust the distribution of training samples to achieve class balance. Commonly used
+oversampling techniques include Synthetic Minority Oversampling Technique (SMOTE),
+Adaptive Synthetic Sampling (ADASYN), and Borderline-SMOTE, as well as hybrid ap-
+proaches such as SMOTE-Tomek and SMOTE-ENN. Meanwhile, undersampling techniques
+such as Random Undersampling (RUS) and Tomek Links are also frequently used to re-
+duce the dominance of the majority class. While these resampling techniques have shown
+advantages in various imbalanced classification tasks, there is still a lack of comprehensive
+comparative studies that assess their effectiveness and applicability in enhancing model
+performance for real-world financial distress detection.
+Despite the growing body of research on resampling techniques, most existing studies
+either focus on a limited subset of techniques or rely on simulated or non-financial datasets,
+which may not fully capture the unique characteristics and challenges of real-world financial
+data. Furthermore, previous comparative analyses often lack a unified experimental
+framework, making it difficult to draw consistent and practical conclusions regarding the
+relative performance of different resampling techniques in financial distress prediction.
+To address these gaps, this study presents a systematic and in-depth comparative anal-
+ysis of a broad range of resampling techniques, including SMOTE, ADASYN, Borderline-
+SMOTE, SMOTE-Tomek, SMOTE-ENN, Random Undersampling, Tomek Links, and
+Bagging-SMOTE, using real financial data from publicly listed companies. All methods are
+evaluated under consistent experimental conditions, with XGBoost employed as the base
+classifier and a unified evaluation framework applied throughout. This approach enables a
+fair and comprehensive assessment of the strengths and limitations of each technique in
+the context of financial distress prediction.
+By comparing the performance of these methods across multiple metrics relevant to
+imbalanced classification such as F1-score, area under the receiver operating characteristic
+curve (AUC), area under the precision-recall curve (PR-AUC), and Matthews correlation
+coefficient (MCC), we reveal the effectiveness of different resampling techniques in enhanc-
+ing the identification of distressed samples and provide practical, evidence-based guidance
+for practitioners and researchers in the field of financial risk management.
+2. Related Works
+Class imbalance is a common challenge when working with real-world data, often
+leading to degraded classification performance. This is because most machine learning
+algorithms are not inherently designed to handle highly imbalanced datasets effectively.
+Machine learning models favor the majority class, thereby reducing the accuracy of pre-
+dictions for the minority class. Song et. al. [ 1] and Engin [ 2] highlighted this issue and
+employed various resampling techniques, including SMOTE and ensemble methods, to
+reshape the dataset size to achieve class balance, thereby improving model performance.
+Resampling techniques can generally be categorized into three major groups: over-
+sampling, undersampling, and hybrid resampling. Each approach seeks to address class
+imbalance by adjusting the size of the majority or minority class to enhance the model’s
+prediction power in detecting minority class instances.
+Mathematics 2025 ,13, 2186 3 of 21
+2.1. Oversampling Techniques
+Oversampling techniques address class imbalance by generating synthetic samples
+for the minority class, thereby improving the performance of machine learning models in
+detecting rare but critical events.
+The commonly used oversampling technique is the Synthetic Minority Oversam-
+pling Technique (SMOTE), which generates synthetic samples for the minority class by
+interpolating new synthetic instances between minority class instances and their nearest
+neighbors [ 3]. It has been widely applied in biomedical domains to generate synthetic
+samples of the minority class in protein-protein interactions [ 4], breast cancer prediction [ 5],
+and medical diagnosis [ 6]. In some practice studies, Alex and Nayahi [ 7] reported that
+SMOTE introduced noise during the process of creating synthetic samples. This could be
+due to instances that are sparsely distributed, and synthetic samples do not accurately
+reflect the true characteristics of the minority class.
+To alleviate the limitations of SMOTE, Han, Wang, and Mao [ 8] proposed using
+Borderline-SMOTE, which focuses on generating samples near the class boundary rather
+than the entire minority class. It operates on the premise that minority samples far from
+the class boundary contribute minimally to classification improvement, while those closer
+to the boundary play a critical role in distinguishing between classes. The effectiveness
+of Borderline-SMOTE has been reported in fault detection systems [ 9] and text classifi-
+cation [ 10], where careful parameter tuning is crucial to prevent misclassification at the
+class boundaries.
+Adaptive Synthetic Sampling (ADASYN) is an advanced oversampling technique
+that extends SMOTE by adaptively focusing on minority class instances that are harder
+to learn [ 11]. The method increases the sampling rate for minority instances that are
+misclassified or located near the decision boundary, thereby enhancing the classifier’s
+focus on complex regions of the input space. It has been reported to outperform other
+methods in multiclass imbalanced scenarios when combined with stacking algorithms [ 12].
+Analogous to other oversampling techniques, ADASYN can easily overfit noisy regions if
+not combined with any other denoising techniques.
+2.2. Undersampling Techniques
+Unlike oversampling techniques that increase the number of instances for the minority
+class, undersampling techniques tackle class imbalance by reducing the number of instances
+in the majority class.
+Random Under Sampling (RUS) is an undersampling technique that reduces the size
+of the majority class by randomly removing instances. Due to its random nature, RUS
+carries the risk of discarding important information, which is why it is often combined
+with cleaning strategies. Arifin et al. [ 13] showed that RUS with decision tree and random
+forest classifiers performed better than other resampling techniques.
+Tomek Links is another widely used undersampling technique, which identifies
+minority-majority pairs where each is the nearest neighbor of the other, and removing these
+pairs improves class separation [ 14]. This technique has been applied in credit card fraud
+detection [ 15] and abnormal traffic detection for filtering noise samples in the data [ 16].
+However, it may excessively trim borderline instances to cause an overly aggressive reduc-
+tion in the dataset’s complexity, potentially losing valuable, nuanced patterns that could
+contribute to a more comprehensive understanding of the predictive model’s behavior
+and performance.
+Mathematics 2025 ,13, 2186 4 of 21
+2.3. Hybrid Resampling Techniques
+Although oversampling and undersampling techniques are effective for balancing
+data, relying on a single resampling method has its limitations. To address these shortcom-
+ings, hybrid techniques that combine multiple resampling approaches have been proposed.
+SMOTE-Tomek, which combines oversampling and undersampling techniques, is
+widely used in enhancing classifier performance for cancer prediction datasets [ 17]. It
+combines SMOTE with Tomek Links to remove noisy majority samples near minority
+instances, which needed careful validation to avoid overfitting the cleaned subsets.
+SMOTE-ENN integrates SMOTE with Edited Nearest Neighbors (ENN) to delete
+misclassified majority samples post-oversampling, refining decision boundaries. It has
+been used in medical datasets such as missed abortion diagnosis to enhance the model’s
+classification accuracy [ 18]. Similar to most of the undersampling techniques, ENN may
+remove useful samples in its aggressive pruning process.
+2.4. Prediction Models with Built-In Resampling Techniques
+A major challenge in hybrid resampling techniques is maintaining a balance be-
+tween enhancing minority class representation and preserving the overall data quality.
+This enhancement is typically achieved by reducing the number of majority class sam-
+ples and/or increasing instances of the minority class. However, excessive pruning or
+over-generating samples can distort the original data distribution, potentially leading to
+inaccurate predictions.
+Recent studies have demonstrated the effectiveness of XGBoost in handling the class
+imbalance issue of financial distress scenarios [ 19,20]. XGBoost incorporates cost-sensitive
+learning through adjustable weights for minority class instances, optimizing prediction.
+It employs regularization techniques to prevent overfitting, making it suitable for high-
+dimensional financial datasets [21].
+RUSBoost, which combines Random Undersampling (RUS) with boosting algorithms,
+was also explored in various application scenarios [ 22]. It reduces the size of the majority
+class to balance the dataset, mitigating bias toward majority classes and boosting iteratively
+trained weak classifiers, emphasizing misclassified instances in subsequent iterations.
+2.5. Summary
+In summary, oversampling techniques such as SMOTE and ADASYN have proven
+effective in improving minority class detection, particularly in dense regions of the minority
+class [ 23]. However, in financial distress prediction, where distressed companies may be
+highly heterogeneous and sparsely distributed, these methods risk introducing synthetic
+noise or generating unrealistic samples [ 24], potentially distorting the true risk profile of
+companies. Undersampling techniques such as Tomek Links can enhance class separation
+and reduce overlap, but they may also discard valuable information from the majority class,
+which is especially problematic in financial datasets where each observation may carry
+unique, informative signals about corporate health.
+Hybrid techniques, such as SMOTE-Tomek and SMOTE-ENN, often outperform indi-
+vidual methods by combining data synthesis with noise reduction [ 25]. Nevertheless, these
+approaches can lead to over-pruning, inadvertently removing borderline or informative
+samples along with noise, which may reduce the model’s ability to capture subtle patterns
+critical for early warning in financial distress scenarios. Moreover, the effectiveness and side
+effects of these resampling techniques are highly dependent on dataset characteristics, such
+as the degree of imbalance, feature distribution, and the presence of outliers, as well as on
+computational resources, an important consideration for large-scale financial applications.
+Mathematics 2025 ,13, 2186 5 of 21
+Previous comparative studies have often focused on general classification tasks or
+biomedical datasets, with limited attention to the unique challenges posed by financial
+distress prediction. These limitations underscore the need for a systematic evaluation of
+resampling techniques in the context of real-world financial datasets, considering both
+predictive performance and practical trade-offs.
+This study aims to address the identified research gaps by critically evaluating the
+effectiveness and limitations of major resampling techniques on a large, real-world financial
+dataset. We utilize a comprehensive set of financial indicators, encompassing both general
+financial ratios and bankruptcy-related features, to ensure robust analysis. Additionally,
+our study considers computational efficiency and discusses the practical implications of
+different resampling techniques for financial risk management.
+3. Materials and Methods
+3.1. Data
+The data used in this study were obtained from the China Stock Market & Accounting
+Research (CSMAR) database. It comprised quarterly financial data from 639 Chinese A-
+share listed companies from 2007 to 2024, resulting in a total of 26,383 firm-quarter samples
+with 368 variables. The data are highly imbalanced, with 3181 samples (12.1%) labeled as
+Special Treated (ST), and 23,202 samples (87.9%) labeled as non-ST (see Figure 1).
+Table 1 summarizes the dataset, which includes two subsets: Financial Indicators and
+Bankruptcy Reorganization. Detailed descriptions are available in CSMAR. The financial
+indicators span various dimensions, while the bankruptcy reorganization subset adds
+variables related to business risk.
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 1. Sample distribution.
+Mathematics 2025 ,13, 2186 6 of 21
+Table 1. The dataset components.
+Set Category Brief Description
+Financial
+IndicatorsSolvency Ability to repay short- and long-term debt using enterprise assets.
+Disclosed Index Indicators directly reported to reflect company operations.
+Ratio StructureFinancial structure based on the proportions of key
+financial indicators.
+Operating Capacity Efficiency in utilizing assets for business operations.
+Earning Capacity Ability to generate profits.
+Cash Flow Cash-related indicators derived from financial statement ratios.
+Risk LevelRisk of financial instability due to weak structure or poor
+financing practices.
+Growth Capability Potential for future expansion and performance improvement.
+Index per Share Financial condition measured on a per-share basis.
+Relative Value IndexDerived from comparisons among
+related indicators.
+Dividend DistributionMetrics derived from comparisons among related
+financial indicators.
+Bankruptcy
+ReorganizationBusiness Risk Risk profile of bankrupt or restructured listed firms.
+3.2. Experimental Design
+Figure 2 illustrates the experimental workflow of this study. We first normalize the
+original dataset using min-max normalization. We then partition the data into training and
+test sets with a stratified split ratio of 70% for training and 30% for testing. To systematically
+investigate the impact of class imbalance handling, we compare eight resampling tech-
+niques, each applying exclusively to the training data to prevent data leakage. We then use
+each balanced training set to train the XGBoost model, employing 5-fold cross-validation
+to mitigate overfitting. Finally, we evaluate each trained XGBoost model on the untouched
+test set to assess generalization ability and robustness to unseen data.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 2. Experimental workflow for the study.
+Mathematics 2025 ,13, 2186 7 of 21
+3.2.1. Data Normalization
+Min-max normalization was selected in this study to rescale feature values because it
+preserves the underlying distribution and patterns of the data. Additionally, since the base
+classifier used (XGBoost) does not assume normality, min-max scaling is a suitable choice.
+Equation (1) presents the mathematical expression of this method.
+Min-Max normalization, X′=Xi−Xmin
+Xmax−Xmin(1)
+Given a feature Xconsisting of value {X1,X2, . . . , Xi}, where iis the total number of
+observations in the feature, the normalization process involves subtracting the minimum
+value of Xfrom each value and then dividing by the range. The resulting normalized
+values retain the original distribution shape but are confined within the range of [0, 1].
+3.2.2. Stratified Splitting of the Dataset
+To ensure a fair and representative evaluation, we employ stratified splitting to di-
+vide the dataset into training and test sets. Stratified splitting preserves the original class
+distribution in both subsets, which is especially important for imbalanced classification
+tasks. Importantly, all subsequent data preprocessing steps, including resampling tech-
+niques such as oversampling, undersampling, and hybrid resampling, were performed
+exclusively on the training set. The test set remains completely isolated and was not used
+in any way during resampling or model training. This protocol effectively prevents data
+leakage, ensuring that the evaluation metrics reflect the model’s true generalization ability
+on unseen data.
+3.2.3. Resampling and Hybrid Techniques
+(1) Synthetic Minority Oversampling Technique (SMOTE)
+SMOTE is an oversampling technique that creates new instances through linear inter-
+polation between a given minority sample and its k-nearest minority class neighbors. The
+default number of kneighbors in the standard SMOTE algorithm is 5.
+The process involves selecting a minority class sample xi, identifying one of its nearest
+neighbors xj, and generating a synthetic sample xsynth as follows:
+xsynth =xi+λ· 
+xj−xi
+(2)
+where xi, and xjare minority class neighbors, and λis a random weight ∈[0, 1]. This
+operation effectively generates new samples along the line segments connecting minority
+instances, which helps to generalize the minority region and reduce model bias toward the
+majority class.
+(2) Borderline-SMOTE
+Borderline-SMOTE is a supervised oversampling method that improves upon the
+original SMOTE algorithm by focusing specifically on minority class instances that lie
+near the decision boundary, where misclassification is more likely. The technique starts by
+analyzing the k-nearest neighbors of each minority class instance. Based on the distribution
+of class labels within this neighborhood, each instance is categorized as safe, noisy, or
+dangerous. Only those identified as dangerous, which are surrounded by a mix of majority
+and minority class neighbors, are selected for oversampling.
+For a given dangerous minority instance xiand its k-nearest minority neighbors
+k1,k2, . . . , kj	
+, the SMOTE interpolation process generates synthetic samples by com-
+bining xiwith a selected neighbor kj. The synthetic instance is created using a linear
+Mathematics 2025 ,13, 2186 8 of 21
+interpolation between the two points based on their distance. The mathematical represen-
+tation is given as follows:
+xsynth =xi+λ· 
+kj−xi
+(3)
+where λis a random weight ∈[0, 1].
+(3) Adaptive Synthetic Sampling (ADASYN)
+ADASYN is an extension technique of SMOTE that focuses on minority class instances
+that are harder to learn. It begins by computing the ratio of majority class neighbors within
+the k-nearest neighborhood of each minority sample. A higher ratio indicates greater
+difficulty in learning that instance. ADASYN assigns a higher weight to such samples when
+generating synthetic data. Formally, for each minority sample xi, the number of synthetic
+samples to be generated is proportional to its local density measure. Equation (4) is the
+mathematical expression of this method.
+gi=ri
+∑n
+j=1rj(4)
+where riis the ratio of the majority class examples to xi, and nis the total number of
+observations in the minority class.
+New instances are generated using the same interpolation mechanism as in SMOTE.
+By concentrating on more challenging areas of the feature space, ADASYN dynamically
+shifts the decision boundary and enhances the learning process.
+(4) Random Undersampling (RUS)
+RUS is an undersampling technique that reduces the number of majority class instances
+by randomly removing samples, thereby balancing the class distribution in the dataset.
+The core assumption of RUS is that the majority class contains redundant or less
+informative instances that can be discarded without significantly compromising model
+performance. However, due to the random nature of instance removal, there is a potential
+risk of discarding important majority examples and thus losing valuable information.
+(5) Tomek Links
+Tomek Links is an undersampling technique that finds pairs of nearest-neighbor
+instances from different classes. When such pairs are found, instances of the majority class
+will be removed, thereby refining the decision boundary and reducing overlap between the
+two classes. Equation (5) shows the mathematical representation of this method.
+NN(xi)=xj∧NN 
+xj=xi∧yi̸=yj(5)
+Two instances ( xi,xj) form a Tomek Link if they are nearest neighbors ( NN(x)) from
+opposite classes ( yi,yj).
+(6) SMOTE-Tomek
+SMOTE-Tomek is a two-stage hybrid technique that integrates SMOTE oversampling
+with Tomek Links undersampling [ 26]. Firstly, SMOTE generates synthetic minority class
+samples using interpolation between existing instances and their k-nearest neighbors (see
+Equation (2)). In the latter stage, Tomek Links are identified within the augmented dataset
+to remove nearest-neighbor instances from the majority class (see Equation (5)).
+The combination of oversampling through SMOTE and data cleaning via Tomek Links
+enables SMOTE-Tomek to enhance both class balance and the discriminative quality of the
+feature space.
+(7) SMOTE-Edited Nearest Neighbors (SMOTE-ENN)
+Mathematics 2025 ,13, 2186 9 of 21
+SMOTE-ENN is a hybrid resampling technique that integrates SMOTE with the ENN
+method [ 14]. This approach aims to address class imbalance and to enhance the quality of
+the training dataset by removing noisy or ambiguous instances.
+In the first step, SMOTE generates synthetic instances for the minority class in the
+dataset. The ENN algorithm is then applied to remove any instance whose class label
+differs from the majority class of its k-nearest neighbors. This rule applies to both original
+and synthetic examples, enabling the algorithm to eliminate overlapping or noisy points
+from both classes. By combining data augmentation and noise filtering, SMOTE-ENN
+improves class separability and enhances generalization performance.
+(8) Bagging-SMOTE
+Bagging-SMOTE is a prediction model that combines the strengths of bootstrap ag-
+gregating and SMOTE to improve classification performance on imbalanced datasets. The
+training data were first randomly split into K bootstrap folds (with replacement). The
+SMOTE was then applied to each bootstrap fold to balance the class distribution. In the
+Bagging-SMOTE framework, we selected XGBoost as the base classifier.
+Table 2 summarizes the resampling techniques used in this study.
+Table 2. Summary of resampling and hybrid techniques.
+Technique Type Description
+SMOTE OversamplingGenerates synthetic minority class
+samples via linear interpolation
+between neighbors.
+ADASYN OversamplingFocuses synthesis on difficult
+minority samples by weighting
+based on local imbalance.
+Borderline-SMOTE OversamplingSpecifically, it oversamples
+minority instances near the
+decision boundary.
+Random Under UndersamplingRandomly reduces the majority
+class samples to balance
+the distribution.
+Tomek Links UndersamplingRemoves overlapping majority
+class samples to improve
+class separation.
+SMOTE-Tomek HybridApply SMOTE, then clean the
+noise with Tomek Links.
+SMOTE-ENN HybridGenerates synthetic samples and
+then removes
+misclassified instances.
+Bagging-SMOTE HybridStratify data with sampling by
+replacement, then apply SMOTE
+in each stratified set of data.
+3.2.4. XGBoost Prediction Model
+XGBoost is a powerful gradient boosted trees algorithm known for its effectiveness in
+handling complex datasets. We select it as the base classifier in this study due to its strong
+performance in tabular data modeling, robustness to multicollinearity, and ability to handle
+missing values—characteristics well-suited to financial datasets with high dimensionality
+and sparsity. In addition, XGBoost offers effective regularization to prevent overfitting,
+supports various objective functions, and provides efficient, scalable implementations that
+are widely adopted in both academic research and industry. These advantages make it a
+Mathematics 2025 ,13, 2186 10 of 21
+practical and reliable choice for our analysis focused on evaluating resampling techniques
+under class imbalance.
+During model training, it begins with an initial prediction based on the distribution
+of the target variable. We then train the subsequent trees to correct the errors of the
+previous model by focusing on the misclassified samples. Each new tree works to refine
+the predictions of the previous model by re-predicting the incorrectly classified samples.
+This iterative process continues until either the predefined number of trees is built or the
+number of unchanged predictions reaches a specified threshold.
+To mitigate overfitting, the experiment employs 5-fold cross-validation (CV) during
+training. In each iteration, it trains the model on four folds of the data, while the remaining
+fold is used to validate its predictive performance. This process is repeated until each fold
+has served once as the validation set. The experiment uses average performance across all
+folds to assess the model’s generalization ability. Table 3 shows the used hyperparameters
+of the model.
+Table 3. Hyperparameter in XGBoost.
+Parameter Value Descriptions
+random_state 42To ensure the reproducibility of
+experimental results
+n_estimators 300 The maximum number of trees
+eval_metric Logloss, AUCTo evaluate the performance of
+tree prediction
+early_stopping_rounds 20Early stopping to prevent
+model overfit
+To comprehensively assess the predictive performance of the XGBoost classifier, we
+employ a range of evaluation metrics, including accuracy, precision, recall, F1-score, area
+under the receiver operating characteristic curve (AUC-ROC), area under the precision-
+recall curve (PR-AUC), and Matthews correlation coefficient (MCC). Equations (6)–(11)
+present the mathematical representation of these metrics.
+Accuracy =TP+TN
+TP+TN+FP+FN(6)
+Precision =TP
+TP+FP(7)
+Recall =TP
+TP+FN(8)
+where,
+TP = True Positives
+TN = True Negatives
+FP = False Positives
+FN = False Negatives
+F1 Score =2×Precision ×Recall
+Precision +Recall(9)
+MCC =(TP×TN)−(FP×FN)p
+(TP+FP)(TP+FN)(TN+FP)(TN+FN)(10)
+AUC =Z1
+0TPR (FPR )d(FPR ) (11)
+where,
+Mathematics 2025 ,13, 2186 11 of 21
+TPR (True Positive Rate) is also known as sensitivity or recall.
+FPR (False Positive Rate) is defined asFP
+FP+TN.
+4. Results
+To preserve the original class imbalance ratio, we stratified the dataset into training
+and test subsets. Figure 3 illustrates the class distribution of the entire dataset, training,
+and test subsets. The proportion of the minority class (i.e., Class 1, representing distressed
+samples) is consistently 12.1%, while the majority class (i.e., Class 0, non-distressed samples)
+accounts for 87.9% across all splits.
+Figure 3. Class distribution among training and test sets.
+4.1. Impact of Resampling Techniques Toward the Training Set
+To address class imbalance, we applied eight resampling techniques to the training
+subset. Figure 4 compares the class distribution of the original training set against the
+effects of the eight resampling methods on the minority and majority classes.
+SMOTE (see Figure 4b), ADASYN (see Figure 4c), and Borderline-SMOTE (see Fig-
+ure 4d) generate synthetic minority samples to balance the dataset, with ADASYN focusing
+more on difficult-to-learn regions. SMOTE-Tomek (see Figure 4g) and SMOTE-ENN (see
+Figure 4h) combine oversampling with cleaning methods by removing noisy or overlap-
+ping majority class samples, resulting in clearer class boundaries. RUS (see Figure 4e)
+reduces the number of majority samples, leading to a more compact but potentially under-
+representative distribution. Tomek Links (see Figure 4f) remove borderline majority class
+samples that overlap or are close to the minority class, resulting in a cleaner class boundary.
+As shown by the purple ‘ ×’ markers, a small subset of the majority class is eliminated,
+leading to minimal distributional shift while retaining the overall structure of the data.
+Bagging-SMOTE (see Figure 4i) produces a similarly distributed training set in each fold,
+following a sampling strategy of 0.15, where synthetic minority class samples are generated
+to reach approximately 15% of the majority class size. The synthetic minority samples
+(green triangles) enhance minority representation in overlapping areas of the feature space.
+These visualizations collectively demonstrate how each technique reshapes the data space
+to address class imbalance and enhance classifier learning.
+Table 4 summarizes the class distribution comparison before and after applying the
+resampling techniques.
+Mathematics 2025 ,13, 2186 12 of 21
+   
+(a) ( b) ( c) 
+   
+(d) ( e) ( f) 
+   
+(g) ( h) ( i) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 4. Sample distribution after resampling. ( a) Original training data; ( b) SMOTE;
+(c) ADASYN; ( d) Borderline-SMOTE; ( e) RUS; ( f) Tomek Links; ( g) SMOTE-Tomek; ( h) SMOTE-ENN;
+(i) Bagging-SMOTE. Legends and marker styles are unified: blue circles = original minority, orange
+dots = original majority, green triangles = synthetic minority, purple crosses = removed majority, red
+stars = removed minority. Only 10% of samples are shown for clarity.
+Oversampling techniques such as SMOTE, ADASYN, and Borderline-SMOTE elevated
+the number of distressed (minority) samples from 2227 to 16,241, thereby achieving a fully
+balanced class distribution with a 1:1 ratio. In contrast, undersampling techniques such as
+RUS addressed the imbalance by reducing the number of non-distressed (majority) samples
+down to 2227, equalizing the class frequencies at the cost of discarding a substantial portion
+of the majority class data.
+Hybrid approaches implemented more nuanced balancing strategies. For instance,
+Tomek Links applied a light filtering mechanism, resulting in a slight reduction in ma-
+jority class samples (from 16,241 to 16,021), while keeping the minority class unchanged,
+maintaining a high imbalance ratio of approximately 7.19:1. This reflects its design, which
+Mathematics 2025 ,13, 2186 13 of 21
+aims to eliminate overlapping or borderline instances rather than adjust class frequencies
+aggressively.
+Table 4. Class distribution comparison before and after resampling.
+MethodsClass Distribution
+Class 0 Class 1 Class Ratio (0:1)
+Original data 16,241 2227 7.29:1
+SMOTE 16,241 16,241 1:1
+ADASYN 16,241 16,273 1:1
+Borderline-SMOTE 16,241 16,241 1:1
+RUS 2227 2227 1:1
+Tomek Links 16,021 2227 7.19:1
+SMOTE-Tomek 16,229 16,229 1:1
+SMOTE-ENN 13,702 16,018 0.86:1
+Bagging-SMOTE 16,241 2436 6.67:1
+Class 0 denotes non-distressed samples, and Class 1 denotes distressed samples.
+Other hybrid techniques, such as SMOTE-Tomek, combined synthetic sample gen-
+eration with instance filtering to achieve perfect balance, increasing the minority class to
+16,229 while slightly reducing the majority class to a comparable number. SMOTE-ENN,
+which applies to a more aggressive noise-filtering mechanism after oversampling, led to
+an imbalanced but cleaner dataset, yielding 16,018 distressed and 13,702 non-distressed
+samples, with a class ratio of 0.86:1. This filtering step aims to remove noisy or ambiguous
+instances, improving data quality and potentially enhancing model generalization.
+Bagging-SMOTE integrates bootstrapped training with SMOTE within an ensemble
+framework, maintaining consistent resampling outcomes across folds. In each fold of the
+cross-validation process, four estimators were used for training and one for validation. The
+majority class in the training estimators comprised 16,241 samples, and SMOTE syntheti-
+cally increased the minority class samples to about 2436 based on the defined sampling
+strategy of 0.15. Bagging-SMOTE effectively reshapes the data space by generating syn-
+thetic minority instances within the existing data manifold, mitigating class imbalance
+while maintaining diversity across ensemble folds.
+Overall, the visualization and tabulated results highlight the diverse impacts of various
+resampling techniques on class distribution. These adjustments are critical for addressing
+the severe class imbalance inherent in financial distress prediction tasks. By balancing the
+dataset, either through oversampling, undersampling, or hybrid resampling, these tech-
+niques enhance the model’s capacity to detect distressed samples, which would otherwise
+be underrepresented and potentially overlooked during the learning process due to the
+overwhelming dominance of the majority class.
+4.2. Impact of Resampling Techniques Toward Prediction Model
+To evaluate the effectiveness of resampling techniques in enhancing the model’s
+prediction performance of predicting financial distress, we used the original imbalanced
+test data to test. Table 5 and Figure 5 summarize the prediction performance of XGBoost
+models combined with various resampling techniques, including no-resampling, SMOTE,
+Borderline-SMOTE, ADASYN, SMOTE-ENN, SMOTE-Tomek, Tomek Links, RUS, and
+Bagging-SMOTE. The examined metrics are accuracy, precision, recall, F1-score, the area
+under the ROC curve (AUC), the area under the precision-recall curve (PR-AUC), the
+Matthews Correlation Coefficient (MCC), sampling time, and training time.
+Mathematics 2025 ,13, 2186 14 of 21
+Table 5. Classification results on the test set and time costs.
+Methods Accuracy Precision Recall F1 AUC PR-AUC MCCSampling
+Time (s)Training
+Time (s)
+Original data 0.94 0.85 0.60 0.71 0.96 0.82 0.68 - 42.6
+SMOTE 0.94 0.77 0.69 0.73 0.96 0.80 0.70 2.4 70.0
+ADASYN 0.94 0.76 0.68 0.72 0.96 0.80 0.68 2.3 70.4
+Borderline-
+SMOTE0.94 0.77 0.69 0.73 0.96 0.80 0.69 2.4 71.4
+RUS 0.87 0.48 0.88 0.62 0.94 0.71 0.58 1.6 14.9
+Tomek Links 0.94 0.82 0.61 0.70 0.96 0.81 0.68 2.7 41.0
+SMOTE-Tomek 0.94 0.75 0.69 0.72 0.95 0.80 0.69 5.9 68.5
+SMOTE-ENN 0.92 0.63 0.77 0.69 0.95 0.76 0.65 6.1 58.1
+Bagging-SMOTE 0.93 0.74 0.69 0.72 0.96 0.80 0.68 - 400.3
+Values in boldface indicate the best result from the metrics.
+  
+(a) ( b) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 5. Comparison of ROC and PR-AUC curves. ( a) ROC curve; ( b) PR-AUC curve.
+In the task of financial distress prediction, resampling techniques significantly influ-
+ence model performance by mediating the trade-off between precision and recall. The
+benchmark model without any resampling achieves the highest precision (0.85), indicating
+that most samples it predicts as distressed are indeed distressed. However, its relatively
+low recall (0.60) indicates that it fails to identify a considerable number of actual distressed
+cases, revealing a sensitivity issue likely caused by class imbalance. Despite its simplicity
+and fast processing (training time: 42.6 s), the original model may not be reliable for early
+warning systems due to under-identification of distressed observations.
+In contrast, RUS achieves the highest recall (0.88), demonstrating its effectiveness in
+detecting distressed samples, but this comes at the cost of significantly reduced precision
+(0.48) and overall accuracy (0.87). This pattern suggests that while undersampling improves
+minority class detection, it does so by introducing more false positives. This occurs because
+RUS balances the classes by aggressively reducing the majority class, resulting in the
+model learning comprehensive patterns of the minority class but only limited information
+from the majority class. However, RUS is the most computationally efficient among all
+methods (training time: 14.9 s), making it suitable for scenarios where detection sensitivity
+is prioritized and resources are limited. Tomek Links offers a moderate recall of 0.61 and a
+precision of 0.82, resulting in an F1-score of 0.70 and MCC of 0.68. Its runtime remains low,
+Mathematics 2025 ,13, 2186 15 of 21
+requiring 2.7 s for sampling and only 41 s for training, making it a time-efficient option
+with strong precision.
+Among oversampling techniques, SMOTE, ADASYN, and Borderline-SMOTE present
+a more balanced and stable performance. These techniques improve recall to approximately
+0.68–0.69 while maintaining moderate precision levels (0.76–0.77), resulting in relatively
+strong F1-scores (0.72–0.73). Additionally, their AUC values (0.96) and PR-AUC values
+(0.80) remain consistently high, indicating strong discriminative power across both classes.
+MCC ranges from 0.68 to 0.70, further confirming the models’ balanced classification ability.
+Their computational demands are modest, with sampling times around 2.3–2.4 s and
+training durations of approximately 70 s. These results suggest that synthetic oversampling
+is effective in alleviating the effects of class imbalance while preserving predictive accuracy,
+making it a reliable choice for financial distress prediction tasks.
+Hybrid resampling techniques offer additional advantages by refining minority class
+learning and reducing noise in the feature space. SMOTE-Tomek, which combines SMOTE
+with Tomek Links, yields more balanced performance (recall: 0.69, precision: 0.75, F1-
+score: 0.72, MCC: 0.69) while slightly increasing computation time (5.9 s sampling, 68.5 s
+training), which is still acceptable for most financial applications. SMOTE-ENN achieves
+the highest recall among all oversampling variants (0.77) because its ENN component
+removes ambiguous or misclassified majority class instances, reducing the majority class to
+13,702 samples (see Table 4), while its SMOTE component increases the minority class to
+16,018 samples (see Table 4) by generating synthetic examples. This dual process enhances
+the model’s ability to detect minority class cases. However, it may also introduce noise and
+eliminate some informative majority class samples, leading to more false positives and thus
+lower precision (0.63). As a result, the F1-score is moderate (0.69), reflecting the trade-off
+between improved recall and reduced precision. Its sampling and training times are 6.1 s
+and 58.1 s, respectively, indicating high computational efficiency.
+Meanwhile, Bagging-SMOTE demonstrates competitive results across all metrics,
+achieving balanced recall (0.69), precision (0.74), and F1-score (0.72), supported by AUC
+(0.96), PR-AUC (0.80), and MCC (0.68). Although its training time is relatively long
+(400.3 s), the combination of oversampling and ensemble learning significantly enhances
+generalization performance and stability, especially for highly imbalanced datasets such as
+those used in financial distress prediction.
+Table 6 compares the performance of these resampling techniques on the test set
+using confusion matrix metrics: True Negatives (TN), False Positives (FP), False Negatives
+(FN), and True Positives (TP). These outcomes are further illustrated in Figure 6. The
+results highlight the trade-offs inherent in each method, particularly the balance between
+enhancing the detection of minority (i.e., TP: Class 1, distressed) cases and preserving the
+accuracy of majority (i.e., TN: Class 0, non-distressed) classifications.
+Using the model trained without any resampling as a baseline, it achieved high accu-
+racy in identifying non-distressed samples (TN = 6859; FP = 102), reflecting a strong bias
+toward the majority class. However, its performance in detecting distressed cases was no-
+tably weaker (TP = 575; FN = 379), highlighting the adverse impact of class imbalance. The
+resulting low sensitivity undermines the model’s practical effectiveness in early financial
+distress detection, where accurate identification of minority cases is critical.
+To mitigate this issue, we compared a series of resampling techniques, including
+oversampling, undersampling, and hybrid techniques. Among the oversampling methods,
+SMOTE, ADASYN, and Borderline-SMOTE all balanced the training set to a 1:1 ratio and
+improved recall for the minority class. SMOTE achieved TP = 661 (FN = 293), ADASYN
+yielded TP = 653 (FN = 301), and Borderline-SMOTE produced TP = 659 (FN = 295). How-
+ever, these improvements in sensitivity came at the cost of increased false positives, 198,
+Mathematics 2025 ,13, 2186 16 of 21
+210, and 202, respectively, compared to only 102 in the baseline model without resam-
+pling. The results suggest that while these methods enhance minority detection, they do
+so at the cost of greater misclassification of non-distressed instances, thereby reducing
+overall precision.
+Table 6. Confusion matrix on the test set.
+MethodsTest Set
+Class 0: 6961, Class 1: 954
+TN FP FN TP
+Original data 6859 102 379 575
+SMOTE 6763 198 293 661
+ADASYN 6751 210 301 653
+Borderline-SMOTE 6759 202 295 659
+RUS 6040 921 117 837
+Tomek Links 6833 128 370 584
+SMOTE-Tomek 6746 215 295 659
+SMOTE-ENN 6528 433 217 737
+Bagging-SMOTE 6734 227 291 663
+    
+(a) ( b) (c) (d) 
+    
+(e) (f) (g) (h) 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+Figure 6. The comparison of the confusion matrix. ( a) SMOTE; ( b) ADASYN; ( c) Borderline-SMOTE;
+(d) RUS; ( e) Tomek Links; ( f) SMOTE-Tomek; ( g) SMOTE-ENN; ( h) Bagging-SMOTE.
+In contrast, RUS, which aggressively balanced the classes by reducing the majority
+to match the minority, achieved the highest recall (TP = 837; FN = 117). However, this
+came with the highest false positive count (FP = 921) and a reduction in true negatives
+to 6040, indicating substantial information loss and impaired model precision. A more
+conservative undersampling approach, Tomek Links, preserved most of the majority data,
+modestly improved recall (TP = 584), and maintained a relatively low FP (128). This
+confirms that selective undersampling can improve minority detection without drastically
+compromising specificity.
+Hybrid methods, such as SMOTE-Tomek and SMOTE-ENN, aimed to combine the
+advantages of both oversampling and data cleaning. SMOTE-Tomek achieved a balanced
+training set and yielded TP = 659, FN = 295, and FP = 215, offering a better balance between
+Mathematics 2025 ,13, 2186 17 of 21
+sensitivity and specificity compared to SMOTE alone. In contrast, SMOTE-ENN produced
+a higher TP (737) and lower FN (217) but incurred a sharp increase in FP (433), resulting in
+a significant drop in precision. While SMOTE-ENN demonstrated strong recall, its high
+false alarm rate makes it less desirable in practical scenarios requiring high precision.
+Finally, Bagging-SMOTE demonstrated a strong balance between sensitivity and
+specificity. It achieved TP = 663, FN = 291, and FP = 227, resulting in a sensitivity of
+69.5% and a specificity of 96.8%. Compared to standard SMOTE (TP = 661, FN = 293,
+FP = 198), Bagging-SMOTE delivered marginal improvements in both sensitivity and
+specificity, albeit with a slight increase in false positives. The ensemble design effectively
+stabilizes predictions by averaging across multiple base learners, thereby reducing the
+variance typically introduced by oversampling. These results suggest that Bagging-SMOTE
+enhances the model’s generalization capability in the context of highly imbalanced financial
+distress prediction tasks.
+5. Discussion
+The experimental analysis highlights the crucial role of class imbalance handling in
+financial distress prediction. In the highly imbalanced dataset used, where distressed
+samples represent a small minority, XGBoost tended to bias predictions toward the majority
+(non-distressed) class, resulting in high precision but poor sensitivity to the minority
+class (such as the model with no sampling). This necessitates the adoption of resampling
+techniques to mitigate the imbalance and improve minority class detection.
+The results revealed substantial performance variability across different resampling
+techniques, particularly in metrics sensitive to minority class detection, such as recall,
+precision, and F1-score. Standard SMOTE achieved the highest F1-score (0.73) and the best
+Matthews Correlation Coefficient (MCC) score (0.70) among all tested techniques. These
+results indicated that SMOTE was particularly effective in improving the model’s ability to
+detect distressed samples while maintaining a sound balance between precision and recall.
+The computational demands of synthetic oversampling methods (such as SMOTE and
+ADASYN) were also modest, with sampling times around 2.3–2.4 s and training durations
+of approximately 70 s, making them practical for real-world applications. The synthetic
+generation of minority class samples through interpolation appeared to have successfully
+generalized the minority class distribution in the feature space, thereby enhancing classifier
+robustness without introducing significant noise or overfitting.
+Among the oversampling and hybrid techniques, Borderline-SMOTE and SMOTE-
+Tomek consistently delivered more balanced outcomes. For example, compared to standard
+SMOTE, both techniques achieved similar or slightly improved recall (up to 0.69 for SMOTE-
+Tomek), highlighting their enhanced ability to identify distressed samples. This suggests
+that targeted oversampling near decision boundaries (as in Borderline-SMOTE) and the
+hybrid removal of overlapping instances (as in SMOTE-Tomek) can improve the model’s
+sensitivity to “hard-to-classify” cases while preserving the integrity of the majority class
+distribution. SMOTE-Tomek offered a good trade-off between recall (0.69), precision (0.75),
+and computational efficiency (sampling: 5.9 s, training: 68.5 s). These findings reinforce
+the value of SMOTE as a strong baseline oversampling technique in high-stakes financial
+prediction tasks while also emphasizing the added benefits of more advanced resampling
+techniques that focus on decision boundary refinement and noise reduction.
+In contrast, Random Undersampling (RUS) achieved the highest recall (0.88) but at
+the cost of much lower precision (0.48) and overall accuracy (0.87). However, RUS was the
+most computationally efficient among all methods (training time: 14.9 s, sampling time:
+1.6 s), making it suitable for scenarios where detection sensitivity is prioritized and resources
+are limited. Tomek Links also offered a time-efficient option (sampling: 2.7 s, training: 41 s)
+Mathematics 2025 ,13, 2186 18 of 21
+with strong precision (0.82) and moderate recall (0.61), making it attractive for applications
+where computational speed is critical.
+In the Bagging-SMOTE technique, stratified SMOTE was independently applied to
+each bootstrapped subset of the training data using a sampling ratio of 0.15, and final
+predictions were obtained through ensemble averaging. While Bagging-SMOTE did not
+achieve the highest performance in all evaluation metrics, it demonstrated comparable and
+stable results, including an AUC of 0.96, F1-score of 0.72, and PR-AUC of 0.80. Notably,
+Bagging-SMOTE maintained a balanced trade-off between precision (0.74) and recall (0.69)
+and yielded a stable MCC of 0.68, indicating strong generalization capability. However, this
+came at the cost of a much longer training time (400.3 s), which may limit its practicality in
+time-sensitive applications. Its performance was particularly notable given the minimal
+modification of the original dataset, which preserved data integrity while still improving
+minority class detection. These results underscore the practical effectiveness of combining
+stratified oversampling at an appropriate sampling ratio with ensemble learning, particu-
+larly in enhancing the detection of minority-class (distressed) cases while mitigating model
+variance, a trade-off that is especially valuable in real-world financial scenarios where both
+predictive accuracy and data fidelity are critical.
+In real-world financial distress prediction, the costs associated with false positives
+(incorrectly flagging a healthy company as distressed) and false negatives (failing to identify
+an actually distressed company) are highly asymmetric and context dependent. False
+negatives are often more detrimental, as overlooking a distressed firm can lead to significant
+financial losses, regulatory penalties, or reputational harm. In contrast, false positives
+may result in unnecessary interventions, increased monitoring costs, or missed business
+opportunities. Therefore, the choice of resampling technique should go beyond overall
+accuracy and consider the specific cost structure, business objectives, and risk tolerance of
+the application.
+For example, techniques that emphasize recall, such as Borderline-SMOTE or SMOTE-
+Tomek, may be preferred in early warning systems, where minimizing missed distress
+cases outweighs the cost of false alarms. Conversely, when operational efficiency and
+resource management are paramount, methods such as Bagging-SMOTE, which pro-
+vide a more balanced trade-off between precision and recall, may be more appropriate.
+Additionally, when computational resources or time constraints are a concern, RUS or
+Tomek Links may be prioritized due to their superior efficiency, despite their trade-offs in
+predictive performance.
+Overall, the experimental findings highlight the importance of selecting resampling
+techniques that are closely aligned with the specific objectives and misclassification costs of
+the application to maximize the real-world value of financial distress prediction models.
+Future research may extend this work by investigating uncertainty-aware sampling
+frameworks, where sample selection is guided by measures of predictive confidence or
+entropy. Additionally, incorporating explainable machine learning techniques, such as
+SHAP , to assess the influence of synthetic samples on model behavior could provide
+valuable insights for refining the resampling-model feedback loop. These advancements
+hold potential to support the development of more intelligent, interpretable, and effective
+resampling strategies, particularly critical in high-stakes domains such as financial risk
+assessment and corporate distress prediction.
+6. Conclusions
+In this study, we systematically compared eight resampling techniques to address the
+class imbalance problem in financial distress prediction, using a real-world dataset com-
+prising 26,383 firm-quarter samples from 639 Chinese A-share listed companies spanning
+Mathematics 2025 ,13, 2186 19 of 21
+the years 2007 to 2024. With only 12.1% of the samples labeled as distressed, the dataset
+presents a typical yet challenging imbalanced classification task. To ensure consistency
+and fair evaluation, the XGBoost algorithm was employed as the base classifier across all
+techniques, with identical model structures and hyperparameter settings.
+The experimental results show that resampling techniques have a significant impact on
+model performance. This effect is especially notable in metrics sensitive to minority-class
+detection, such as precision, recall, F1-score, and Matthews Correlation Coefficient (MCC).
+Several key findings emerged from the comparative analysis:
+• Resampling is critical for improving minority class detection. Traditional oversampling
+methods, especially SMOTE, showed meaningful improvements in F1-score (up to
+0.73) and MCC (up to 0.70). These results indicate enhanced model robustness without
+excessive overfitting. Hybrid techniques such as SMOTE-Tomek and Borderline-
+SMOTE further improved recall while almost maintaining precision. This highlights
+their value in refining decision boundaries and reducing class overlap. Importantly,
+these methods also demonstrated modest computational demands, with sampling
+times around 2–6 s and training times of approximately 70 s. Therefore, they are
+practical for real-world applications.
+• Trade-offs between recall and precision, as well as computational efficiency, must be
+context aware. Aggressive techniques such as RUS yielded the highest recall (0.85).
+However, this came at the cost of poor precision (0.46) and diminished generalization
+performance, mainly due to the loss of informative majority-class samples. RUS was
+also the most computationally efficient method, with a training time of 14.9 s and a
+sampling time of 1.6 s. This makes it suitable for scenarios where detection sensitivity
+and speed are prioritized. In contrast, Tomek Links offered a strong balance between
+precision (0.82) and efficiency (sampling: 2.7 s, training: 41 s). This makes it attractive
+for applications where computational speed and minimizing false positives are critical.
+SMOTE-ENN achieved a high recall (0.77) but at a moderate precision level (0.63),
+suggesting a tendency toward increased false positives. Its computational cost was
+also reasonable (sampling: 6.1 s, training: 58.1 s).
+• Bagging combined with stratified SMOTE (Bagging-SMOTE) achieved a strong overall
+balance across evaluation metrics. Applying stratified SMOTE with an appropriate
+sampling ratio (0.15) to each bootstrap sample and aggregating predictions through
+bagging led to competitive results. These included AUC of 0.96, F1-score of 0.72,
+PR-AUC of 0.80, and MCC of 0.68. However, this method required much longer
+training time (400.3 s), which may limit its practicality in time-sensitive applications.
+These results show that ensemble-based resampling can improve both sensitivity and
+generalization, which is important in financial applications.
+• Resampling techniques selection should be tailored to application goals. For early
+warning systems that prioritize recall and timely identification of financially distressed
+companies, techniques such as Bagging-SMOTE, Borderline-SMOTE, SMOTE-Tomek,
+and SMOTE are recommended. In contrast, when minimizing false positives is impor-
+tant, such as in regulatory flagging or risk-adjusted decision-making, more conserva-
+tive methods, such as Tomek Links, may be more appropriate.
+Practitioners should carefully consider the specific cost structure and operational
+priorities of their financial distress prediction tasks. For applications where missing a
+distressed firm is particularly costly, we recommend prioritizing resampling methods that
+maximize recall, such as Bagging-SMOTE or Borderline-SMOTE. Conversely, in scenarios
+where false alarms are more problematic, more conservative techniques such as Tomek
+Links may be preferable. Additionally, when computational resources or time constraints
+are a concern, RUS and Tomek Links offer practical alternatives due to their superior
+Mathematics 2025 ,13, 2186 20 of 21
+efficiency, despite their trade-offs in predictive performance. Ensemble-based approaches
+can offer a robust balance between sensitivity and specificity, making them suitable for
+high-stakes financial environments.
+Future research could advance these findings by integrating uncertainty-aware sam-
+pling strategies, where sample selection is driven by predictive confidence. Leveraging
+explainable machine learning techniques could further improve the synergy between re-
+sampling and modeling, while enhancing the transparency of interpretability. Additionally,
+extending these techniques to datasets from diverse markets, such as the U.S. or Europe,
+would provide valuable insights into their generalizability, making a valuable avenue for
+future exploration. Researchers could also investigate advanced class imbalance handling
+methods, such as adaptive resampling or hybrid approaches, combined with cost-sensitive
+learning. Finally, real-world case studies are needed to evaluate the practical impact and
+deployment of these techniques in financial risk assessment and early warning systems.
+Author Contributions: Conceptualization, G.H., D.L.T., S.Y.L. and P .Y.C.; Formal analysis, G.H.;
+Investigation, G.H.; Methodology, G.H. and D.L.T.; Writing—original draft, G.H. and D.L.T.; Writing—
+review & editing, D.L.T., S.Y.L. and P .Y.C.; Validation, D.L.T., S.Y.L. and P .Y.C.; Visualization, G.H.,
+Supervision, D.L.T., S.Y.L. and P .Y.C.; Project administration, S.Y.L.; Funding acquisition, D.L.T., S.Y.L.
+and P .Y.C. All authors have read and agreed to the published version of the manuscript.
+Funding: This project was supported with funding from UTARRF, project number IPSR/RMC/UTARRF/
+2024-C1/T07.
+Data Availability Statement: The original contribution presented in the research is included in the
+paper. Further inquiries can be directed to the corresponding author.
+Acknowledgments: The authors are grateful to the anonymous referees for their comments, which
+substantially improved the quality of this paper.
+Conflicts of Interest: The authors declare no conflicts of interest.
+References
+1. Song, Y.; Jiang, M.; Li, S.; Zhao, S. Class-imbalanced Financial Distress Prediction with Machine Learning: Incorporating Financial,
+Management, Textual, and Social Responsibility Features into Index System. J. Forecast. 2024 ,43, 593–614. [CrossRef]
+2. Eng
+Mathematics 2025 , 13, x FOR PEER REVIEW  20 of 22 
+can offer a robust balance between sensitivity and specificity, making them suitable for 
+high-stakes financial environments.  
+Future research could advance these findings by integrating uncertainty -aware sam-
+pling strategies, where sample selection is driven by predictive confidence. Leveraging 
+explainable machine learning techniques could further improve the synergy between 
+resampling and modeling, while enhancing the transparency of interpretability. Addi-
+tionally, extending these techniques to datasets from diverse markets, such as the U.S. or 
+Europe, would provide valuable insights into their generalizability, making a valuable 
+avenue for future exploration. Researchers could also investigate advanced class imbal-
+ance handling methods, such as adaptive resampling or hybrid approaches, combined 
+with cost -sensitive learning. Finally, real -world case studies are needed to evaluate the 
+practical impact and deployme nt of these techniques in financial risk assessment and early 
+warning systems.  
+Author Contribution s: Conceptualization, G.H., D.L.T., S.Y.L. and P.Y.C. ; Formal analysis, G.H.; 
+Investigation, G.H.; Methodology, G.H. and D.L.T.; Writing —original draft, G.H. and D.L.T. ; Writ-
+ing—review & editing, D.L.T., S.Y.L. and P.Y.C.; Validation, D.L.T., S.Y.L. and P.Y.C.; Visualization, 
+G.H., Supervision, D.L.T., S.Y.L. and P.Y.C.; Project administration, S.Y.L.; Funding acquisition,
+D.L.T., S.Y.L. and P.Y.C.  All authors have read and agreed to the published version of the manu-
+script.  
+Funding : This project  was supported with funding from UTARRF, project number 
+IPSR/RMC/UTARRF/2024 -C1/T07.  
+Data Availability Statement: The original contribution presented in the research is included in the 
+paper. Further inquiries can be directed to the corresponding author.  
+Acknowledgments : The authors are grateful to the anonymous referees for their comments , which 
+substantially improved the quality of this paper.  
+Conflicts of Interest: The authors declare no conflicts of interest.  
+References  
+1.Song, Y.; Jiang, M.; Li, S.; Zhao, S. Class-imbalanced Financial Distress Prediction with Machine Learning: Incorporating Finan-
+cial, Management, Textual, and Social Responsibility Features into Index System. J. Forecast. 2024, 43, 593–614. 
+https://doi.org/10.1002/for.3050.
+2.Eng   ї  n, U. Financial distress prediction from time series data using xgboost: bist100 of borsa istanbul. Doğuş Üniversitesi 
+Derg. 2023, 24, 589–604. https://doi.org/10.31671/doujournal.1238432.
+3.Chawla, N.V.; Bowyer, K.W.; Hall, L.O.; Kegelmeyer, W.P. SMOTE: Synthetic Minority Over-Sampling Technique. J. Artif. Intell. 
+Res. 2002, 16, 321–357. https://doi.org/10.1613/jair.953.
+4.Wang, B.; Mei, C.; Wang, Y.; Zhou, Y.; Cheng, M.-T.; Zheng, C.-H.; Wang, L.; Zhang, J.; Chen, P.; Xiong, Y. Imbalance Data 
+Processing Strategy for Protein Interaction Sites Prediction. IEEE/ACM Trans. Comput. Biol. Bioinf.  2021, 18, 985–994. 
+https://doi.org/10.1109/tcbb.2019.2953908.
+5.Cai, T. Breast Cancer Diagnosis Using Imbalanced Learning and Ensemble Method. Appl. Comput. Math. 2018, 7, 146. 
+https://doi.org/10.11648/j.acm.20180703.20.
+6.Elreedy, D.; Atiya, A.F. A Novel Distribution Analysis for SMOTE Oversampling Method in Handling Class Imbalance. In 
+Computational Science–Proceedings of the ICCS 2019: 19th International Conference, Faro, Portugal, 12–14 June 2019; Lecture Notes in 
+Computer Science; Springer International Publishing: Cham, Switzerland, 2019; pp. 236–248. https://
+doi.org/10.1007/978-3-030-22744-9_18.
+7.Alex, S.A.; Nayahi, J.J.V. Classification of Imbalanced Data Using SMOTE and AutoEncoder Based Deep Convolutional Neural 
+Network. Int. J. Unc. Fuzz. Knowl. Based Syst. 2023, 31, 437–469. https://doi.org/10.1142/S0218488523500228. n, U. Financial distress prediction from time series data using xgboost: Bist100 of borsa istanbul. Do˘ gu¸ s Üniversitesi Derg.
+2023 ,24, 589–604. [CrossRef]
+3. Chawla, N.V .; Bowyer, K.W.; Hall, L.O.; Kegelmeyer, W.P . SMOTE: Synthetic Minority Over-Sampling Technique. J. Artif. Intell.
+Res. 2002 ,16, 321–357. [CrossRef]
+4. Wang, B.; Mei, C.; Wang, Y.; Zhou, Y.; Cheng, M.-T.; Zheng, C.-H.; Wang, L.; Zhang, J.; Chen, P .; Xiong, Y. Imbalance Data
+Processing Strategy for Protein Interaction Sites Prediction. IEEE/ACM Trans. Comput. Biol. Bioinf. 2021 ,18, 985–994. [CrossRef]
+5. Cai, T. Breast Cancer Diagnosis Using Imbalanced Learning and Ensemble Method. Appl. Comput. Math. 2018 ,7, 146. [CrossRef]
+6. Elreedy, D.; Atiya, A.F. A Novel Distribution Analysis for SMOTE Oversampling Method in Handling Class Imbalance. In
+Computational Science–Proceedings of the ICCS 2019: 19th International Conference, Faro, Portugal, 12–14 June 2019 ; Lecture Notes in
+Computer Science; Springer International Publishing: Cham, Switzerland, 2019; pp. 236–248. [CrossRef]
+7. Alex, S.A.; Nayahi, J.J.V . Classification of Imbalanced Data Using SMOTE and AutoEncoder Based Deep Convolutional Neural
+Network. Int. J. Unc. Fuzz. Knowl. Based Syst. 2023 ,31, 437–469. [CrossRef]
+8. Han, H.; Wang, W.-Y.; Mao, B.-H. Borderline-SMOTE: A New Over-Sampling Method in Imbalanced Data Sets Learning. In
+Advances in Intelligent Computing ; Springer Berlin Heidelberg: Berlin, Heidelberg, 2005; Volume 3644, pp. 878–887. ISBN
+978-3-540-28226-6. [CrossRef]
+9. Chen, C.; Shen, W.; Yang, C.; Fan, W.; Liu, X.; Li, Y. A New Safe-Level Enabled Borderline-SMOTE for Condition Recognition of
+Imbalanced Dataset. IEEE Trans. Instrum. Meas. 2023 ,72, 1–10. [CrossRef]
+10. Glazkova, A. A Comparison of Synthetic Oversampling Methods for Multi-Class Text Classification. arXiv 2020 , arXiv:2008.04636.
+[CrossRef]
+Mathematics 2025 ,13, 2186 21 of 21
+11. He, H.; Bai, Y.; Garcia, E.A.; Li, S. ADASYN: Adaptive Synthetic Sampling Approach for Imbalanced Learning. In Proceedings of
+the 2008 IEEE International Joint Conference on Neural Networks (IEEE World Congress on Computational Intelligence), Hong
+Kong, China, 1–8 June 2008; IEEE: Hong Kong, China, 2008; pp. 1322–1328. [CrossRef]
+12. Pristyanto, Y.; Nugraha, A.F.; Dahlan, A.; Wirasakti, L.A.; Ahmad Zein, A.; Pratama, I. Multiclass Imbalanced Handling Using
+ADASYN Oversampling and Stacking Algorithm. In Proceedings of the 2022 16th International Conference on Ubiquitous
+Information Management and Communication (IMCOM), Seoul, Republic of Korea, 3 January 2022; IEEE: Seoul, Republic of
+Korea, 2022; pp. 1–5. [CrossRef]
+13. Arifin, M.A.S.; Stiawan, D.; Yudho Suprapto, B.; Susanto, S.; Salim, T.; Idris, M.Y.; Budiarto, R. Oversampling and Undersampling
+for Intrusion Detection System in the Supervisory Control and Data Acquisition IEC 60870-5-104. IET Cyber-Phys. Syst. Theory
+Appl. 2024 ,9, 282–292. [CrossRef]
+14. Batista, G.E.A.P .A.; Prati, R.C.; Monard, M.C. A Study of the Behavior of Several Methods for Balancing Machine Learning
+Training Data. ACM SIGKDD Explor. Newsl. 2004 ,6, 20–29. [CrossRef]
+15. Kaushik, M.M.; Mahmud, S.M.H.; Kabir, M.A.; Nandi, D. The Effects of Class Rebalancing Techniques on Ensemble Classifiers on
+Credit Card Fraud Detection: An Empirical Study. In Proceedings of the Applied Data Science and Smart Systems, Rajpura, India,
+4–5 November 2022; AIP Publishing LLC: Rajpura, India, 2023; p. 030011. [CrossRef]
+16. Zang, J.; Li, H. Abnormal Traffic Detection Based on Data Augmentation and Hybrid Neural Network. In Proceedings of the 2024
+2nd International Conference on Signal Processing and Intelligent Computing (SPIC), Guangzhou, China, 20 September 2024;
+IEEE: Guangzhou, China, 2024; pp. 249–253. [CrossRef]
+17. Putra, L.G.R.; Marzuki, K.; Hairani, H. Correlation-Based Feature Selection and Smote-Tomek Link to Improve the Performance
+of Machine Learning Methods on Cancer Disease Prediction. Eng. Appl. Sci. Res. 2023 ,50, 577583. [CrossRef]
+18. Yang, F.; Wang, K.; Sun, L.; Zhai, M.; Song, J.; Wang, H. A Hybrid Sampling Algorithm Combining Synthetic Minority Over-
+Sampling Technique and Edited Nearest Neighbor for Missed Abortion Diagnosis. BMC Med. Inform. Decis. Mak. 2022 ,22, 344.
+[CrossRef]
+19. Wang, W.; Liang, Z. Financial Distress Early Warning for Chinese Enterprises from a Systemic Risk Perspective: Based on the
+Adaptive Weighted XGBoost-Bagging Model. Systems 2024 ,12, 65. [CrossRef]
+20. Liu, W.; Fan, H.; Xia, M.; Pang, C. Predicting and Interpreting Financial Distress Using a Weighted Boosted Tree-Based Tree. Eng.
+Appl. Artif. Intell. 2022 ,116, 105466. [CrossRef]
+21. Wu, C.; Chen, X.; Jiang, Y. Financial Distress Prediction Based on Ensemble Feature Selection and Improved Stacking Algorithm.
+Kybernetes , 2024; ahead-of-print . [CrossRef]
+22. Seiffert, C.; Khoshgoftaar, T.M.; Van Hulse, J.; Napolitano, A. RUSBoost: A Hybrid Approach to Alleviating Class Imbalance.
+IEEE Trans. Syst. Man Cybern. A 2010 ,40, 185–197. [CrossRef]
+23. Díez López, C.; Montiel González, D.; Vidaki, A.; Kayser, M. Prediction of Smoking Habits From Class-Imbalanced Saliva
+Microbiome Data Using Data Augmentation and Machine Learning. Front. Microbiol. 2022 ,13, 886201. [CrossRef]
+24. Shaikh, S.; Daudpota, S.M.; Imran, A.S.; Kastrati, Z. Towards Improved Classification Accuracy on Highly Imbalanced Text
+Dataset Using Deep Neural Language Models. Appl. Sci. 2021 ,11, 869. [CrossRef]
+25. Kotb, M.H.; Ming, R. Comparing SMOTE Family Techniques in Predicting Insurance Premium Defaulting Using Machine
+Learning Models. Int. J. Adv. Comput. Sci. Appl. 2021 ,12, 621–629. [CrossRef]
+26. Hairani, H.; Anggrawan, A.; Priyanto, D. Improvement Performance of the Random Forest Method on Unbalanced Diabetes Data
+Classification Using Smote-Tomek Link. JOIV Int. J. Inform. Vis. 2023 ,7, 258. [CrossRef]
+Disclaimer/Publisher’s Note: The statements, opinions and data contained in all publications are solely those of the individual
+author(s) and contributor(s) and not of MDPI and/or the editor(s). MDPI and/or the editor(s) disclaim responsibility for any injury to
+people or property resulting from any ideas, methods, instructions or products referred to in the content.

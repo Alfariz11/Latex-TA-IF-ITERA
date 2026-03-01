@@ -1,0 +1,1127 @@
+Pattern Recognition  91 (2019) 216–231 
+Contents  lists available  at ScienceDirect  
+Pattern  Recognition  
+journal  homepage:  www.elsevier.com/locate/patcog  
+The impact  of class  imbalance  in classiﬁcation  performance  metrics  
+based  on the binary  confusion  matrix  
+Amalia  Luque  a , ∗, Alejandro  Carrasco  b , Alejandro  Martín  a , Ana de las Heras  a 
+a Dpto. Ingeniería  del Diseño. Escuela Politécnica  Superior. Universidad  de Sevilla. Virgen de África, 7. 41011 Sevilla, Spain 
+b Dpto. Tecnología  Electrónica.  Escuela Politécnica  Superior. Universidad  de Sevilla. Virgen de África, 7. 41011, Sevilla, Spain 
+a r t i c l e i n f o 
+Article history: 
+Received  4 September  2018 
+Revised 22 December  2018 
+Accepted  22 February  2019 
+Available  online 28 February  2019 
+Keywords:  
+Classiﬁcation  
+Performance  measures  
+Imbalanced  datasets 
+Class Balance Metrics a b s t r a c t 
+A major issue in the classiﬁcation  of class imbalanced  datasets  involves  the determination  of the most 
+suitable  performance  metrics to be used. In previous  work using several examples,  it has been shown 
+that imbalance  can exert a major impact on the value and meaning  of accuracy  and on certain other well- 
+known performance  metrics.  In this paper, our approach  goes beyond simply studying  case studies and 
+develops  a systematic  analysis  of this impact by simulating  the results obtained  using binary classiﬁers.  A 
+set of functions  and numerical  indicators  are attained  which enables the comparison  of the behaviour  of 
+several performance  metrics based on the binary confusion  matrix when they are faced with imbalanced  
+datasets.  Throughout  the paper, a new way to measure  the imbalance  is deﬁned which surpasses  the 
+Imbalance  Ratio used in previous  studies.  From the simulation  results, several clusters  of performance  
+metrics have been identiﬁed  that involve the use of Geometric  Mean or Bookmaker  Informedness  as 
+the best null-biased  metrics if their focus on classiﬁcation  successes  (dismissing  the errors) presents  no 
+limitation  for the speciﬁc application  where they are used. However,  if classiﬁcation  errors must also 
+be considered,  then the Matthews  Correlation  Coeﬃcient  arises as the best choice. Finally, a set of null- 
+biased multi-perspective  Class Balance  Metrics is proposed  which extends  the concept  of Class Balance  
+Accuracy  to other performance  metrics.  
+©2 0 1 9 The Authors.  Published  by Elsevier  Ltd. 
+This is an open access article under the CC BY-NC-ND  license. 
+( http://creativecommons.org/licenses/by-nc-nd/4.0/  ) 
+1. Introduction  
+In recent years, the scientiﬁc  community  working  on classiﬁ-  
+cation algorithms  has shown an increasing  interest  in the chal- 
+lenges that arise when imbalanced  datasets  are considered.  Sev- 
+eral overviews  on these issues have been addressed  in [2,17,21,24]  . 
+In these analyses,  the Synthetic  Minority  Over-sampling  Technique  
+(SMOTE)  [9] and the AdaBoost  [39] are highlighted  as general-  
+purpose  solutions,  although  algorithms  of a more speciﬁc  nature 
+can also be found, either as general-purpose  [3] , as problem-  
+oriented  [15] or as classiﬁer-oriented  [33] . Algorithms  that address  
+the imbalance  problem  in multi-label  classiﬁcation  [8] or that use 
+advanced  classiﬁers  such as extreme  learning  machines  [41] can 
+also be found. An up-to-date  comparison  of these techniques  ad- 
+dressing  a speciﬁc  problem  can be found in [40] . 
+∗Corresponding  author. 
+E-mail addresses:  amalialuque@us.es  (A. Luque), acarrasco@us.es  (A. Carrasco),  
+ammartin@us.es  (A. Martín), adelasheras@us.es  (A. de las Heras). A key aspect of these methods  involves  the determination  of 
+the classiﬁcation  performance,  not only in order to assess the ﬁ- 
+nal result, but also to obtain a ﬁgure which has to be optimized  by 
+tuning the classiﬁer  parameters.  However,  there is no single way to 
+select the best algorithm  as any algorithm  can obtain good results 
+in one class but poor scores in other classes.  For this reason,  sev- 
+eral metrics  are usually  considered,  which permits  the polyhedral  
+characteristics  of the classiﬁcation  performance  to be viewed  from 
+different  points of views. 
+The impact  of class imbalance  on classiﬁcation  performance  
+metrics  has therefore  become  a major issue. Several  authors  have 
+addressed  this topic by showing  a few examples  of this impact  on 
+accuracy  [10,22]  and on several  other metrics  [5,13,20]  . To the best 
+of our knowledge,  only one systematic  (albeit limited)  study has 
+been published  that is not simply based on examples,  [25] . 
+The quantitative  research  on classiﬁcation  performance  metrics  
+has traditionally  been tackled  either by using a collection  of known  
+and widely available  datasets  [1,4] , or by randomly  simulating  the 
+classiﬁer  results [27,34] . A mixture  of random  simulated  variations  
+on known  datasets  is employed  in Jeni et al. [25] . 
+https://doi.org/10.1016/j.patcog.2019.02.023  
+0031-3203/© 2019 The Authors.  Published by Elsevier Ltd.  This is an  open access article under the CC  BY-NC-ND  license. ( http://creativecommons.org/licenses/by-nc-nd/4.0/  ) 
+A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 217 
+In order to overcome  the effect of imbalance  on performance  
+metrics,  several  solutions  have been suggested,  among  which the 
+most cited is the use of the Class Balanced  Accuracy  ( CBA ) [1,6,32]  . 
+Approaches  such as relevance-based  evaluation  [5] , the Normalized  
+Precision  Rate [13] , the Index of Balanced  Accuracy  [18,28,29]  , and 
+the multiclass  performance  score (MPS) [23] have also been pro- 
+posed. 
+In this paper, an extensive  and systematic  study is undertaken  
+of the impact  of class imbalance  on classiﬁcation  performance  
+metrics.  Several  dozen performance  metrics  can be found in the 
+scientiﬁc  literature,  some based on a threshold,  others based on 
+probabilities,  while yet others are based on ranks [14] . However,  
+the most widely employed  metrics  are those based on the confu- 
+sion matrix [38] , where the multi-class  case is usually  reduced  to 
+a set of binary cases using the One-versus-All  or the One-versus-  
+One approach  [31] . For these reasons,  our research  is focused  on 
+classiﬁcation  performance  metrics  based on the binary confusion  
+matrix.  
+The rest of the paper is organized  as follows.  Section  2 presents  
+the methodology  employed  to measure  the impact  of imbalance  
+in performance  metrics,  thereby  formally  deﬁning  the confusion  
+matrix ( Section  2.1 ) and the metrics  based thereon  ( Section  2.2 ). 
+Section  2.3 proposes  a new ﬁgure for the quantiﬁcation  of the class 
+imbalance,  and several  functions  and indicators  of the aforemen-  
+tioned impact  of imbalance  are deﬁned  in Section  2.4 . The appli- 
+cation to a set of classiﬁcation  performance  metrics  based on the 
+binary confusion  matrix is presented  in Section  3 . The discussion  
+and conclusion  of these results are addressed  in Section  4 . 
+2. Methodology  
+2.1. Deﬁnition  of the confusion  matrix 
+Consider  a dataset  D = { d 1 , d 2 , ···, d m } made up of m elements  
+where d k represents  the k -th element.  Let /Theta1be a set of C classes  
+/Theta1={ θ1 , θ2 , ···, θC } where θi deﬁnes  the i -th class. The classiﬁer  C
+operating  on d k (the k -th element  of the dataset  D) assigns  a label 
+θj and estimates  that this element  belongs  to the j -th class, that 
+is, d k C → θj or C( d k ) = θj , while it really belongs  to the i -th class θi , 
+thereby  causing  a misclassiﬁcation  (a confusion)  when i /negationslash = j . 
+Let A = { α1 , α2 , ···, αm } be the set of actual classes  corre- 
+sponding  to the dataset  D, where αk is the actual class of the ele- 
+ment d k . Furthermore,  let E = { ε 1 , ε 2 , ···, ε m } be the set of classes  
+estimated  by the classiﬁer  Cfor each element  in D, where ɛ k is 
+the estimated  class of the element  d k . The performance  of Ccan 
+be assessed  using a measuring  function  M , which assigns  a metric 
+μ∈R to the pair ( A , E ) , that is, ( A , E ) M → μ. 
+In this paper, we will focus on metrics  based on the confu- 
+sion matrix,  which represents  one of the most common  methods  
+to present  the results obtained  by a classiﬁer,  and is deﬁned  as 
+CM ≡⎡ 
+⎢ ⎢ ⎣ m 11 m 12 . . . m 1 C 
+m 21 m 22 . . . m 2 C 
+. . . . . . . . . . . . 
+m C1 m C2 . . . m CC ⎤ 
+⎥ ⎥ ⎦ . (1) 
+In this expression,  m ij represents  the number  of elements  ac- 
+tually belonging  to the i -th class ( θi ) but that are classiﬁed  as 
+members  of the j -th class ( θj ). In the context  of our research,  it is 
+better to describe  the term m ij in relation  to the total number  of 
+elements  m i belonging  to the i -th class ( θi ). By denoting  λij as the ratio m ij / m i , the confusion  matrix can be rewritten  as 
+CM = ⎡ 
+⎢ ⎢ ⎣ λ11 m 1 λ12 m 1 . . . λ1 C m 1 
+λ21 m 2 λ22 m 2 . . . λ2 C m 2 
+. . . . . . . . . . . . 
+λC1 m C λC2 m C . . . λCC m C ⎤ 
+⎥ ⎥ ⎦ , (2) 
+which can be expressed  as the Hadamard  (element-wise)  product  
+of two matrices  in the form 
+CM = ⎡ 
+⎢ ⎢ ⎣ λ11 λ12 . . . λ1 C 
+λ21 λ22 . . . λ2 C 
+. . . . . . . . . . . . 
+λC1 λC2 . . . λCC ⎤ 
+⎥ ⎥ ⎦ ◦⎡ 
+⎢ ⎢ ⎣ m 1 m 1 . . . m 1 
+m 2 m 2 . . . m 2 
+. . . . . . . . . . . . 
+m C m C . . . m C ⎤ 
+⎥ ⎥ ⎦ . (3) 
+In the binary case, that is, when the number  of classes  is C = 2 , 
+then the confusion  matrix can be written  as 
+CM ≡/bracketleftbigg
+m 11 m 12 
+m 21 m 22 /bracketrightbigg
+. (4) 
+In general,  one of the classes  is called the “Positive” class  and 
+the other is named  the “Negative” class.  Therefore,  the confusion  
+matrix can be rewritten  according  to this new terminology  as 
+CM ≡/bracketleftbigg
+m PP m PN 
+m NP m NN /bracketrightbigg
+. (5) 
+The elements  of this matrix are named  with the following  con- 
+vention:  m PP , “True Positive” (  TP ); m PN , “False Negative” (  FN ); m NP , 
+“False Positive” (  FP ); and m NN , “True Negative” (  TN ). 
+The total number  of positive  m P and negative  m N elements  in 
+Dmeet that they sum m , the total number  of elements,  that is, 
+m P + m N = m . Furthermore,  it is also true that the number  of ele- 
+ments correctly  classiﬁed  in class P ( m PP ), and the number  of ele- 
+ments misclassiﬁed  in that class P ( m PN ), adds up to the number  of 
+elements  in the positive  class ( m P ), that is, m PP + m PN = m P . Simi- 
+larly, it can be stated that m NP + m NN = m N . The confusion  matrix 
+can therefore  be written  as 
+CM = /bracketleftbigg
+m PP m P −m PP 
+m N −m NN m NN /bracketrightbigg
+, (6) 
+which can also be formulated  in terms of the λij ratios as 
+CM = /bracketleftbigg
+λPP m P λPN m P 
+λNP m N λNN m N /bracketrightbigg
+= /bracketleftbigg
+λPP m P ( 1 −λPP ) m P 
+( 1 −λNN ) m N λNN m N /bracketrightbigg
+. (7) 
+Additionally,  the total number  of elements  in Destimated  by C
+as positive  (despite  their actual class), e P , and those estimated  as 
+negative,  e N , can be written  as 
+e P = m PP + m NP = λPP m P + ( 1 −λNN ) m N . 
+e N = m NN + m PN = λNN m N + ( 1 −λPP ) m P . (8) 
+They also add up to the total number  of elements,  e P + e N = m . 
+The deﬁnitions  regarding  the confusion  matrix are summarized  in 
+Fig. 1 . 
+2.2. Metrics  based on the binary confusion  matrix 
+Based on the binary confusion  matrix,  numerous  performance  
+metrics  have been proposed  [19,27,30,34,37]  . For our study, the fo- 
+cus is placed on 10 of these metrics,  which are summarized  in 
+Table 1 . All these metrics,  take values within the [0, 1] range, ex- 
+cept the last three ( MCC, BM , and MK ), whose ranges lie within 
+the [ −1 , 1 ] interval.  For comparison  purposes,  these metrics  are 
+used herein in their normalized  version  ( MCCn, BMn , and MKn ). By 
+naming  a metric deﬁned  within the [ −1 , 1 ] interval  as μ, it can be 
+normalized  within the [0, 1] range by the expression  
+μn ≡μ+ 1 
+2 . (9) 
+218 A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 
+Fig. 1. Confusion  matrix for binary classiﬁcation.  
+Table 1 
+Deﬁnition  of classiﬁcation  performance  metrics. 
+Symbol Metric Deﬁned as 
+SNS Sensitivity  TP 
+TP+ FN 
+SPC Speciﬁcity  TN 
+TN+ FP 
+PRC Precision  TP 
+TP+ FP 
+NPV Negative  Predictive  Value TN 
+TN+ FN 
+ACC Accuracy  T P+ T N 
+T P+ FN+ T N+ FP 
+F 1 F 1 score 2 PRC·SNS 
+PRC+ SNS 
+GM Geometric  Mean √ 
+SNS ·SPC 
+MCC Matthews  Correlation  Coeﬃcient  T P·T N−F P·F N √ 
+( TP+ FP )( TP+ FN )( TN+ FP )( TN+ FN ) 
+BM Bookmaker  Informedness  SNS + SPC −1 
+MK Markedness  P P V + NP V −1 
+It can easily be shown (see supplementary  material  in the elec- 
+tronic version  of this paper) that all these metrics  can be expressed  
+as a function  μ= μ( λPP , λNN , πP , πN ) , where πP is the ratio of 
+positive  elements  in the dataset  ( m P / m ) and, analogously,  where 
+πN ≡m N / m . Furthermore,  for balanced  classes,  when πP = πN = 
+0 . 5 , them the metrics  can be formulated  as μ= μ( λPP , λNN ) . These 
+functions  are depicted  in Fig. 2 as a heat map for each metric.  
+The best classiﬁer  achieves  a value of λPP = 1 (all the positive  
+elements  are correctly  classiﬁed  as positive)  and, also a value of 
+λNN = 1 (all the negative  elements  are correctly  classiﬁed  as neg- 
+ative), corresponding  to the upper right-hand-side  corner in the 
+graphic.  Instead,  the worst classiﬁer  ( λPP = 0 , λNN = 0 ) corresponds  
+to the lower left-hand-side  corner of the graphic.  
+Although  only performance  metrics  based on the confusion  ma- 
+trix are considered,  a marginal  approach  to Receiver  Operating  
+Characteristics  (ROC) analysis  [16] can also be carried  out. In this 
+analysis,  the Area Under Curve ( AUC ) is commonly  used as a per- 
+formance  metric.  However,  for classiﬁers  offering  only a label (and 
+not a set of scores for each label), or when a single threshold  
+is used on scores, the value of AUC and BMn are the same [36] . 
+Therefore,  in the forthcoming  sections,  whenever  BMn is men- 
+tioned it could also be understood  as AUC . 
+2.3. Deﬁning  class imbalance  
+The concept  of class imbalance  is relatively  clear: it arises when 
+the dataset  has a different  number  of elements  in positive  and 
+negative  classes.  However,  its formalization  is far from being uni- 
+vocally  accepted.  For instance,  in [18,29]  , the imbalance  is char- 
+acterized  by the dominance  ( Dom ) or prevalence  relationship  be- 
+tween the positive  class and the negative  class, and is deﬁned  
+as T P R −T NR . This value is later employed  to compensate  perfor-  
+mance metrics  affected  by the imbalance  problem.  However,  the 
+dominance  is not exactly  a measure  of the imbalance  in the dataset  
+because  it considers  imbalance  in the outcomes  of the classiﬁer.  Other authors  formalize  this concept  by using the entropy  
+[12] or, more commonly,  the proportion  between  positive  and neg- 
+ative instances  (formalized  as 1: X ) [13] which is similar  to the 
+imbalance  ratio ( IR ) deﬁned  as m P / m N [1] , also called skew [25] . 
+This value lies within the [0, ∞ ] range, having a value IR = 1 in 
+the balanced  case. 
+Other authors  formalize  this concept  by using the propor-  
+tion between  positive  and negative  instances  (formalized  as 1: X ) 
+[13] or, which is similar,  the imbalance  ratio ( IR ) deﬁned  as m P / m N 
+[1] , which is also called skew [25] . This value lies within the [0, 
+∞ ] range, having a value IR = 1 in the balanced  case. 
+In this paper, it is preferred  to feature  the imbalance  with a 
+value within the [ −1 , 1 ] range, while reserving  the 0 value for 
+when the classes  are perfectly  balanced  (lack of imbalance).  For 
+this purpose,  we propose  the imbalance  coeﬃcient  δas 
+δ= δP ≡2 πP −1 = 2 m P 
+m −1 . (10) 
+For the negative  class, the coeﬃcient  δN = 2 πN −1 is also de- 
+ﬁned. The sum of these coeﬃcients  is 
+δP + δN = 2 πP −1 + 2 πN −1 = 2 ( πP + πN ) −2 = 0 . (11) 
+Hence δN = −δP = −δ. From (10) , the value of πP can be ob- 
+tained as 
+πP = 1 + δ
+2 . (12) 
+Moreover,  the value of πN can be derived  from (11) 
+πN = 1 −δ
+2 . (13) 
+Therefore,  the metrics  μ=μ( λPP , λNN , πP , πN ) can be redeﬁned  
+as μ=μ( λPP , λNN , δ) . It is clear that the value of the metric μ
+depends  not only on the classiﬁer’s  performance,  but also on the 
+imbalance  δ. 
+It can easily be derived  that the relationship  between  the im- 
+balance  ratio ( IR ) and the imbalance  coeﬃcient  ( δ) is 
+IR = 1 + δ
+1 −δ. (14) 
+2.4. Assessing  the impact of imbalance  
+In order to assess the impact  of the imbalance  in a certain  met- 
+ric, its value ( μb ) for the balanced  case (when δ= 0 ) is ﬁrst con- 
+sidered.  
+μb ≡μ| δ=0 = μ( λPP , λNN , 0 ) = μb ( λPP , λNN ) . (15) 
+This deﬁnition  is later employed  to propose  a family of met- 
+rics where the effect of the imbalance  is dismissed.  In the scien- 
+tiﬁc literature,  a few examples  of these metrics  can be found, as in 
+the case of Class Balance  Accuracy  ( CBA ) [35] . On generalizing  this 
+approach,  the metrics  μb are called Class Balance  Metrics  ( CBM ). 
+Table 2 summarizes  the equations  for each metric,  both in the class 
+imbalance  and balance  cases. These results are derived  in the sup- 
+plementary  material  of the paper, available  online. 
+With these deﬁnitions,  it is now possible  to quantify  the impact  
+of imbalance,  by using the bias of the metric which is deﬁned  as 
+B μ≡μ−μb = μ( λPP , λNN , δ) −μb ( λPP , λNN ) . (16) 
+Table 3 summarizes  the deﬁnition  of bias for each metric.  These 
+results are derived  in the supplementary  material  of the paper, 
+available  online. 
+As can be observed,  bias depends  on three variables:  B μ= 
+B μ( λPP , λNN , δ) . In order to study this function,  a 4-dimensional  
+space is required.  Its representations  are ﬁrst tackled  using heat 
+volumes  (3D), where each point in the 3-dimensional  ( λPP , λNN , δ) 
+space has a bias-dependent  colour. 
+A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 219 
+Fig. 2. Heat maps for metrics with balanced  classes. 
+Table 2 
+Classiﬁcation  performance  metrics as a function of imbalance.  
+Metrics Class imbalance  metrics μ( λPP , λNN , δ) Class Balance metrics μb ( λPP , λNN ) 
+SNS λPP λPP 
+SPC λNN λNN 
+PRC λPP ( 1+ δ) 
+λPP ( 1+ δ)+( 1 −λNN )( 1 −δ) λPP 
+λPP +( 1 −λNN ) 
+NPV λNN ( 1 −δ) 
+λNN ( 1 −δ)+( 1 −λPP )( 1+ δ) λNN 
+λNN +( 1 −λPP ) 
+ACC λPP 1+ δ
+2 + λNN 1 −δ
+2 λPP + λNN 
+2 
+F 1 2 λPP ( 1+ δ) 
+( 1+ λPP )( 1+ δ)+( 1 −λNN )( 1 −δ) 2 λPP 
+2+ λPP −λNN 
+GM /radicalbig 
+λPP ·λNN /radicalbig 
+λPP ·λNN 
+MCCn 1 
+2 ( λPP + λNN −1 /radicalBig 
+[ λPP +( 1 −λNN ) 1 −δ
+1+ δ][ λNN +( 1 −λPP ) 1+ δ
+1 −δ] + 1 ) 1 
+2 ( λPP + λNN −1 √ 
+[ λPP +( 1 −λNN ) ][ λNN +( 1 −λPP ) ] + 1 ) 
+BMn λPP + λNN 
+2 λPP + λNN 
+2 
+MKn 1 
+2 ( 1+ δ
+( 1+ δ)+ 1 −λNN 
+λPP ( 1 −δ) + 1 −δ
+( 1 −δ)+ 1 −λPP 
+λNN ( 1+ δ) ) 1 
+2 ( 1 
+1+ 1 −λNN 
+λPP + 1 
+1+ 1 −λPP 
+λNN ) 
+Table 3 
+Bias of performance  metrics due to class imbalance.  
+Metrics Bias B μ( λPP , λNN , δ) 
+SNS 0 
+SPC 0 
+PRC 1+ δ
+( 1+ δ)+ 1 −λNN 
+λPP ( 1 −δ) −1 
+1+ 1 −λNN 
+λPP 
+NPV 1 −δ
+( 1 −δ)+ 1 −λPP 
+λNN ( 1+ δ) −1 
+1+ 1 −λPP 
+λNN 
+ACC δ
+2 ( λPP −λNN ) 
+F 1 2 λPP ( 1+ δ) 
+( 1+ λPP )( 1+ δ)+( 1 −λNN )( 1 −δ) −2 λPP 
+2+ λPP −λNN 
+GM 0 
+MCCn λPP + λNN −1 
+2 /radicalBig 
+[ λPP +( 1 −λNN ) 1 −δ
+1+ δ][ λNN +( 1 −λPP ) 1+ δ
+1 −δ] −λPP + λNN −1 
+2 √ 
+[ λPP +( 1 −λNN ) ][ λNN +( 1 −λPP ) ] 
+BMn 0 
+MKn 1 
+2 ( 1+ δ
+( 1+ δ)+ 1 −λNN 
+λPP ( 1 −δ) −1 
+1+ 1 −λNN 
+λPP + 1 −δ
+( 1 −δ)+ 1 −λPP 
+λNN ( 1+ δ) −1 
+1+ 1 −λPP 
+λNN ) 
+Alternatively,  B μis also represented  as a set of heat maps (or 
+contour  graphs).  Each heat map (2D) represents  the metric bias for 
+a certain  ﬁxed value of the imbalance  (let us say δ0 ), thereby  mak- 
+ing bias dependent  on two variables  ( λPP , λNN ) and on one con- 
+stant ( δ0 ). Hence, B μ= B μ( λPP , λNN , δ0 ) . 
+Nevertheless,  drawing  conclusions  regarding  a 4-dimensional  
+space is, in most cases, a challenging  task. Several  partial prospects  
+are therefore  proposed  that reduce the bias function  dimension-  
+ality. In this respect,  the ﬁrst approach  involves  considering  the Table 4 
+Bias indicators  for singular classiﬁers.  
+Singular classiﬁer  Symbol σB μ( δ) 
+Worst classiﬁer  wcB μ( δ) lim 
+ε→ 0 B μ( ε , ε , δ) 
+Best classiﬁer  bcB μ( δ) lim 
+ε→ 0 B μ( 1 −ε, 1 −ε, δ) 
+Worst-positive  classiﬁer  wpcB μ( δ) lim 
+ε→ 0 B μ( ε, 1 −ε, δ) 
+Worst-negative  classiﬁer  wncB μ( δ) lim 
+ε→ 0 B μ( 1 −ε , ε , δ) 
+Medium classiﬁer  mcB μ( δ) B μ(0.5, 0.5, δ) 
+metric bias for classiﬁers  whose performance  is singularly  located  
+on the ( λPP , λNN ) plane, thereby  obtaining  a set of bias indicators  
+which are generically  denoted  as σB μ( δ). The singular  classiﬁers  
+and their formulations  are proposed  in Table 4. 
+An alternative  way to reduce the dimensionality  of B μis 
+through  the consideration  that λPP and λNN are randomly  and uni- 
+formly distributed  within the [0, 1] range. Bias can therefore  be 
+seen for each value of the imbalance  coeﬃcient  δas a random  
+variable  B μ( δ), which is characterized  by its probability  density  
+function  ( pdf [ B μ( δ)]). Additionally,  several  local statistical  indica-  
+tors can be deﬁned,  which are generically  denoted  as ψB μ( δ). The 
+term local attributed  to these indicators  (summarized  in Table 5 ) 
+means that they are deﬁned  for each value of δ. 
+Deﬁnitions  in Tables 4 and 5 have introduced  several  prospects  
+of bias, all of which depend  on the imbalance  δ. They are gener- 
+220 A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 
+Table 5 
+Local statistical  indicators  on bias. 
+Local statistical  indicator  Symbol ψB μ( δ) 
+Mean mB μ( δ) ∫ ∫ B μ( λPP , λNN , δ) d λPP d λNN 
+Standard  deviation  sdB μ( δ) /radicalBig /integraltext /integraltext 
+[ B μ( λPP , λNN , δ) −m B μ(δ) ] 2 d λPP d λNN 
+Root-Mean-Square  Bias rmsB μ( δ) /radicalbig /integraltext /integraltext 
+B 2 μ( λPP , λNN , δ) d λPP d λNN 
+Maximum  absolute value maxaB μ( δ) max 
+0 ≤λPP ≤1 
+0 ≤λNN ≤1 | B μ( λPP , λNN , δ) | 
+Skewness  skB μ( δ) 1 
+sdB 3 μ(δ) /radicalBig /integraltext /integraltext 
+[ B μ( λPP , λNN , δ) −m B μ(δ) ] 3 d λPP d λNN 
+Kurtosis kB μ( δ) 1 
+sdB 4 μ(δ) /radicalBig /integraltext /integraltext 
+[ B μ( λPP , λNN , δ) −m B μ(δ) ] 4 d λPP d λNN 
+Table 6 
+Global statistical  indicators  on bias. 
+Global statistical  indicator  Symbol /Psi1B μ( δ) 
+Mean MB μ1 
+2 /integraltext /integraltext /integraltext 
+B μ( λPP , λNN , δ) d λPP d λNN dδ
+Standard  deviation  SDB μ/radicalBig 
+1 
+2 /integraltext /integraltext /integraltext 
+[ B μ( λPP , λNN , δ) −M B μ] 2 d λPP d λNN dδ
+Root-Mean-Square  Bias RMSB μ/radicalBig 
+1 
+2 /integraltext /integraltext /integraltext 
+B 2 μ( λPP , λNN , δ) d λPP d λNN dδ
+Maximum  absolute value MAXAB μ max 
+0 ≤λPP ≤1 
+0 ≤λNN ≤1 
+0 ≤δ≤1 | B μ( λPP , λNN , δ) | 
+Skewness  SKB μ1 
+SDB 3 μ/radicalBig 
+1 
+2 /integraltext /integraltext /integraltext 
+[ B μ( λPP , λNN , δ) −M B μ] 3 d λPP d λNN dδ
+Kurtosis KB μ1 
+SDB 4 μ/radicalBig 
+1 
+2 /integraltext /integraltext /integraltext 
+[ B μ( λPP , λNN , δ) −M B μ(δ) ] 4 d λPP d λNN dδ
+ically denoted  as x B μ(δ) = { σB μ(δ) , ψ B μ(δ) } . It should be ob- 
+served that these are not numbers  but functions.  In order to obtain 
+a single value derived  from these functions,  we can make the hy- 
+pothesis  that δis randomly  and uniformly  distributed  within the 
+[ −1 , 1 ] range. Mean values of each function  can therefore  be com- 
+puted as 
+xB μ≡1 
+2 /integraldisplay 1 
+−1 x B μ( δ) dδ. (17) 
+Another  way to reduce the generic  function  xB μ( δ) to a single 
+value is by focusing  on its value for extremely  positive-imbalanced  
+datasets  where δ→ 1. A generic  value can therefore  be obtained  
+through  the expression  
+xB εP 
+μ≡lim 
+ε→ 0 x B μ( 1 −ε ) . (18) 
+The corresponding  negative  counterpart  is deﬁned  as 
+xB εN 
+μ≡lim 
+ε→ 0 x B μ( −1 + ε ) . (19) 
+A global regard of bias can also be undertaken  by considering  
+that λPP and λNN are randomly  and uniformly  distributed  within 
+the [0, 1] range, and also that δlies within the [ −1 , 1 ] range. 
+Bias can now be seen as a random  variable  B μthat is indepen-  
+dent of the imbalance  coeﬃcient  δ. Bias can therefore  be char- 
+acterized  by its probability  density  function  ( pdf [ B μ]). Based on 
+this overall pdf , several  global statistical  indicators  can be de- 
+ﬁned, which are generically  denoted  as /Psi1B μand are summarized  
+in Table 6 . 
+Deﬁnitions  in Eqs. (17) –(19) and in Table 6 have introduced  sev- 
+eral single-valued  indicators  regarding  bias which will generically  
+be denoted  as X B μ(δ) = { xB μ, xB εP μ, xB εN μ, /Psi1B μ(δ) } . 
+Throughout  this subsection,  several  function  and single-valued  
+indicators  have been introduced  to assess the impact  of dataset  imbalance  on classiﬁcation  performance  metrics.  A summary  of 
+these indicators  is depicted  in Fig. 3 . 
+3. Results  
+3.1. Performance  metric bias function  
+The methods  described  in Section  2 will now be applied  to the 
+ten metrics  deﬁned  in Table 1 . As explained  above, bias depends  
+on three variables,  that is, B μ= B μ( λPP , λNN , δ) and its formulation  
+for the selected  metrics  is also shown in Table 3 . The ﬁrst approach  
+for their representation  is based on the heat volumes  as depicted  
+in Fig. 4 , where each point in the 3-dimensional  ( λPP , λNN , δ) space 
+has a bias-dependent  colour. 
+In certain  performance  metrics  (for instance  in MCCn ), bias has 
+low values for many points in the ( λPP , λNN , δ) space. In these 
+cases, the expressive  power of the whole range of colours  is not 
+completely  exploited.  It is therefore  better to select the colour of 
+each point not directly  based on bias, but on the relative  value 
+of bias within the range of values for their corresponding  met- 
+ric. The colour-map  is then rescaled  to show the relative  bias 
+with the value −1 corresponding  to the minimum  bias, and the 
+value +1 to the maximum.  The result is depicted  in Fig. 5 , where 
+the range of each metric is shown in its corresponding  subplot  
+title. 
+As explained  above, B μcan also be represented  as a set of heat 
+maps. Each heat map represents  the metric bias for a certain  ﬁxed 
+value of the imbalance  B μ= B μ( λPP , λNN , δ0 ) . The result for preci- 
+sion ( PRC ) is portrayed  in Fig. 6 . Similar  graphics  can be obtained  
+for the remaining  metrics.  
+Now let us suppose  that the value of δis known,  for in- 
+stance δ= δ0 = 0 . 95 . Therefore  B μ= B μ( λPP , λNN , δ0 ) depends  on 
+only two variables  ( λPP and λNN ) and can be represented  as a heat 
+map. The results for each metric are shown in Fig. 7 where the 
+colours  represent  the absolute  value of bias. 
+A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 221 
+Fig. 3. Functions  and single-valued  indicators  assessing  bias in performance  metrics due to class imbalance.  
+Fig. 4. Heat volumes of bias for each performance  metric. 
+This information  can also be presented  in the form of contour  
+graphs as in Fig. 8 where the colours  represent  the absolute  value 
+of bias. 
+3.2. Bias indicators  depending  on δ
+In the previous  section,  several  bias indicators  depending  only 
+on the imbalance  coeﬃcient  δwere deﬁned.  As mentioned  therein,  
+the ﬁrst approach  is to consider  classiﬁers  whose performance  is 
+singularly  located  on the ( λPP , λNN ) plane. The results obtained  for 
+each bias indicator  and performance  metric σB μ( δ) are summa-  
+rized in Table 7 , where unbiased  performance  metrics  ( SNS, SPC, 
+GM, BMn ) have been omitted.  Table 7 
+Bias indicators  for singular classiﬁers:  σB μ( δ). 
+PRC NPV ACC F 1 MCCn MKn 
+wcB μ 0 0 0 0 0 0 
+bcB μ 0 0 0 0 0 0 
+wpcB μδ /2 −δ/ 2 −δ/ 2 0 0 0 
+wncB μδ /2 −δ/ 2 δ/2 2( 1+ δ) 
+3+ δ−2 
+3 0 0 
+mcB μδ /2 −δ/ 2 0 1+ δ
+2+ δ−1 
+2 0 0 
+It can be observed  that only four types of non-null  indicators  
+appear.  Their dependence  on δis plotted  in Fig. 9 . 
+Alternatively,  it can be assumed  that λPP and λNN are randomly  
+and uniformly  distributed  across the [0, 1] range and the bias 
+222 A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 
+Fig. 5. Heat volumes of relative bias for each performance  metric. 
+Fig. 6. Set of heat maps of bias for precision.  
+B μ( δ) can then be statistically  characterized.  First, the probability  
+density  function  ( pdf [ B μ( δ)]) is derived  for each performance  met- 
+ric. The results are shown in Fig. 10 , where, for each δand each 
+bias B μ, the values of pdf are shown using different  colours  (dark 
+blue corresponds  to pdf = 0 ). 
+Additionally,  several  local statistical  indicators  have been de- 
+ﬁned (see Table 5 ) and these are generically  denoted  as ψB μ( δ). 
+The results obtained  for each performance  metric are depicted  in 
+Fig. 11 . For easier reading,  unbiased  performance  metrics  ( SNS, SPC, 
+GM, BMn ) have been omitted.  Moreover,  NPV presents  symmetric  
+behaviour  to PRC and has also been disregarded  from the graphs 
+for the sake of simplicity.  3.3. Single-valued  bias indicators  
+As has already  been pointed  out, there are various  ways to ob- 
+tain single-valued  bias indicators.  First, we consider  bias functions  
+σB μ( δ) as summarized  in Table 7 . By assuming  that δis randomly  
+and uniformly  distributed  within the [ −1 , 1 ] range, the mean val- 
+ues of each measure  can be computed.  The results for each perfor-  
+mance metric are shown in Table 8 . 
+Now let us consider  bias functions  ψB μ( δ) depicted  in Fig. 11 . 
+By applying  the same method,  mean values of these measures  
+can also be obtained.  Results  for each metric are shown in 
+Table 9 . 
+A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 223 
+Fig. 7. Heat maps of bias for each performance  metric ( δ= 0 . 95 ). 
+Fig. 8. Contour graphs of bias for each performance  metric ( δ= 0 . 95 ). 
+Table 8 
+Mean values of bias functions  for singular classiﬁers  σB μ( δ). 
+Symbol PRC NPV ACC F 1 MCCn MKn 
+1 wcB μ 0 0 0 0 0 0 
+2 bcB μ 0 0 0 0 0 0 
+3 wpcB μ 0 0 0 0 0 0 
+4 wncB μ 0 0 0 −0 . 053 0 0 
+5 mcB μ 0 0 0 −0 . 049 0 0 
+Table 9 
+Mean values of bias of local statistical  indicators  ψB μ( δ). 
+Symbol PRC NPV ACC F 1 MCCn MKn 
+6 mB μ 0 0 0 −0 . 041 0 0 
+7 sdB μ 0.082 0.082 0.102 0.066 0.038 0.066 
+8 rmsB μ 0.228 0.228 0.102 0.135 0.038 0.066 
+9 maxaB μ0.308 0.308 0.25 0.244 0.090 0.154 
+10 skB μ 0 0 0 0.129 0 0 
+11 kB μ 0.080 0.080 −0 . 6 −1 . 093 0.006 0.028 Instead  of computing  the mean of a function,  single-valued  bias 
+indicators  can also be obtained  by focusing  on their value for ex- 
+tremely  imbalanced  datasets.  By ﬁrst considering  the bias metrics  
+of singular  classiﬁers  ( σB μ( δ)), their results are shown in Table 10 . 
+Regarding  the extremely  imbalanced  case for local statistical  in- 
+dicators  ( ψB μ( δ)), their results are shown in Table 11 . 
+For a global view of bias, let us consider  that λPP and 
+λNN are randomly  and uniformly  distributed  across the [0, 1] 
+range while δlies within the [ −1 , 1 ] range, and then bias B μ
+is statistically  characterized.  First, the probability  density  func- 
+tion ( pdf ( B μ)) is derived  for each performance  metric.  The re- 
+sults are shown in Fig. 12 , where NPV has been omitted  from the 
+graph because  it shows symmetric  behaviour  to PRC and has the 
+same pdf . 
+Finally,  several  global statistical  indicators  based on pdf ( B μ) 
+have been deﬁned  (see Table 6 ), which are generically  denoted  as 
+/Psi1B μ. The results obtained  for each performance  metric are shown 
+in Table 12 . 
+224 A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 
+Table 10 
+Bias indicators  on singular classiﬁers  ( σB μ( δ)) for extremely  imbalanced  datasets.  
+Symbol PRC NPV ACC F 1 MCCn MKn 
+Extremely  
+positive-  
+imbalanced  12 wcB εP μ 0.667 0 0 0 0.211 0.333 
+13 bcB εP μ 0 −0 . 667 0 0 −0 . 211 −0 . 333 
+14 wpcB εP μ 0.5 −0 . 5 −0 . 5 0 0 0 
+15 wncB εP μ 0.5 −0 . 5 0.5 0.333 0 0 
+16 mcB εP μ 0.5 −0 . 5 0 0.167 0 0 
+Extremely  
+negative-  
+imbalanced  17 wcB εN μ 0 0.667 0 0 −0 . 211 0.333 
+18 bcB εN μ −0.667 0 0 −0 . 5 0.211 −0 . 333 
+19 wpcB εN μ −0 . 5 0.5 0.5 0 0 0 
+20 wncB εN μ −0 . 5 0.5 −0 . 5 −0 . 667 0 0 
+21 mcB εN μ −0 . 5 0.5 0 −0 . 5 0 0 
+Table 11 
+Bias measures  on local statistical  indicators  ( ψB μ( δ)) for extremely  imbalanced  datasets.  
+Symbol PRC NPV ACC F 1 MCCn MKn 
+Extremely  
+positive-  
+imbalanced  22 mB εP μ 0.5 −0.5 0 0.137 0 0 
+23 sdB εP μ 0.238 0.238 0.204 0.088 0.213 0.226 
+24 rmsB εP μ 0.554 0.554 0.204 0.163 0.213 0.226 
+25 
+maxaB εP μ1 1 0.5 0.333 0.5 0.5 
+26 skB εP μ 0 0 0 0.244 0 0 
+27 kB εP μ −0 . 651 −0 . 651 −0 . 6 −1 . 043 −0 . 790 −1 . 014 
+Extremely  
+negative-  
+imbalanced  28 mB εN μ −0 . 5 0.5 0 −0 . 477 0 0 
+29 sdB εN μ 0.238 0.238 0.204 0.241 0.213 0.226 
+30 rmsB εN μ 0.554 0.554 0.204 0.534 0.213 0.226 
+31 
+maxaB εN μ1 1 0.5 1 0.5 0.5 
+32 skB εN μ 0 0 0 0.168 0 0 
+33 kB εN μ −0 . 651 −0 . 651 −0 . 6 −0 . 933 −0 . 790 −1 . 014 
+Fig. 9. Four types of bias indicators  for singular classiﬁers.  
+Table 12 
+Global statistical  indicators  of bias /Psi1B μfor each performance  metric. 
+Symbol PRC NPV ACC F 1 MCCn MKn 
+34 MB μ 0 0 0 −0 . 041 0 0 
+35 SDB μ 0.271 0.271 0.118 0.169 0.055 0.086 
+36 RMSB μ0.271 0.271 0.118 0.174 0.055 0.086 
+37 MAXAB μ1 1 0.5 1 0.5 0.5 
+38 SKB μ 0 0 0 −1 . 269 0 0 
+39 KB μ −0 . 046 −0 . 046 1.32 2.043 6.9 3.061 
+In this section,  39 single-valued  bias indicators  have been con- 
+sidered,  which can also be presented  in a graphical  form, as 
+shown in Fig. 13 . Here, the bias indicators  σB μ(δ) , detailed  in 
+Table 8 , have been omitted,  since all these indicators  are null 
+(except  for F 1 score) and therefore  their comparison  would be 
+meaningless.  3.4. Symmetry  of bias functions  
+In order to categorize  the bias functions  for each performance  
+metric,  it is convenient  to study their symmetry.  For this pur- 
+pose, let us begin by considering  the Matthews  Correlation  Co- 
+eﬃcient  ( MCC ), since this coeﬃcient  is particularly  clear. Its heat 
+map for an imbalance  coeﬃcient  δ= 0 . 95 is shown in the upper 
+left-hand-side  plot of Fig. 14 . A ﬁrst anti-clockwise  90 °rotation  
+on the ( λPP , λNN ) plane is performed,  and the result is shown in 
+the upper right-hand-side  plot. The result of a second  90 ºrotation  
+is shown in the lower right-hand-side  graph. Finally,  the sign of 
+the bias values is changed,  as shown in the lower left-hand-side  
+plot. It can be observed  that the result coincides  with the original  
+heat map. 
+The 180 ºrotation  enables  the bias to be deﬁned  on a new set 
+of axes ( /Lambda1PP , /Lambda1NN ), which are related  to the original  ( λPP , λNN ) 
+through  the expressions  /Lambda1PP = 1 −λPP ; /Lambda1NN = 1 −λNN . This sym- 
+metry can therefore  be formalized  as 
+B MCC ( λPP , λNN , δ) = −B MCC ( /Lambda1PP , /Lambda1NN , δ) 
+= −B MCC ( 1 −λPP , 1 −λNN , δ) . (20) 
+Hence, the MCC bias function  shows an order-2  (180 º) rota- 
+tional odd symmetry  (or anti-symmetry)  on the ( λPP , λNN ) plane. 
+Furthermore,  this bias function  shows symmetry  with respect  to 
+the principal  diagonal  on the ( λPP , λNN ) plane if the sign of δis 
+inverted,  that is, 
+B MCC ( λNN , λPP , −δ) = B MCC ( λPP , λNN , δ) . (21) 
+This dual behaviour  is called Type I symmetry.  Bias functions  
+for ACC and MK also exhibit  this type of symmetry.  
+When the bias of precision  ( PRC ) is considered,  no symmetry  
+on the ( λPP , λNN ) plane can be found. However,  it exhibits  a sym- 
+metry in the ( λPP , λNN , δ) space as can be observed  in Fig. 15 
+where its heat volume  for an imbalance  coeﬃcient  δ= 0 . 95 is 
+shown in the upper left-hand-side  plot. First, a mirror symme-  
+try, with respect  to the δ= 0 plane, is performed  and the result is 
+A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 225 
+Fig. 10. Probability  density function pdf [ B μ( δ)] for each performance  metric. 
+Fig. 11. Local statistical  indicators  of bias ψB μ( δ) for each performance  metric. 
+Fig. 12. Probability  density function pdf ( B μ) for each performance  metric. 
+shown in the upper right-hand-side  plot. The sign of the bias val- 
+ues is then changed  and the results are shown in the lower right- hand-side  plot. Finally,  a second  mirror symmetry  is performed,  
+this time with respect  to the anti-diagonal  plane drawn in the 
+third plot. The result is shown in the lower left-hand-side  plot. It 
+can be observed  that the result coincides  with the original  heat 
+volume.  
+The double  mirror symmetry  enables  the bias to be deﬁned  
+on a new set of axes ( /Lambda1PP , /Lambda1NN , /Delta1), which are related  to the 
+original  set ( λPP , λNN , δ) through  the expressions  /Lambda1PP = 1 −λNN ; 
+/Lambda1NN = 1 −λPP ; /Delta1= −δ. This symmetry  can hence be formalized  
+as 
+B PRC ( λPP , λNN , δ) = −B PRC ( /Lambda1PP , /Lambda1NN , /Delta1) 
+= −B PRC ( 1 −λNN , 1 −λPP , −δ) . (22) 
+Therefore,  the PRC bias function  shows a double  mirror odd 
+symmetry  (or anti-symmetry)  in the ( λPP , λNN , δ) space. This be- 
+haviour  is called Type II symmetry.  Bias functions  for each metric 
+(except  F 1 score) exhibit  this type of symmetry.  
+Additionally,  the symmetry  of each pdf can be measured  
+through  the skewness  statistics.  
+226 A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 
+Fig. 13. Single-valued  bias indicators  for each performance  metric. 
+Fig. 14. Study of symmetry  for B MCC ( λNN , λPP ) with δ= 0 . 95 . 
+3.5. Clustering  performance  metrics  based on their bias 
+In previous  sections,  the impact  of imbalance  on ten classiﬁca-  
+tion performance  metrics  is studied.  Based on their bias, the per- 
+formance  metrics  can now be grouped  into several  clusters.  In or- 
+der to perform  this clustering,  the 39 single-valued  bias indicators  
+are considered.  That is, each performance  metric is to be featured  
+by a point in an R 39 space. 
+To tackle the issue of how to visualize  such a high-dimensional  
+vector, a reduction  of dimensionality  to a plane (2D) must be undertaken.  The ﬁrst approach  ( Fig. 16 -A) involves  the selection  
+of 2 highly signiﬁcant  bias indicators  and the projection  of the 
+points on that plane. Our selection  is of RMSB μ, which is an 
+indicator  of the mean global bias, and of rmsB εP μ, which is a 
+mean gauge of bias for extremely  positive-imbalanced  datasets.  
+In this graphic,  it can be observed  that: bias for SNS, SPC, GM 
+and BMn performance  metrics  are at the same point; bias for 
+ACC, MCCn and MKn are very close to each other; bias for F 1 
+is not far from these metrics;  and, ﬁnally, bias for PRC and 
+NPV are at the same point but distant  from the other metrics.  
+A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 227 
+Fig. 15. Study of symmetry  for B PRC ( λNN , λPP , δ) with δ= 0 . 95 . 
+Following  these criteria,  either 3 or 4 clusters  could be esta- 
+blished.  
+However,  a more in-depth  insight  shows that PRC and NPV 
+have symmetric  behaviour  for many bias indicators.  They have ap- 
+peared  together  in the previous  graph because  the selected  indi- 
+cators ( RMSB μand rmsB εP μ) compute  a squared  mean, which hides 
+their symmetric  characteristics.  In order to overcome  this issue, the 
+dimensionality  reduction  can be made by selecting  a different  pair 
+of bias indicators.  In Fig. 16 -B, MAXAB  is a global indicator  of the 
+absolute  maximum  value of bias (and still hides the symmetry),  
+and mB εP μis another  mean gauge of bias for extremely  positive-  
+imbalanced  datasets  that reveals  the symmetry.  Five clusters  now 
+clearly appear.  
+An alternative  to the previous  somewhat  arbitrary  and reduc- 
+tionist selection  of the pair of bias indicators  involves  the con- 
+sideration  of the full set of indicators  and the performance  of 
+some kind of bidimensional  reduction.  Principal  Component  Anal- 
+ysis (PCA), shown in Fig. 16 -C [26] , and Multi-dimensional  Scaling  
+(MDS),  shown in Fig. 16 -D [7] , are employed  as the techniques  for 
+this reduction.  
+Each panel on Fig. 16 represents  a different  bidimensional  
+perspective  of highly dimensional  ( R 39 ) set of points. Therefore,  
+slightly  different  clustering  may arise in any of them. But consid-  
+ering all the panels,  it can be seen that the following  5 clusters  
+appear:  
+I. Cluster  comprised  of SNS, SPC, GM and BMn with metrics  having 
+null bias. 
+II. Cluster  comprised  of ACC, MCCn and MKn with the following  
+features:  
+•Bias has Type I symmetry,  that is, B μ( λPP , λNN , δ) = 
+−B μ( 1 −λPP , 1 −λNN , δ) and B μ( λNN , λPP , −δ) = B μ( λPP , 
+λNN , δ) . 
+•Bias pdf has null skewness.  •Bias values are moderate:  0.5 for maximum  ( MAXAB  μ, 
+maxaB εP μand maxaB εN μ); and about 0.2 for average  bias in 
+extremely  imbalanced  datasets  ( rmsB εP μand rmsB εN μ). 
+•Sign of bias does not depend  on sign of imbalance.  
+III. Cluster  (with 2 subclusters)  comprised  of PRC and NPV with the 
+following  features:  
+•Bias has Type II symmetry,  that is, B μ( λPP , λNN , δ) = 
+−B μ( 1 −λNN , 1 −λPP , −δ) . 
+•Bias pdf has null skewness.  
+•Bias values are high: 1 for maximum  ( MAXAB  μ, maxaB εP μand 
+maxaB εN μ); and about 0.5 for average  bias in extremely  im- 
+balanced  datasets  ( r msB εP μand r msB εN μ). 
+•The relationship  between  the sign of bias and the sign of 
+imbalance  establishes  2 subclusters.  
+A. PRC , with bias and imbalance  having the same sign. 
+B. NPV , with bias and imbalance  having the opposite  sign. 
+IV. Cluster  comprised  by F 1 with the following  features:  
+•Bias has no symmetry.  
+•Bias pdf has non-null  skewness.  
+•Bias values are low for positive  imbalance:  0.33 for maxi- 
+mum ( maxaB εP μ); and approximately  0.15 for average  bias in 
+extremely  imbalanced  datasets  ( rmsB εP μ). 
+•Bias values are high for negative  imbalance:  1 for maximum  
+( maxaB εN μ); and approximately  0.5 for average  bias in ex- 
+tremely  imbalanced  datasets  ( rmsB εN μ). 
+•Sign of bias and sign of imbalance  are the same. 
+Clustering  information  is summarized  in Table 13 . 
+Another  way to represent  how performance  metrics  are 
+grouped  according  to the bias behaviour  is by drawing  a dendro-  
+gram. To this end, the full set of bias indicators  is employed  to fea- 
+ture each performance  metric.  The distances  between  the metrics  
+are then computed  in the space of the R 39 bias indicators.  These 
+228 A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 
+Fig. 16. Bidimensional  representation  of performance  metrics according  to their bias indicators.  
+Table 13 
+Clusters of performance  metrics attending  to their bias. 
+I II III.A III.B IV 
+SNS SPCGM BM ACC MCC MK PRC NPV F1 
+δ> 0 maxaB εP μNull 0 Medium 0.5 High 1 High 1 Low 0.333 
+rmsB εP μ 0 ∼0.2 0.554 0.554 0.163 
+δ< 0 maxaB εN μ 0 0.5 1 1 High 1 
+rmsB εN 
+μ 0 ∼0.2 0.554 0.554 0.534 
+Symmetry  Type I Yes Yes Yes Yes No 
+Type II Yes Yes No No No 
+Skewness  0 0 0 0 /negationslash = 0 
+sgn ( B ) vs. sgn ( δ) = Independent  = /negationslash = = 
+distances  are employed  to gauge how separated  the metrics  are, as 
+shown in Fig. 17 . Once again, 5 clusters  clearly appear.  
+4. Discussion  
+The ﬁrst issue to be discussed  is the comparison  between  the 
+imbalance  ratio ( IR ), deﬁned  by several  authors  to quantify  imbal- 
+ance, and the imbalance  coeﬃcient  ( δ) as proposed  in this paper. 
+Although  they are both valid indicators  of the degree to which the 
+datasets  are imbalanced,  we prefer δbecause  it is deﬁned  within 
+the [ −1 , +1 ] bounded  range with the balanced  case ( δ= 0 ) in the 
+middle  of the segment  (and hence it is symmetric);  whilst IR is deﬁned  within the [ 0 , + ∞ ] unbounded  range with the balanced  
+case IR = 1 , which is clearly asymmetric.  In order to obtain sym- 
+metric behaviour  based on IR , the logarithm  of IR could be used 
+( LIR ), whose range is [ −∞ , + ∞ ] with the balanced  case ( LIR = 0 ) 
+in the middle;  however,  its range still remains  unbounded.  Fig. 18 
+shows an example  of a local statistical  indicator  of bias ( rmsB ) as 
+a function  of the imbalance  using δ(left-hand-side)  and IR in log- 
+arithmic  scale (right-hand-side).  
+A practical  application  of the above results is that the bias’s 
+mean value of every performance  metric (and other related  statis- 
+tics) can be computed  using the equations  in Table 6 , and their 
+results for the ten studied  metrics  are shown in Table 12 . 
+A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 229 
+Fig. 17. Dendrogram  of performance  metrics according  to their bias measures.  
+In the cases where the dataset  is known,  the expected  bias of 
+every performance  metric can be computed.  Indeed,  the dataset  
+determine  the value of the imbalance  coeﬃcient  δand, for that 
+value, the bias (its root-mean-square  value) can be obtained  as it 
+is shown in Fig. 18 . The full set of bias’s statistics  can be computed  
+using the equations  in Table 5 and their results are depicted  in 
+Fig. 11 . 
+Additionally  if the classiﬁer  results on that dataset  are also 
+known  (that is, the values of λPP and λNN ) the bias’s exact value 
+of every performance  metric can be computed  using the equations  
+in Table 3 . 
+Let us now focus on the bias functions.  From the above results 
+it is clear that the best performance  metrics,  that is, those with 
+no bias due to imbalance,  are those of sensitivity  ( SNS ) and speci- 
+ﬁcity ( SPC ). These metrics  can be considered  one-dimensional  (or 
+partial)  performance  metrics  however,  since they take into account  
+only the results on either the positive  ( SNS ) or the negative  ( SPC ) 
+class, but not both. 
+Null bias is also shown by two metrics  directly  depending  on 
+SNS and SPC : geometric  mean ( GM ) and bookmaker  informedness  
+( BM or single-threshold  AUC ). These solve the one-dimensionality  Table 14 
+Behaviour  of performance  metrics with imbalanced  datasets.  
+Cluster Metric Bias RMSB μFocus on classes Focus on results 
+(Positive,  Negative)  (Successes,  Errors) 
+I SNS Null 0 P S 
+SPC Null 0 N S 
+GM Null 0 P & N S 
+BM Null 0 P & N S 
+II ACC Medium 0.118 P & N S 
+MCC Medium 0.055 P & N S & E 
+MK Medium 0.086 P & N S & E 
+III PRC High 0.271 P & N S & E 
+NPV High 0.271 P & N S & E 
+IV F 1 High 0.174 P & N S & E 
+problem  of the SNS and SPC metrics  by considering  either their 
+arithmetic  ( BM ) or geometric  ( GM ) mean. Although  these two 
+metrics  constitute  good alternatives  to be used with imbalanced  
+datasets,  they have the drawback  of focusing  on only the classi- 
+ﬁcation  successes  ( λPP and λNN ), and fail to directly  consider  the 
+classiﬁcation  errors ( λPN and λNP ). 
+The second  best (lowest  biased)  cluster of metrics  is that 
+which is comprised  of accuracy  ( ACC ), Matthews  correlation  co- 
+eﬃcient  ( MCC ), and markedness  ( MK ). These all have a global 
+(not partial)  perspective,  since classiﬁcation  results on both pos- 
+itive and negative  classes  are considered.  From among  these 3 
+metrics,  ACC focuses  only on the classiﬁcation  successes,  which is 
+a drawback  and, additionally,  has the highest  bias (except  when 
+extreme  balanced  datasets  are used). In this cluster,  the lowest 
+bias is shown by MCC with moderate  values (lower than 0.2 in 
+the normalized  version)  for almost every value of the imbalance  
+coeﬃcient.  
+Finally,  the metrics  in the third and fourth clusters,  precision  
+( PRC ), negative  predictive  value ( NPV ), and F 1 score ( F 1 ), are highly 
+biased and should be avoided  for use in imbalanced  datasets.  
+Table 14 summarizes  the behaviour  of performance  metrics  with 
+imbalanced  datasets.  
+As a practical  conclusion,  when dealing  with imbalanced  
+datasets,  GM and BM are the best performance  metrics  if their fo- 
+cus on successes  (dismissing  the errors) presents  no limitation  for 
+the speciﬁc  application  where they are used. However,  if classiﬁ-  
+cation errors must also be considered,  then MCC arises as the best 
+choice.  
+Fig. 18. Comparison  of δand IR to measure  the imbalance.  
+230 A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 
+Concordant  results have been obtained  in other studies,  al- 
+though  most of these previous  results were only shown and not 
+exhaustively  explored  and quantiﬁed.  The weakness  of ACC in im- 
+balanced  problems  has been signalled  by many authors  [10,22]  . 
+Furthermore,  the use of PRC has been extensively  discouraged  
+[5,13,20]  . F 1 score, which depends  on PRC , is also indirectly  dis- 
+missed  by those authors  and directly  rejected  by Jeni, Cohn & De 
+La Torre [25] . Most of the literature  on this issue does not select 
+any performance  metrics,  thereby  limiting  their study to a mere 
+indication  that they are biased.  A few authors  also suggest  that the 
+best choice is the MCC metric [4,11] . 
+Probably  the most cited solution  to overcome  the effect of im- 
+balance  on performance  metrics  is the use of the Class Balanced  
+Accuracy  ( CBA ). In the terminology  used throughout  this paper, this 
+is the accuracy  for the classiﬁer  operating  on a balanced  dataset  
+( ACC b ). Nevertheless,  according  to our study, this idea can be ex- 
+tended  to the remaining  performance  metrics,  by obtaining  their 
+balanced  counterpart  ( μb ), generally  called Class Balance  Metrics  
+( CBM ), as formulated  in the last column  of Table 2 . These exten- 
+sions permit different  null-bias  perspectives  to be used in the as- 
+sessment  of the results obtained  by a classiﬁer  in the imbalanced  
+case. 
+The Class Balance  version  of the ten studied  metrics  ( μb ) will 
+show a null bias and, therefore,  a value of RMS B μ= 0 (columns  3 
+and 4 in Table 14 ). As every metric is now unbiased,  choosing  any 
+of them should be based on other criteria,  for instance,  on their 
+symmetry  (column  1), their focus on classes  (column  5) or their 
+focus on results (last column).  These values remain  unaltered  with 
+respect  to their biased counterpart.  
+The behaviour  of each Class Balance  Metric is shown in 
+Fig. 2 which can also be used as a guide for the selection  of the 
+metric.  
+5. Conclusions  
+In this paper, an extensive  and systematic  study of the impact  
+of class imbalance  on classiﬁcation  performance  metrics  is under- 
+taken. To the best of our knowledge,  no quantitative  and complete  
+study of this issue has been previously  published.  
+To characterize  the disparity  between  classes  the Imbalance  Co- 
+eﬃcient  has been deﬁned:  a new measure  which surpasses  the Im- 
+balance  Ratio or the Entropy  used in previous  studies.  
+Throughout  our analysis  several  practical  procedures  to deter- 
+mine the bias’s quantitative  value of a metric have been derived,  
+either for a general  case, for a certain  dataset  or for a given exper- 
+iment (pair of classiﬁer  and dataset).  
+From the simulation  results,  a quantitatively  justiﬁed  guide to 
+select performance  metrics  in the presence  of imbalance  classes  
+has been developed.  In our analysis,  several  clusters  of perfor-  
+mance metrics  have been identiﬁed  that involve  the use of Geo- 
+metric Mean or Bookmaker  Informedness  as the best null-biased  
+metrics  if their focus on classiﬁcation  successes  (dismissing  the er- 
+rors) present  no limitation  for the speciﬁc  application  where they 
+are used. However,  if classiﬁcation  errors must also be consid-  
+ered, then the Matthews  Correlation  Coeﬃcient  arises as the best 
+choice.  
+Finally,  a set of null-biased  multi-perspective  Class Balance  
+Metrics  is proposed  which extends  the concept  of Class Balance  
+Accuracy  to other performance  metrics.  
+Supplementary  material  
+Supplementary  material  associated  with this article can be 
+found, in the online version,  at doi: 10.1016/j.patcog.2019.02.023  . References  
+[1] A. Amin , S. Anwar , A. Adnan , M. Nawaz , N. Howard , J. Qadir , . . . A. Hussain , 
+Comparing  oversampling  techniques  to handle the class imbalance  problem:  a 
+customer  churn prediction  case study, IEEE Access 4 (2016) 7940–7957  . 
+[2] G.E. Batista , R.C. Prati , M.C. Monard , A study of the behavior  of several methods  
+for balancing  machine  learning training data, ACM SIGKDD Explor. Newslett.  6 
+(1) (2004) 20–29 . 
+[3] C. Beyan , R. Fisher , Classifying  imbalanced  data sets using similarity  based hi- 
+erarchical  decomposition,  Pattern Recognit.  48 (5) (2015) 1653–1672  . 
+[4] S. Boughorbel  , F. Jarray , M. El-Anbari  , Optimal classiﬁer  for imbalanced  
+data using Matthews  Correlation  Coeﬃcient  metric, PloS One 12 (6) (2017) 
+e0177678  . 
+[5] P. Branco , L. Torgo , R.P. Ribeiro , Relevance-based  evaluation  metrics for multi–
+class imbalanced  domains,  in: Paciﬁc-Asia  Conference  on Knowledge  Discovery  
+and Data Mining, Cham, Springer,  2017, May, pp. 698–710  . 
+[6] K.H. Brodersen  , C.S. Ong , K.E. Stephan , J.M. Buhmann  , The balanced  accuracy  
+and its posterior  distribution,  in: Pattern Recognition  (ICPR), 2010 20th Inter- 
+national Conference  on, IEEE, 2010, August, pp. 3121–3124  . 
+[7] R. Caruana , A. Niculescu-Mizil  , Data mining in metric space: an empirical  anal- 
+ysis of supervised  learning performance  criteria, in: Proceedings  of the Tenth 
+ACM SIGKDD International  Conference  on Knowledge  Discovery  and Data Min- 
+ing, ACM, 2004, August, pp. 69–78 . 
+[8] F. Charte , A.J. Rivera , M.J. del Jesus , F. Herrera , Addressing  imbalance  in multi- 
+label classiﬁcation:  measures  and random resampling  algorithms,  Neurocom-  
+puting 163 (2015) 3–16 . 
+[9] N.V. Chawla , K.W. Bowyer , L.O. Hall , W.P. Kegelmeyer  , SMOTE: synthetic  mi- 
+nority over-sampling  technique,  J. Artif. Intell. Res. 16 (2002) 321–357  . 
+[10] N.V. Chawla , Data mining for imbalanced  datasets:  An Overview,  in: Data Min- 
+ing and Knowledge  Discovery  Handbook,  Springer US, 2005, pp. 853–867  . 
+[11] D. Chicco , Ten quick tips for machine  learning in computational  biology, Bio- 
+Data Min. 10 (1) (2017) 35 . 
+[12] R.A. Dara , M.S. Kamel , N. Wanas , Data dependency  in multiple classiﬁer  sys- 
+tems, Pattern Recognit.  42 (7) (2009) 1260–1273  . 
+[13] S. Daskalaki  , I. Kopanas , N. Avouris , Evaluation  of classiﬁers  for an uneven class 
+distribution  problem,  Appl. Artif. Intell. 20 (5) (2006) 381–417 . 
+[14] C. Ferri , J. Hernández-Orallo  , R. Modroiu  , An experimental  comparison  of per- 
+formance  measures  for classiﬁcation,  Pattern Recognit.  Lett. 30 (1) (2009) 
+27–38 . 
+[15] A. Fernández  , S. del Río , N.V. Chawla , F. Herrera , An insight into imbalanced  
+Big Data classiﬁcation:  outcomes  and challenges,  Complex  Intell. Syst. 3 (2) 
+(2017) 105–120 . 
+[16] P.A. Flach , The geometry  of ROC space: understanding  machine  learning met- 
+rics through ROC isometrics,  in: Proceedings  of the 20th International  Confer- 
+ence on Machine  Learning  (ICML-03),  2003, pp. 194–201  . 
+[17] V. Ganganwar  , An overview  of classiﬁcation  algorithms  for imbalanced  
+datasets,  Int. J. Emerg. Technol. Adv. Eng. 2 (4) (2012) 42–47 . 
+[18] V. García , R.A. Mollineda  , J.S. Sánchez , Index of balanced  accuracy:  a perfor- 
+mance measure  for skewed class distributions,  in: Iberian Conference  on Pat- 
+tern Recognition  and Image Analysis,  Berlin, Heidelberg,  Springer,  2009, June, 
+pp. 4 41–4 48 . 
+[19] J. Gorodkin  , Comparing  two K-category  assignments  by a K-category  correla- 
+tion coeﬃcient,  Comput. Biol. Chem. 28 (5–6) (2004) 367–374 . 
+[20] Q. Gu , L. Zhu , Z. Cai , Evaluation  measures  of the classiﬁcation  performance  of 
+imbalanced  data sets, in: International  Symposium  on Intelligence  Computa-  
+tion and Applications,  Berlin, Heidelberg,  Springer,  2009, October, pp. 461–471 . 
+[21] H. He , E.A. Garcia , Learning  from imbalanced  data, IEEE Trans. Knowl. Data 
+Eng. 21 (9) (2009) 1263–1284  . 
+[22] M. Hossin , M.N. Sulaiman  , A review on evaluation  metrics for data classiﬁca-  
+tion evaluations,  Int. J. Data Min. Knowl. Manage. Process 5 (2) (2015) 1 . 
+[23] T. Kautz , B.M. Eskoﬁer , C.F. Pasluosta  , Generic performance  measure  for multi- 
+class-classiﬁers,  Pattern Recognit.  68 (2017) 111–125 . 
+[24] B. Krawczyk  , Learning  from imbalanced  data: open challenges  and future di- 
+rections, Prog. Artif. Intell. 5 (4) (2016) 221–232  . 
+[25] L.A. Jeni , J.F. Cohn , F. De La Torre , Facing imbalanced  data–recommendations  
+for the use of performance  metrics, in: Affective  Com puting and Intelligent  In- 
+teraction  (ACII), 2013 Humaine  Association  Conference,  IEEE, 2013, September,  
+pp. 245–251  . 
+[26] I. Jolliffe , Principal  component  analysis, in: International  Encyclopedia  of Sta- 
+tistical Science, Springer,  Berlin, Heidelberg,  2011, pp. 1094–1096  . 
+[27] G. Jurman , S. Riccadonna  , C. Furlanello  , A comparison  of MCC and CEN error 
+measures  in multi-class  prediction,  PLoS One 7 (8) (2012) e41882 . 
+[28] M.S. Kraiem , M.N. Moreno , Effectiveness  of basic and advanced  sampling  
+strategies  on the classiﬁcation  of imbalanced  data. a comparative  study using 
+classical and novel metrics, in: International  Conference  on Hybrid Artiﬁcial  
+Intelligence  Systems,  Cham, Springer,  2017, June, pp. 233–245  . 
+[29] V. López , A. Fernández  , S. García , V. Palade , F. Herrera , An insight into classi- 
+ﬁcation with imbalanced  data: empirical  results and current trends on using 
+data intrinsic characteristics,  Inf. Sci. 250 (2013) 113–141 . 
+[30] B.W. Matthews  , Comparison  of the predicted  and observed  secondary  struc- 
+ture of T4 phage lysozyme,  Biochimica  et Biophysica  Acta (BBA) 405 (2) (1975) 
+442–451  . 
+[31] N. Mehra , S. Gupta , Survey on multiclass  classiﬁcation  methods,  Int. J. Comput. 
+Sci. Inf. Technol. 4 (4) (2013) 572–576 . 
+[32] L. Mosley , A Balanced  Approach  to the Multi-Class  Imbalance  Problem,  Iowa 
+State University,  2013 . 
+A. Luque, A. Carrasco and A. Martín et al. / Pattern Recognition  91 (2019) 216–231 231 
+[33] H. Núñez , L. Gonzalez-Abril  , C. Angulo , Improving  SVM classiﬁcation  on im- 
+balanced  datasets by introducing  a new bias, J. Classiﬁcation  34 (3) (2017) 
+427–443  . 
+[34] D.M. Powers , Evaluation:  from precision,  Recall and F-Measure  to ROC, In- 
+formedness,  Markedness  and Correlation,  School of Informatics  and Engineer-  
+ing, Flinders University,  Adelaide,  Australia,  2011 Technical  Report SIE-07-001  . 
+[35] B. Raman , T.R. Ioerger , Enhancing  Learning  Using Feature and Example  Selec- 
+tion, Texas A&M University,  College Station, TX, USA, 2003 . 
+[36] M. Sokolova  , N. Japkowicz  , S. Szpakowicz  , Beyond accuracy,  F-score and ROC: 
+a family of discriminant  measures  for performance  evaluation,  in: Australasian  
+Joint Conference  on Artiﬁcial  Intelligence,  Berlin, Heidelberg,  Springer,  2006, 
+December,  pp. 1015–1021  . 
+[37] M. Sokolova  , G. Lapalme , A systematic  analysis of performance  measures  for 
+classiﬁcation  tasks, Inf. Process. Manage. 45 (4) (2009) 427–437  . 
+[38] S.V. Stehman  , Selecting  and interpreting  measures  of thematic  classiﬁcation  
+accuracy,  Remote Sens. Environ. 62 (1) (1997) 77–89 . 
+[39] Y. Sun , M.S. Kamel , A.K. Wong , Y. Wang , Cost-sensitive  boosting  for classiﬁca-  
+tion of imbalanced  data, Pattern Recognit.  40 (12) (2007) 3358–3378  . 
+[40] X. Yuan , L. Xie , M. Abouelenien  , A regularized  ensemble  framework  of deep 
+learning for cancer detection  from multi-class,  imbalanced  training data, Pat- 
+tern Recognit.  77 (2018) 160–172 . 
+[41] W. Zong , G.B. Huang , Y. Chen , Weighted  extreme learning machine  for imbal- 
+ance learning,  Neurocomputing  101 (2013) 229–242  . Amalia Luque received her Industrial  Engineering  degree in 2007, Master in Au- 
+tomation  in 2010 and her Doctoral Degree in 2014. She has been involved in teach- 
+ing related to Project Engineering  at the University  of Seville since 2015. Her main 
+areas of research are business  intelligence,  data mining and feature extraction.  
+Alejandro  Carrasco  received his Computer  Engineering  degree in 1998 and his 
+Ph.D. in 2003. He is a Lecturer and Researcher  at the University  of Seville since 
+1998, has founded a NTBF and directed several R&D projects. His main areas of re- 
+search are data mining, industrial  computing  and network security. 
+Alejandro  M. Martín-Gómez,  B. Industrial  Electronics  and Automation  Engineer,  MS 
+Product and facilities design and development,  MS Security and health and PhD Stu- 
+dent (manufacturing  engineering).  He worked across a wide variety of projects of 
+industrial  sector. He is assistant  professor  at University  of Seville (Field of Knowl- 
+edge: Engineering  Project). 
+Ana de las Heras García de Vinuesa is a BSc. Eng Industrial  Design, MSc. Ecodesign,  
+and PhD. in Manufacturing  and Environmental  Engineering.  She works as an assis- 
+tant professor  in the Department  of Design Engineering,  Engineering  Project area, 
+at University  of Seville, Spain. 

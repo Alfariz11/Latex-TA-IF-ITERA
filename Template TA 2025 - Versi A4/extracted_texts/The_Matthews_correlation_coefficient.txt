@@ -1,0 +1,1041 @@
+Chiccoetal. BioDataMining           (2021) 14:13 
+https://doi.org/10.1186/s13040-021-00244-z
+METHODOLOGY OpenAccess
+TheMatthewscorrelationcoefficient
+(MCC)ismorereliablethanbalanced
+accuracy,bookmakerinformedness,and
+markednessintwo-classconfusionmatrix
+evaluation
+DavideChicco1*†,NiklasTötsch2†andGiuseppeJurman3
+*Correspondence:
+davidechicco@davidechicco.it
+†DavideChiccoandNiklasTötsch
+contributedequallytothiswork.
+1KrembilResearchInstitute,
+Toronto,Ontario,Canada
+Fulllistofauthorinformationis
+availableattheendofthearticleAbstract
+Evaluatingbinaryclassificationsisapivotaltaskinstatisticsandmachinelearning,
+becauseitcaninfluencedecisionsinmultipleareas,includingforexampleprognosisor
+therapiesofpatientsincriticalconditions.Thescientificcommunityhasnotagreedon
+ageneral-purposestatisticalindicatorforevaluatingtwo-classconfusion
+matrices(havingtruepositives,truenegatives,falsepositives,andfalsenegatives)yet,
+evenifadvantagesoftheMatthewscorrelationcoefficient(MCC)overaccuracyandF 1
+scorehavealreadybeenshown.
+Inthismanuscript,wereaffirmthatMCCisarobustmetricthatsummarizesthe
+classifierperformanceinasinglevalue,ifpositiveandnegativecasesareofequal
+importance.WecompareMCCtoothermetricswhichvaluepositiveandnegative
+casesequally:balancedaccuracy(BA),bookmakerinformedness(BM),and
+markedness(MK).WeexplainthemathematicalrelationshipsbetweenMCCandthese
+indicators,thenshowsomeusecasesandabioinformaticsscenariowherethese
+metricsdisagreeandwhereMCCgeneratesamoreinformativeresponse.
+Additionally,wedescribethreeexceptionswhereBMcanbemoreappropriate:
+analyzingclassificationswheredatasetprevalenceisunrepresentative,comparing
+classifiersondifferentdatasets,andassessingtherandomguessinglevelofaclassifier.
+Exceptinthesecases,webelievethatMCCisthemostinformativeamongthesingle
+metricsdiscussed,andsuggestitasstandardmeasureforscientistsofallfields.A
+Matthewscorrelationcoefficientcloseto+1,infact,meanshavinghighvaluesforall
+(Continuedonnextpage)
+©TheAuthor(s). 2021 OpenAccess ThisarticleislicensedunderaCreativeCommonsAttribution4.0InternationalLicense,
+whichpermitsuse,sharing,adaptation,distributionandreproductioninanymediumorformat,aslongasyougiveappropriate
+credittotheoriginalauthor(s)andthesource,providealinktotheCreativeCommonslicence,andindicateifchangeswere
+made. Theimagesorotherthirdpartymaterialinthisarticleareincludedinthearticle’sCreativeCommonslicence,unless
+indicatedotherwiseinacreditlinetothematerial. Ifmaterialisnotincludedinthearticle’sCreativeCommonslicenceandyour
+intendeduseisnotpermittedbystatutoryregulationorexceedsthepermitteduse,youwillneedtoobtainpermissiondirectly
+fromthecopyrightholder. Toviewacopyofthislicence,visit http://creativecommons.org/licenses/by/4.0/ .TheCreative
+CommonsPublicDomainDedicationwaiver( http://creativecommons.org/publicdomain/zero/1.0/ )appliestothedatamade
+availableinthisarticle,unlessotherwisestatedinacreditlinetothedata.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page2of22
+(Continuedfrompreviouspage)
+theotherconfusionmatrixmetrics.Thesamecannotbesaidforbalancedaccuracy,
+markedness,bookmakerinformedness,accuracyandF 1score.
+Keywords: Matthewscorrelationcoefficient,Balancedaccuracy,Bookmaker
+informedness,Markedness,Confusionmatrix,Binaryclassification,Machinelearning
+Introduction
+Evaluatingtheresultsofabinaryclassificationremainsanimportantchallengeinmachine
+learning and computational statistics. Every time researchers use an algorithm to dis-
+criminate the elements of a dataset having two conditions (for example, positiveand
+negative), they can generate a contingency table called two-class confusion matrix rep-
+resenting how many elements were correctly predicted and how many were wrongly
+classified[ 1–8].
+Among the positive data instances, the ones that the algorithm correctly identified
+as positive are called true positives (TP), while those wrongly classified as negative are
+labeledfalse negatives (FN). On the other side, the negative elements that are correctly
+labeled negative are called true negatives (TN), while those which are wrongly predicted
+aspositivesarecalledfalsepositives(FP).
+When the predicted values are real numbers ( ∈R), one needs a cut-off threshold τto
+discriminatebetweenpositivesandnegativesandproperlyfilltheconfusionmatrixcate-
+gories. The best practice suggests to compute the confusion matrices for all the possible
+cut-offs.Then,theseconfusionmatricescanbeusedtogenerateareceiveroperatingchar-
+acteristic (ROC) curve [ 9] or a precision-recall (PR) curve [ 10]. Finally, practitioners can
+computetheareaunderthecurve(AUC)oftheROCcurveorofthePRcurvetoevaluate
+the performance of the classification. The AUC ranges between 0 and 1: the closer to 1,
+thebetterthebinaryclassification.
+Althoughpopularanduseful,thePRcurveandROCcurvecanbeemployedonlywhen
+therealpredictionscoresareavailable.Additionally,AUCasametricsuffersfromseveral
+drawbacks, both when used for ROC curves [ 11,12] and when used for PR curves [ 13].
+The Precision-Recall curve, especially, has flaws similar to those of the F 1score, being
+basedonthesamestatisticalmeasures.Toovercometheseissues,Caoandcolleagues[ 14]
+recentlyintroducedanewcurvebasedonMCCandF 1score.
+If the predictive scores are binary (usually represented as zeros and ones), however,
+thereisjustasingleconfusionmatrixtoanalyze.Andtobeinformative,eachcategoryof
+the confusion matrix (TP, TN, FP, FN), must not be evaluated independently, but rather
+withrespecttotheotherones.
+For this scope, scientists invented several confusion matrix rates in the past. Some of
+them involve only two confusion matrix categories: sensitivity (Eq.1),specificity (Eq.2),
+precision (Eq.3),andnegativepredictivevalue (Eq.4),amongthem,areparticularlyuseful
+torecapthepredictivequalityofaconfusionmatrix.Werefertothesefourratesas basic
+confusionmatrixrates .
+truepositiverate(TPR) =TP
+TP+FN(1)
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page3of22
+(worstvalue =0;bestvalue =1)
+truenegativerate(TNR) =TN
+TN+FP(2)
+(worstvalue =0;bestvalue =1)
+positivepredictivevalue(PPV) =TP
+TP+FP(3)
+(worstvalue =0;bestvalue =1)
+negativepredictivevalue(NPV) =TN
+TN+FN(4)
+(worstvalue =0;bestvalue =1)
+True positiverate is also called recallorsensitivity . True negative rate is also known as
+specificity .Positivepredictivevalueisalsocalled precision.
+These four binary rates indicate the ratios of correctly predicted positives (TP) with
+respecttothetotalnumberofpositivedatainstances(sensitivity)andthetotalnumberof
+positivepredictions(precision),andtheratiosofcorrectlypredictednegatives(TN)with
+respect to the total number of negative data instances (specificity) and the total number
+ofnegativepredictions(negativepredictivevalue).
+Other confusion matrix scores involve three or even all the four confusion matrix
+categories, therefore providing a more complete and informative response: Matthews
+correlation coefficient (MCC) (Eq. 5),accuracy,F1score,balanced accuracy (Eq.6),
+bookmakerinformedness (Eq.7),andmarkedness (Eq.8).
+Matthews correlation coefficient (MCC), in fact, measures the correlation of the true
+classescwiththepredictedlabels l:
+MCC =Cov(c,l)
+σc·σl=TP·TN−FP·FN√(TP+FP)·(TP+FN)·(TN+FP)·(TN+FN)(5)
+(worstvalue =−1;bestvalue =+1)where Cov(c,l)isthecovarianceofthetrueclasses
+candpredictedlabels lwhereas σcandσlarethestandarddeviations,respectively.
+Balanced accuracy is the arithmetic mean of sensitivity and specificity (Eq. 6), and
+strongly relates to bookmaker informedness (Eq. 7). Markedness, instead, is the arith-
+meticmeanofprecisionandnegativepredictivevalue(Eq. 8).
+balancedaccuracy(BA) =TPR+TNR
+2(6)
+(worstvalue =0;bestvalue =1)
+bookmakerinformedness(BM) =TPR+TNR−1( 7 )
+(worstvalue =−1;bestvalue =+1)
+markedness(MK) =PPV+NPV−1( 8 )
+(worstvalue =−1;bestvalue =+1)
+Accuracy and F 1score, although popular among the scientific community, can be
+misleading[ 15,16].
+The Matthews correlation coefficient (Eq. 5)[17], instead, generates a high score only
+if the classifier correctly predicted most of the positive data instances and most of the
+negative data instances, and if most of its positive predictions and most of its negative
+predictionsarecorrect.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page4of22
+AlthoughEq. 5isundefinedwhenevertheconfusionmatrixhasawholeroworawhole
+column filled with zeros, by simple mathematical considerations it is possible to cover
+suchcasesandthushavingMCCdefinedforallconfusionmatrices[ 15].
+Unfortunately, this is not the case for BA, BM and MK, whose definition relies on the
+definitionofthefourbasicratesTPR,TNR,PPV,NPV.
+Thesefourmetricshavetheshape f(x,y)=x
+x+y,forx∈TP,TNandy∈FP,FN.
+Now, lim
+(x,y)→(0,0)
+x=0,y>0f(x,y)=0, but lim
+(x,y)→(0,0)
+x=0,y>0f(x,y)=0a n d l i m
+(x,y)→(0,0)
+y=1−t
+txf(x,y)=0f o rt∈
+(0,1).
+Thisimpliesthatlim (x,y)→(0,0)x
+x+ydoesnotexist,andthusthereisnomeaningfulvalue
+these four metrics can be set to whenever their formula is not defined. Thus, when
+(TP+FN)·(TN+FP)=0bothBAandBMareundefined,andthesamehappenstoMK
+when (TP+FP)·(TN+FN)=0.
+Even if some studies forget about MCC [ 18,19], it has been shown to be effective in
+multiplescientifictasks[ 20,21].
+Since the advantages of MCC over accuracy and F 1score have been already dis-
+cussed in the scientific literature [ 15], in this paper we focus on the benefits of MCC
+over three other metrics: balanced accuracy (BA), bookmaker informedness (BM), and
+markedness(MK).
+Thescientificcommunityhasemployedbalancedaccuracyforalongtime,butitsben-
+efits over general accuracy were introduced by Brodersen and colleagues [ 22] in 2010,
+and reaffirmed by Wei et al. [ 3] a few years later. Several researchers employed balanced
+accuracy in different areas such as robotics [ 23], classical genetics [ 24–26], neuroimag-
+ing [27], computational biology [ 28], medical imaging [ 29,30], molecular genetics [ 31],
+sportsscience[ 32],andcomputervisionappliedtoagriculture[ 33].
+Also, Peterson and coauthors [ 34] showed that balanced accuracy can work well for
+featureselection,whileGarcíaetal.[ 35]tookadvantageofittobuildanewclassification
+metriccalled IndexofBalancedAccuracy .
+Powers [36] introduced bookmaker informedness and markedness in 2003, but, to the
+best of our knowledge, these two measures have not become as popular as balanced
+accuracy in the machine learning community so far. Bookmaker informedness (BM) is
+identical to Peirce’s I and Youden’s index (also known as Youden’s J statistic) which have
+been introduced in 1884 and 1950, respectively [ 37,38]. Youden’s index is often used to
+determinetheoptimalthreshold τfortheconfusionmatrix[ 39–41].
+Bookmaker informedness has been used in several studies, most authored by Powers
+[42–44], and few authored by other scientists (two in image recognition [ 45,46], one in
+text mining [ 47], and one in vehicle tracking [ 48]). Two studies show the effectiveness of
+markednessinenvironmentalsciences[ 49]andeconomics[ 50].
+We organized the rest of the paper as follows. After this Introduction, we describe
+the mathematical foundations of the analyzed rates in terms of confusion matrix
+(“Mathematical background ” section). We then report and discuss our discoveries
+regarding the relationshipsbetweenMCC andbalanced accuracy, bookmakerinformed-
+ness, and markedness, describing some use cases and a real bioinformatics scenario
+(“Results and discussion ” section). We conclude this study by drawing some conclusions
+about our analyses and describing some potential future development (“ Conclusions ”
+section).
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page5of22
+Mathematicalbackground
+Asmentionedintheintroduction,theentriesoftheconfusionmatrix(TP,TN,FP,FN)are
+notmeaningfulindividuallybutratherwhentheyareinterpretedrelativetoeachother.In
+this section, we introduce a redefinition with individually meaningful dimensions which
+alsoproveshelpfulinthecomparisonofmetrics.
+Prevalenceandbias
+Prevalence (φ)measureshowlikelypositivecasesareinthetestset
+φ=TP+FN
+N(9)
+where N represents the sample size of the test set. φis independent of the classifier. On
+the other hand, bias (β)measures how likely the classifier is to predict positive for the
+testset.
+β=TP+FP
+N=TPR·φ+(1−TNR)·(1−φ) (10)
+βisdependentbothontheunderlyingtestsetaswellastheclassifierbecausetruepositive
+rate(TPR)andtruenegativerate(TNR)areclassifierintrinsic.
+We note that φin a test dataset is often arbitrary. In many medical studies, for exam-
+ple, the φin the test dataset is completely unrelated to the prevalence in the population
+of interest. This is due to the fact that the dataset was provided by physicians treating
+patients suffering from a disease. Consequently, they have data on a limited number of
+sick patients and a cohort of controls. Depending on the size of the control group, the
+prevalence will vary. Unless the control group sizeis chosenin away that the prevalence
+intheoveralldatasetequalstheprevalenceinthepopulationofinterest,thatmeansnew
+subjectsbeingtestedforthedisease,theprevalenceofthedatasetisarbitrary.
+Precision and negative predictive value depend on φ(“Interpretation of high values
+of multi-category metrics ” subsection). Since MK and MCC depend on precision and
+negative predictive value, they are also affected by φ. If the prevalence in the dataset is
+arbitrary and not reflective of the prevalence in the population of interest, these metrics
+willalsonotreflecttheperformanceoftheclassifierforthepopulationofinterest.Inthis
+case, it might be best to ignore these metrics because they are not meaningful for the
+applicationtothepopulationofinterest.
+Redefiningconfusionmatrixintermsofprevalence,TPRandTNR
+AllentriesofaconfusionmatrixcanbederivedifN, φ,TPRandTNRareknown[ 51,52].
+Theycanberepresentedinthisway:
+TP=N·TPR·φ (11)
+FN=N·(1−TPR)·φ (12)
+TN=N·TNR·(1−φ) (13)
+FP=N·(1−TNR)·(1−φ) (14)
+Na n d φare entirely intrinsic to the dataset, and if N is small, there are only few
+observations.Asinallscientificstudies,smallsamplesizeslimitthereliabilityofthecon-
+clusions that can be drawn from the data. Since metrics such as MCC, BM and MK are
+calculated from the confusion matrices, a small N leads to uncertainty in those metrics
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page6of22
+[53].Inpracticalapplications,oneneedstodeterminethisuncertaintyasdescribedinthe
+literature[ 22,53].
+In this manuscript, we define examples of confusion matrices to illustrate similarities
+and discrepancies between different metrics. Since MCC, BM and MK are independent
+ofN,wedecidedtocomparethemetricsforrelativeconfusionmatrices,thatcontainthe
+shares of the four categories (TP, TN, FP, and FN) rather than the counts, whose sum
+equals1.Thisway,N,andhenceuncertainty,becomeirrelevant.
+However, we advise against using relative confusion matrices to evaluate real-world
+applications. It is important to communicate N in order to estimate how reliable the
+obtained results are. For each use case, we display examples of corresponding count
+confusionmatricesalongsiderelativeconfusionmatricesforthereadership’sconvenience.
+TPR and TNR describe the classifier completely. Therefore, any metric that depends
+onφ(such as PPV, NPV, MCC) does not describe the classifier objectively but rather
+the performance of the classifier for a given dataset or prevalence. As mentioned ear-
+lier(“Prevalenceandbias ”section), φinthetestsetisnotnecessarilyrepresentativeofthe
+φinthepopulationofinterest.Therefore,onehastokeepinmindifanymetricincluding
+φofthetestsetisofrealinterest.
+ThisredefinitionalsoshedslightontoashortcomingthatMCC,BM,BA,andMKhave
+in common. All of these metrics try to capture the performance of a classifier in a single
+metric,whereasactuallytherearethreerelevantones(prevalence,TPR,TNR).Reducing
+threedimensionsintooneleadstoalossofinformation.NoneofMCC,BMandmarked-
+ness (MK) can be as informative individually as the complete confusion matrix (CM). A
+single metric is easier to interpret, though, and can under some conditions summarize
+thequalityoftheclassifiersufficientlywell.
+Resultsanddiscussion
+Our results can be categorized in four parts. First, we demonstrate that balanced accu-
+racy (BA) and BM are tightly related and can be used interchangeably (“ BA and BM
+containequivalentinformation ”subsection).Second,wederivetherelationshipsbetween
+MCC, BA, BM and MK (“ Relationship between MCC and BA, BM, MK ”s u b s e c t i o n ) .
+Third,weelucidatehowstronglythemetricscandeviateforthesameconfusionmatrixby
+s h o w c as i n gs e l ec t edu s ec as e si ngr ea t e rd e t a i l( “ Disagreements between MCC and BM ”
+subsection). Finally, we investigate which metric can truthfully measure how similar a
+classifier behaves to random guessing (“ Bookmaker informedness is the only metric that
+measureshowsimilaraclassifieristorandomguessing ”subsection).
+BAandBMcontainequivalentinformation
+BA and BM were developed independently by Brodersen and Powers [ 22,54].
+InsertingEqs. 6into7yields:
+BA=BM+1
+2(15)
+Ultimately,BAandBMcontainthesameinformation.Bothdescribetheclassifierinde-
+pendentlyofthetestdataset.Theaccessiblerangeistheonlydifference:BArangesfrom
+0to1whereasBMrangesfrom–1to1.AllconclusionsdrawnforBMcanbetransferred
+to BA. In the rest of the manuscript, we will focus on the comparison between BM and
+MCCbecausetherangescorrespond.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page7of22
+RelationshipbetweenMCCandBA,BM,MK
+Tounderstandthedifferencesbetweenthemetrics,weneedtoderivetheirmathematical
+relationships.
+Relationship between MCC and BM . MCC can be expressed in multiple ways. An
+alternativetoEq. 5is:
+MCC =√
+PPV·TPR·TNR·NPV−√
+FDR·FNR·FPR·FOR (16)
+We report the definition of FDR, FNR, FPR, FOR in the Supplementary information .
+Based on the redefinition of the entries of the confusion matrix given earlier
+(“Redefining confusion matrix in terms of prevalence, TPR and TNR ” subsection), one
+can also express all metrics in terms of N, φ,T P Ra n dT N R .T h i sa p p r o a c hf a c i l i t a t e s
+derivingtheirrelationshipsandleadsto:
+MCC = (17)
+=/radicalBigg
+TPR·φ
+β·TPR·TNR·TNR·1−φ
+1−β+
+−/radicalBigg
+(1−TNR)·1−φ
+β·(1−TPR)·(1−TNR)·(1−TPR)·φ
+1−β= (18)
+=/radicalBigg
+φ
+β·1−φ
+1−β·[TPR·TNR−(1−TPR)·(1−TNR)]= (19)
+=/radicalBigg
+φ−φ2
+β−β2·(TPR+TNR−1)= (20)
+=/radicalBigg
+φ−φ2
+β−β2·BM (21)
+Equation 21shows us that MCC and BM always yield the same sign, that means that
+both inform us if a classifier is informative or deceptive. While BM exclusively describes
+classifierintrinsicTPRandTNR,MCCisalsodependentondataintrinsic φaswellas β
+whichdependsonboththeclassifierandthedataset.
+Basedonthe/radicalBig
+φ−φ2
+β−β2fa ct o r ,M CCca nbela r g e ro rs m a l l e rt h a nB M .T h et e rm s φ−φ2
+andβ−β2are symmetric around 0.5 and peak at this value. If the imbalance in the
+dataset(measuredby |0.5−φ|)islargerthantheimbalanceinthepredictions(measured
+by|0.5−β|),MCCislowerthanBMand viceversa .
+Moreover,Eq. 21showsthatrankingsoftwoclassifiers AandBbasedonMCCandBM
+candiffer:
+MCCA>MCCB (22)
+BMB>BMA (23)
+SubstitutingEq. 21intoInequation 22leadsto:
+BMB>BMA>/radicalBigg
+βA−β2
+A
+βB−β2
+B·BMB (24)
+Since Inequation 24can be fulfilled, using BM or MCC might lead to different conclu-
+sionsonwhichclassifierperformsbest.Weshowanexamplerankingdifferentclassifiers
+in a bioinformatics scenario in “ Ranking of classifiers in a real bioinformatics scenario ”
+subsection.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page8of22
+Relationship between MCC and MK .M Ki sd e f i n e ds i m i l a r l yt oB Mb u tb a s e do n
+positive predictive value (PPV) and negative predictive value (NPV) instead of TPR and
+TNR:
+MK=PPV+NPV−1 (25)
+AnalogouslytoEq. 21wearriveat:
+MCC =/radicalBigg
+β−β2
+φ−φ2·MK (26)
+MCCislargerthanMKiftheimbalanceinthedatasetislargerthantheimbalanceinthe
+predictions,and viceversa .Equation 26leadsusto:
+MK=φ−φ2
+β−β2·BM (27)
+MKisevenmoreimpactedby φandβthanMCC.Itsresultsarestronglybiasedbyclass
+andpredictionimbalance.SubstitutingEq. 26intoEq.21leadsto:
+MCC =±√
+MK·BM (28)
+MCC is the geometric mean of BM and MK, as has been previously shown by Powers
+[54].InterpretingMCCthisway,itbecomesobviousthatMCCisonlyhighiftheclassifier
+iswellinformed(BMishigh)andiftherealclassismarkedbythepredictedlabel(MKis
+high).
+Visual comparison and correlation between MCC and BA, BM, MK .T ob e t t e r
+understand the correlation between MCC and BA, between MCC and BM, and between
+MCCandMK,wedepictedthreescatterplotshavingtheMatthewscorrelationcoefficient
+onthexaxisandeachofthethreeotherratesonthe yaxis(Fig. 1).Wetakeadvantageof
+thesescatterplotstooverviewthemutualrelationsbetweenMCCandtheotherrates.
+A so n ec a nn o t i c e ,t h es h a p eo ft h es c a t t e r p l o to fM C Ca n dB M( F i g . 1,l e f tp l o t )i s
+identical to the one of MCC and BA (Fig. 1, central plot), only the scales on the yaxis
+differ. BM, in fact, ranges from –1 to +1, while balanced accuracy’s possible values go
+from0to1.
+For each pair, the two measures are reasonably concordant, and close to the x=y
+straight line. However, the scatterplot clouds are wide, especially when MCC ranges
+between +0.1 and +0.9 and between –0.9 and –0.1, implying that for each value of MCC
+thereareseveralvaluesofBM,BA,andespeciallyMK(andviceversa).
+Fig.1RelationshipsbetweenMCCandBM,BA,andMK.PlotsindicatingthevaluesofMCCinrelationship
+withBM(left),BA(centre),andMK(right)calculatedforapproximately8millionconfusionmatriceswith40
+thousandsampleseach
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page9of22
+Overall, these scatterplots show that MCC is concordant with BM, BA, and MK when
+the analyzed confusion matrices generate high true positive rate, high true negative rate,
+highpositivepredictivevalue,andhighnegativepredictivevalue.
+However, the three plots also show some contradictions between pairs of rates when a
+classifierperformswelljustforoneofthetwobinaryclasses.Forexample,whenMCCis
++0.2andindicatespoorperformance,allthethreeotherindicatorscanreach0.9,meaning
+almost perfect predictions. We will discuss these contradictory messages later in the use
+casesUC1,UC2,andUC3ofthenextsection.
+Weconcludethissectionbyquantitativelyassessingthelinearrelationamongthemet-
+rics in terms of the Pearson correlation coefficient (PCC) [ 55], a measure of linearity
+between two sets of values. Interpreting the two sets of values as coordinates of points,
+PCC is +1 when the points lie on a line with positive slope, PCC is –1 if the line has
+negativeslope,PCCiszeroifthepointsarespreadoutontheplane.
+For a given positive integer Nand for a dataset with Nsamples, we consider all the
+possible/parenleftbigN+3
+3/parenrightbig
+confusion matrices and, for each matrix, we compute the corresponding
+MCC, BM and MK and then the Pearson correlation coefficient between MCC and BM,
+MCC and MK and BM and MK, respectively. We list the resulting PCC values in the
+Supplementaryinformation ,andplottheminFig. 2.
+Note that, since BA and BM are analytically linked by the affine map (Eq. 15), their
+mutual Pearson correlation coefficient is one, and thus we only consider BM in the cur-
+rent analysis. All three series of PCC values are very high (close to 1), denoting a strong
+linear relation between the three metrics. In details, PCC is slightly decreasing reach-
+ing the minimum around N≈25, then it increases, first quickly and then very slowly.
+Further,PCC(MCC,BM)coincideswithPCC(MCC,MK)foreach N,evenifBMandMK
+Fig.2PearsoncorrelationbetweenMCC,BMandMKasafunctionofnumberofsamples N
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page10of22
+do not coincide: this aspect comes with no surprise, due to the symmetric form of their
+expressions(Eqs. 7and8).
+DisagreementsbetweenMCCandBM
+WhileMCC ≈BM≈MKin many instances, the most insightful cases are those
+wherethethreemetricsgeneratedifferentresults(Fig. 1).Wepresentseveralusecasesto
+illustratewhyoutcomesmaydifferdependingonthemetricandhowtointerpretthem.
+HighTPRandTNR,verylowprevalence
+U s ec a s eU C 1 . In this example we study a classification experiment with high TPR and
+TNR, 0.99 and 0.95 respectively, and a very imbalanced dataset. Let us consider the
+followingrelativeconfusionmatrix:
+relative CM 1=/bracketleftBigg
+TP=9.99×10−4FN=9.99×10−6
+FP=0.05 TN=0.95/bracketrightBigg
+(29)
+Assumingasamplesizeof100,001,CM1isanexemplaryconfusionmatrix:
+CM1=/bracketleftBigg
+TP=100FN=1
+FP=5 000TN=94 900/bracketrightBigg
+(30)
+MCC is 0.136, indicating that predictions from the classifier do not correlate well with
+the real class. One should not make the mistake and consider the classifier to be similar
+to random guessing (which always has BM=MCC=0). Objectively, the classifier is well
+informed (BM=0.94).Nevertheless,itclearlystrugglestopredictwellfor the givenvery
+smallφ.
+Ultimately, MCC and BM answer different questions. BM informs us that the classi-
+fierissubstantiallybetterthanrandomguessing.RandomguessinghasBM=0.0because
+it produces true positive (TP) at the same rate of false positive (FP). In UC1, this is
+clearly not the case. The classifier predicts approximately 99% of reference positives as
+positive and 95% of all reference negatives as negative. UC1 demonstrates that MCC
+in general does not tell us if a classifier performs similarly to random guessing because
+it is biased by class imbalance [ 52]. We are going to discuss this in greater detail later
+(“Bookmaker informedness is the only metric that measures how similar a classifier is
+to random guessing ” subsection). In fact, the low MCC value warns us that correlation
+between predicted and true class is low. This is equivalent to at least one of PPV, TPR,
+TNR,NPVbeinglow(Eq. 16),inthiscasePPV ≈0.02.
+A practical question would be if the classifier at hand is useful for practitioners, for
+exampletopredictadisease.TheresultsinTable 1showusthatapplyingthetestconsid-
+erablyincreasesourknowledgeabouttheprobabilitythatapatientisinfected.Apositive
+test result raises the probability to be infected by a factor of 19. Nevertheless, even those
+patients that test positive are unlikely to be sick. On the other hand, those that receive a
+negative test result are extremely unlikely to be sick. These findings illustrate that posi-
+tivetestresultsshouldnotbetakenatfacevalue.Itsdiscriminativepowerisnotsufficient
+for the tremendous class imbalance in the dataset. If this is required, a classifier with an
+e v e nh i g h e rT P Ra n dT N Rn e e d st ob eb u i l ti no r d e rt oi n c r e a s eP P V .Y e t ,t h ep r e s e n t
+classifier might still be helpful to identify patients which are almost certainly healthy
+(receiving negative test results) from those that could profit from additional diagnostic
+tests(receivingpositivetestresults).
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page11of22
+Table1ProbabilityforpositivedatainstanceinUC1
+Beforetesting φ 0.001
+Testingpositive PPV 0.019
+Testingnegative 1–NPV 0.00001
+Theprobabilityforapositivedatainstance,forexampleapatientthatistrulysick,dependsonthetestresult.Whileapositivetest
+resultincreasestheprobabilitysubstantially,itremainslow.Anegativetestresultdecreasesit
+MisleadingBAandBM,informativeMCCandMK
+Use case UC2 .H e r ew ea n a l y z eau s ec a s ew h e r ew eh a v eav e r yh i g hn u m b e ro ft r u e
+positives, a high number of false negatives, and a very low number of false positives and
+truenegatives(Eq. 31):
+relative CM 2=/bracketleftBigg
+TP=8.99×10−1FN=9.99×10−2
+FP=9.99×10−6TN=8.99×10−5/bracketrightBigg
+(31)
+Ifthesamplesizeis100,010,CM2isanexemplaryconfusionmatrix:
+CM2=/bracketleftBigg
+TP=90,000FN=10,000
+FP=1TN=9/bracketrightBigg
+(32)
+We see that the classifier generates a large number of FN with respect to the number of
+TN. Therefore, we can intuitively state that this classifier performed poorly: its negative
+predictionsareunreliable,sincetheNPVequalsto0.001.
+Computing the confusion matrix rates, we can notice that the scores generated by the
+Matthews correlation coefficient (MCC = +0.027) and the markedness (MK = 0.001)
+confirmthismessages:valuesaroundzero,infact,meaninefficientclassification.
+The values of balanced accuracy and bookmaker informedness, however, contradict
+MCC and MK. For this confusion matrix, in fact, we have BA = 0.9 and BM = 0.8, which
+meanalmostperfectprediction .ThisisausecasewhereBAandBMareclearlymisleading:
+theydonotrepresentthelowratiooftruenegatives(TN=8.99 ×10−5)overfalsenegatives
+(FN=9.99 ×10−2),thatmeansthelownegativepredictivevalue,inthisconfusionmatrix
+(Eq.31).
+If a practitioner decided to evaluate this UC2 confusion matrix by only analyzing its
+corresponding balanced accuracy and bookmaker informedness, she/he would overop-
+timistically think that the classifier generated excellent predictions. The analysis of the
+resultsachievedbyMCCandMK,instead,wouldhavekepther/himontherighttrack.
+This conclusion closely resembles the one from UC1, because Eq. 31would be similar
+to Eq.29ifclasslabelswereswapped.UnlikeF 1score,alltheratesanalyzedinthisstudy
+(MCC,BA,BM,andMK)havetheadvantagetobeinvarianttoclasslabelswapping.
+Virtuallyuninformedclassifier,slightlyelevatedMCC,highMK
+Use case UC3 . Whereas we have discussed examples of low MCC opposed to high BM
+in UC1 and UC2, this use case UC3 will elaborate on the interpretation of low BM and
+moderateMCC.LetusconsiderthefollowingconfusionmatrixCM3(Eq. 33):
+relative CM 3=/bracketleftBigg
+TP=0.999877792 FN=0
+FP=1.11×10−4TN=1.11×10−5/bracketrightBigg
+(33)
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page12of22
+Ifthesamplesizeis90,011,CM3isanexampleofconfusionmatrix:
+CM3=/bracketleftBigg
+TP=90 000FN=0
+FP=10TN=1/bracketrightBigg
+(34)
+Based on Eq. 33one finds BM=0.091. The classifier at hand is only marginally better
+than a “silly” rule predicting positive in all cases,which would lead to BM = 0. Both have
+TPR = 1. Always predicting a positive class would lead to TNR = 0, while the presented
+classifierhasTNR=0.091.
+The MCC of CM3 is +0.301. While one would not consider the classifier to be good
+based on this MCC, one would have a more favorable impression than based on BM.
+MK is close to 1, that means almost perfect, because PPV is approximately 1 and NPV is
+exactly 1. Since MCC is the geometric mean of BM and MK and MK is approximately 1,
+MCC ≈√
+BM. This demonstrates that medium valuesof MCC cannot be interpreted in
+thesamewayasmediumvaluesofBM.
+Also,thecorrelationbetweenpredictionsandgroundtruthishigherthantheinformed-
+ness. Predictions in UC3, as measured by MK, are very reliable, not because of a well
+informedclassifierbutratherbecauseofthehigh φ.
+This use case proves that MK does not reliably tell us how similar a classifier is to ran-
+dom predictions. On the contrary, while the classifier is poorly informed, MK is close to
+itsmaximum.
+BMallowscomparisonacrossdatasets,MCCdoesnot
+U s ecas eU C 4 . The fact that MCC is dependent on φleads to non-transferability across
+datasets. This aspect needs to be considered when searching the scientific literature for
+publishedclassifiersthatpredictthesamecondition,forexampleagivendisease.
+Consider the following example. There are two publications A and B, describing two
+different classifiers, for example neural networks with different architectures [ 56],listing
+thecorrespondingconfusionmatricesandmetrics(Table 2). You assume that the under-
+lying datasets contain comparable samples. Based on the publications, one would like to
+decidewhichclassifier/architectureispreferable.
+ComparingtheMatthewscorrelationcoefficients(Table 2),onewouldoptforclassifier
+A.Objectively,BoutperformsA:MCCisonlyhigherinpublicationAbecausethedataset
+isbalanced.ThedatasetofpublicationBisimbalanced,with φ=0.05.Therefore,MCCis
+low.BothTPRandTNR,thetwometricsthatevaluatetheclassifierindependentlyofthe
+dataset,arehigherforclassifierB.
+Table2EvaluationoftwoclassifiersAandBonseparatedatasets
+Classifier dataset TP FN TN FP φTPR TNR BM MCC
+(a)RelativeCM
+A 1 0.35 0.15 0.35 0.15 0.5 0.7 0.7 0.4 0.4
+B 2 0.04 0.01 0.76 0.19 0.05 0.8 0.8 0.6 0.3
+Classifier dataset TP FN TN FP φTPR TNR BM MCC n+ n–
+(b)ExemplaryCMforasamplesizeof200
+A 1 70 30 70 30 0.5 0.7 0.7 0.4 0.4 100 100
+B 2 8 2 152 38 0.05 0.8 0.8 0.6 0.3 10 190
+Intheliterature,differentpublicationscompareclassifiersforthesametaskonseparatedatasets.Thisposesaproblemforthe
+comparabilityofmetricswhicharedependentonprevalence
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page13of22
+Table3EvaluationoftwoclassifiersAandBonthesametwodatasets
+Classifier dataset TP FN TN FP φTPR TNR BM MCC
+(a)RelativeCM
+A 1 0.35 0.15 0.35 0.15 0.5 0.7 0.7 0.4 0.4
+A 2 0.035 0.015 0.665 0.285 0.05 0.7 0.7 0.4 0.2
+B 1 0.40 0.10 0.40 0.10 0.5 0.8 0.8 0.6 0.6
+B 2 0.04 0.01 0.76 0.19 0.05 0.8 0.8 0.6 0.3
+Classifier dataset TP FN TN FP φTPR TNR BM MCC n+ n–
+(b)ExemplaryCMforasamplesizeof200
+A 1 70 30 70 30 0.5 0.7 0.7 0.4 0.4 100 100
+A 2 7 3 133 57 0.05 0.7 0.7 0.4 0.2 10 190
+B 1 80 20 80 20 0.5 0.8 0.8 0.6 0.6 100 100
+B 2 8 2 152 38 0.05 0.8 0.8 0.6 0.3 10 190
+Ideally,bothclassifiersareevaluatedonbothdatasetsasshowninthistable.Otherwise,oneshouldrelyonmetricswhichare
+independentoftheprevalencesuchasBM.Matthewscorrelationcoefficient(MCC)mightbeunreliableifonewantstocompare
+classificationresultsacrossdatasets
+Comparing classifiers according to MCC requires that φis identical in both datasets.
+If one applied both classifiers to both datasets, it would become apparent that B outper-
+forms A for either of them (Table 3). Often, reproduction is not possible (because the
+datasetsarenotavailable)ortedious(becauseretrainingtheneuralnetworkswouldcon-
+sume a lot of time and resources). Therefore, if the goal is to detect the best classifier,
+weargueagainstcomparingMCCofclassifiersfromdifferentsources.Insuchcases,one
+shouldrelyonBMwhichisunbiasedbyclassimbalance.
+Interpretationofhighvaluesofmulti-categorymetrics
+Whenperformingabinaryclassification,apractitionerwouldliketoknowifallfourbasic
+rates (TPR, TNR, PPV and, NPV) are high by checking a single metric. As shown in Eq.
+16,MCCgeneratesahighscoreonlyifallfourofthemarehigh.
+BMandBAarecalculatedbasedononlyTPRandTNR(Eqs. 7and6).Therefore,itmay
+seemlikeBMisunrelatedtoPPVandNPV,butthatisnotthecase,sincethesebasicrates
+c a nb ec a l c u l a t e df r o mT P R ,T N Ra n d , φ. Following our redefinition of the confusion
+matrix(“Redefiningconfusionmatrixintermsofprevalence,TPRandTNR ”subsection),
+wearriveat:
+PPV=TPR·φ
+TPR·φ+(1−TNR)·(1−φ)(35)
+NPV=TNR·(1−φ)
+(1−TPR)·φ+TNR·(1−φ)(36)
+If both TPR and TNR are high, which is the case for big values of BM and BA, at least
+one of PPV and NPV must be high. One cannot know which one without knowing the
+prevalence(Fig. 3).Therefore,ahighBMguaranteesthatthreeofthefourbasicrateshave
+bigvalues.Ifthedatasetisbalanced,bothPPVandNPVarehighifBMishigh.
+AhighF 1scoredoesnotguaranteehighTNRnorNPVbecause,forlow φ,PPVcanbe
+highevenifTNRislow .Accuracycanberewrittenas:
+accuracy =TPR·φ+TNR·(1−φ) (37)
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page14of22
+Fig.3Indicativeexamplewithhightruepositiverate(TPR)andhightruenegativerate(TNR).Weshowthe
+trendofthefourbasicratesifTPR=0.9andTNR=0.8,andillustratehowpositivepredictivevalue(PPV)and
+negativepredictivevalue(NPV)dependonprevalence( φ).Bookmakerinformedness(BM)equals0.7inthis
+example.AtleastoneofPPVandNPVishigh,evenif φvaries.Onlyif φiscloseto0.6,bothofthemarehigh
+Accuracyishighonlyif:(i)TPRandTNRarehigh;(ii)TPRand φarehigh;or(iii)TNR
+ishighand φislow.Incase(i),atleastoneofPPVandNPVmustbehighaswell.Incase
+(ii),PPVisguaranteedtobehigh;whereasincase(iii),NPVmustbehigh.
+It is well known that accuracy can be large although positive or negative instances are
+predictedverypoorlyinhighlyimbalanceddatasets[ 15].
+SimilartoEqs. 35and36,TPRandTNRcanbeexpressedinwaysofPPV,NPVand, β:
+TPR=PPV·β
+PPV·β+(1−NPV)·(1−β)(38)
+TNR=NPV·(1−β)
+(1−PPV)·β+NPV·(1−β)(39)
+If MK is high, at least one of TPR and TNR must therefore be high as well. Similar to
+thediscussionaboveforBM,wecannotknowwhichonewithouthavingidentified β.
+WecansummarizethatahighF 1scoreoraccuracyguaranteethattwoofthebasicrates
+arehigh(Table 4).HighBA,BMorMKguaranteethatthreeofthebasicratesarehigh.A
+high MCC is the only multi-category metric discussed in this study that guarantees that
+allfourbasicratesarehigh.
+Bookmakerinformednessistheonlymetricthatmeasureshowsimilaraclassifieristo
+randomguessing
+Often,papersintroduceMCCwiththenotionthatMCC=0signalsthatclassifierperfor-
+manceisnobetterthanrandomguessingwhereasaperfectclassifierwouldhaveMCC=
++1.Althoughthesestatementsarecorrect,oneshouldavoidthemisconceptionthatMCC
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page15of22
+Table4Recapoftherelationshipbetweenthemulti-categorymetricsandthebasicratesofthe
+confusionmatrix
+Scenario Basicratescondition #guaranteedhighbasicrates
+highMCCmeans: highTPR,TNR,PPV,andNPV 4
+highBAmeans: highTPR,TNR,andatleastoneofPPVandNPV 3
+highBMmeans: highTPR,TNR,andatleastoneofPPVandNPV 3
+highMKmeans: highPPV,NPV,andatleastoneofTPRandTNR 3
+highF1scoremeans: highPPVandTPR 2
+highaccuracymeans: highTPRandPPV,orhighTNRandNPV 2
+#:integernumber.MCC:Matthewscorrelationcoefficient(Eq. 5).BA:balancedaccuracy(Eq. 6).BM:bookmakerinformedness(Eq.
+7).MK:markedness(Eq. 8).F1score:harmonicmeanofTPRandPPV( Supplementaryinformation ).Accuracy:ratiobetween
+correctlypredicteddatainstancesandalldatainstances( Supplementaryinformation ).Wecall“basicrates”thesefourindicators:
+TPR,TNR,PPV,andNPV
+is a robust indicator of how (dis)similar a classifier is to random guessing. Only BM, and
+BA,canaddressthistopictruthfullywithoutanydistortionby φandβ.
+Consider the example of three students taking an exam consisting of yes/no questions,
+ascenariowhichisanalogoustobinaryclassification.Thestudentsrandomlyguess“yes”
+and “no” to fill in the exam sheet because they did not prepare. The professor has the
+correct solutions on their desk. While the professor is distracted, the students take the
+opportunity to cheat and look up a fraction of the answers. The first one copies 25% of
+thecorrectanswers,thesecondone50%,andthethirdone75%.
+We calculate BM, MCC and MK for the exams of the three students and display the
+resultsinFig. 4.BMisnotatallaffectedby φorβandalwaysequalsthelookupfraction.
+φcorrespondstotheshareofquestionswherethecorrectanswerwouldbe“yes”whereas
+βis the share of questions the students answered with "yes". In fact, we can define the
+randomness of a classifier to be equal to 1 −/bardblBM/bardbl. This will provide the correct answer
+tothequestion:“Howlikelyistheclassifiertoguessatrandom?”.
+MCC and even more so MK can deviate from the respective lookup fraction if φand
+βare dissimilar. In this example, we know exactly that the students are 25%, 50% or 75%
+informed since they have to randomly guess the rest. This fact is independent of φand
+β. Therefore, neither MCC nor MK yield a reliable estimate of how similar to random
+guessingtheanswersofstudentsare.
+This extends to other classifiers. A value of MCC or MK close to zero should not be
+considered evidence that a classifier is similar to random guessing. We note that this
+deviationbecomesevenmoreextremeif φorβapproacheszeroorone.
+Rankingofclassifiersinarealbioinformaticsscenario
+Similar to what we did for the study where we compared MCC with accuracy and F 1
+score [15], here we show a real bioinformatics scenario where the Matthews correlation
+coefficientresultbeingmoreinformativethantheotherrates.
+Dataset.Weappliedseveralsupervisedmachinelearningclassifierstomicroarraygene
+expression of colon tissue collected by Alon and colleagues [ 57], who released it pub-
+liclywithinthePartialLeastSquaresAnalysesforGenomics( plsgenomics )Rpackage
+[58,59]. This dataset comprises 2,000 gene probesets of 62 subjects; 22 of these sub-
+jects are healthy controls and 40 have colon cancer (that is 35.48% negatives and 64.52%
+positives)[ 60].
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page16of22
+Fig.4BM,MCCandMKforclassifierswithknownrandomness.Wesimulatedclassifierswithknownamounts
+ofrandomness.Tothatpurpose,wegeneratedrandomlistsofreferenceclasseswithagivenprevalence.A
+fractionofthoseclasseswerecopied(calledlookupfraction)andusedaspredictedlabels,theremaining
+onesweregeneratedrandomly,matchingagivenbias.Matchingthereferenceclasseswiththeprediction
+labelswedeterminedbookmakerinformedness,Matthewscorrelationcoefficientandmarkedness(left,
+centerandrightcolumnrespectively).Therowsdifferbytheamountofrandomness/lookupfraction
+Experiment design . We used four machine learning binary classifiers to predict
+patients and healthy controls in this dataset: Decision Tree [ 61],k-Nearest Neighbors
+(k-NN) [62], Naïve Bayes [ 63], and Support Vector Machine with radial Gaussian
+kernel[64].
+Regarding Decision Trees and Naïve Bayes, we trained the classifiers on a training set
+containing 80% of randomly selected data instances, and tested them on a test set con-
+sisting of the remaining 20% data instances. For k-Nearest Neighbors ( k-NN) and SVM,
+instead, we divided the dataset into training set (60% data instances, randomly selected),
+validation set (20% data instances, randomly selected), and the test set (remaining 20%
+data instances). We took advantage of the validation set for the hyper-parameter opti-
+mization grid search [ 16]: number kof neighbors for k-NN, and cost Cvalue for the
+SVM.Foralltheclassifiers,werepeatedtheexecution10timesandregisteredtheaverage
+score for MCC, balanced accuracy, bookmaker informedness, markedness, and the four
+basic rates (true positive rate, true negative rate, positive predictive value, and negative
+predictivevalue).
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page17of22
+Wethenrankedtheresultsachievedonthetestsetsorthevalidationsetsfirstbasedon
+MCC,thenbasedonBA,thenonBM,andfinallybasedonMK(Table 5).Forthesakeof
+simplicity,wedonotconsidertheuncertaintyinthemetricscausedbythelimitedsample
+sizeandtheresultinguncertaintyintherankings[ 53].
+Results:differentmetric,differentranking .Thefourrankingsweemployedtoreport
+the same results show two interesting aspects. First, the top classifier changes when we
+therankingratechanges.
+In the MCC ranking, in fact, the top performing method is Decision Tree (MCC =
++0.447), while in the balanced accuracy ranking and in the bookmaker informedness
+rankingthebestclassifierresultedbeingradialNaïveBayes(BA=0.722andBM=0.444).
+And in the markedness ranking, even a different classifier occupied the top position:
+Radial SVM with MK = 0.575. The ranks of the methods change, too: Decision Tree is
+ranked first in the MCC ranking, but ranked second in the other rankings. And radial
+SVM changes its rank in 3 rankings out of 4, occupying the second position in the MCC
+standing, last position in the BA and BM standings, and top position in the MK stand-
+ing.Onlytherankingsofbalancedaccuracyandbookmakerinformednesshavethesame
+standing, and that comes with no surprise since they contain equivalent information, as
+wementionedearlier(“ BAandBMcontainequivalentinformation ”subsection).
+A machine learning practitioner, at this point, could ask the question: which ranking
+should I choose? As we explained earlier, in case the practitioner wants to give the same
+importance to negatives and positives as well as to informedness and markedness, we
+Table5Bioinformaticsscenario:binaryclassificationofcolontissuegeneexpression
+Rank Method MCC BA BM MK TPR TNR PPV NPV
+MCCranking:
+1 DecisionTree 0.447 0.715 0.429 0.477 0.728 0.701 0.774 0.702
+2 RadialSVM 0.423 0.695 0.390 0.517 0.891 0.498 0.754 0.726
+3 k-NearestNeighbors 0.418 0.706 0.412 0.443 0.887 0.525 0.826 0.617
+4 NaïveBayes 0.408 0.722 0.444 0.375 0.778 0.667 0.875 0.500
+BAranking:
+1 NaïveBayes 0.408 0.722 0.444 0.375 0.778 0.667 0.875 0.500
+2 DecisionTree 0.447 0.715 0.429 0.477 0.728 0.701 0.774 0.702
+3 k-NearestNeighbors 0.418 0.706 0.412 0.443 0.887 0.525 0.826 0.617
+4 RadialSVM 0.423 0.695 0.390 0.517 0.891 0.498 0.754 0.726
+BMranking:
+1 NaïveBayes 0.408 0.722 0.444 0.375 0.778 0.667 0.875 0.500
+2 DecisionTree 0.447 0.715 0.429 0.477 0.728 0.701 0.774 0.702
+3 k-NearestNeighbors 0.418 0.706 0.412 0.443 0.887 0.525 0.826 0.617
+4 RadialSVM 0.423 0.695 0.390 0.517 0.891 0.498 0.754 0.726
+MKranking:
+1 RadialSVM 0.423 0.695 0.390 0.517 0.891 0.498 0.754 0.726
+2 DecisionTree 0.447 0.715 0.429 0.477 0.728 0.701 0.774 0.702
+3 k-NearestNeighbors 0.418 0.706 0.412 0.443 0.887 0.525 0.826 0.617
+4 NaïveBayes 0.408 0.722 0.444 0.375 0.778 0.667 0.875 0.500
+RadialSVM:SupportVectorMachinewithradialGaussiankernel.Positives:patientsdiagnosedwithcoloncancer.Negatives:
+healthycontrols.MCC:Matthewscorrelationcoefficient(Eq. 5).BA:balancedaccuracy(Eq. 6).BM:bookmakerinformedness(Eq. 7).
+MK:markedness(Eq. 8).TPR:truepositiverate.TNR:truenegativerate.PPV:positivepredictivevalue.NPV:negativepredictive
+value.MCC,BM,MKvalueinterval:[ −1,+1].BA,TPR,TNR,PPV,NPVvalueinterval:[0,1].
+Boldvaluesrepresentthecorrespondingrankingforeachmetric
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page18of22
+suggest to focus on the ranking obtained by the MCC. A high value of MCC, in fact,
+would mean that the classifier was able to correctly predict the majority of the posi-
+tive data instances (TPR) and the majority of the negative data instances (TNR), and to
+correctly make the majority of positive predictions (PPV) and the majority of negative
+predictions (NPV). So, if the practitioner decided to base her/his study on the results of
+the MCC, she/he would have more chances to have high values for the four basic rates,
+thanbychoosingBA,BM,orMK.
+Finally, we note that the differences in MCC betweenclassifiers are small, whereas dif-
+ferencesofthefourbasicratesarerelativelylarge.Ifitwasdesirabletohaveallbasicrates
+at a similar level, also meaning that none of them are low, Decision Tree would be the
+bestchoiceofclassifiersinthisscenario.SVMand k-NearestNeighborshavehighsensi-
+tivity at the expense of specificity. Instead, if a high precision here was needed and a low
+NPV was acceptable, the Naive Bayes classifier would be the most promising choice in
+thissetting.MCCdoesnotcapturethesedetails:itonlymeasureshowwelltheclassifiers
+performonallfourbasicratestogether.AlthoughMCCstatesthattheclassifiersperform
+similarlywell,wecanseethattheyhavebothadvantagesanddisadvantages,ifcompared
+toeachotherinmoredetail.
+Conclusions
+The evaluation of binary classifications is an important step in machine learning and
+statistics,andthefour-categoryconfusionmatrixhasemergedasoneofthemostpower-
+fulandefficienttoolstoperformit.Torecapthemeaningofatwo-classconfusionmatrix,
+researchers have introduced several statistical metrics, such as Matthews correlation
+coefficient (MCC), accuracy, balanced accuracy (BA), bookmaker informedness (BM),
+markedness (MK), F 1score, and others. Since the advantages of Matthews correlation
+coefficientoveraccuracyandF 1scorehavebeenalreadyunveiledinthepast[ 15],inthis
+study we decided to compare MCC with balanced accuracy, bookmaker informedness,
+and markedness, by exploring their mathematical relationships and by analyzing some
+usecases.
+Fromouranalysis,wecanconfirmagainthatMCCresultsaregenerallymoreinforma-
+tive and truthful than BA, BM, and MK if the positive class and the negative class of the
+dataset have the same importance in the analysis, and if correctly classifying the existing
+ground truth data instances has the same importance of making correct predictions in
+theanalysis.Additionally,wecanstatethatahighMatthewscorrelationcoefficient(close
+to +1) means always high values for all the four basic rates of the confusion matrix: true
+positive rate (TPR), true negative rate (TNR), positive predictive value (PPV), and nega-
+tive predictive value (NPV) (Table 4). The same deduction cannot be made for balanced
+accuracy,bookmakerinformedness,andmarkedness.
+Thesituationchangesifcorrectlyclassifyingtheexistinggroundtruthdatainstancesis
+moreimportantthancorrectlymakingpredictions:inthiscase,BAandBMcanbemore
+usefulthanMCC.Similarly,ifmakingcorrectpredictionsismorerelevantthancorrectly
+identifyinggroundtruthdatainstances,MKcanbemoreinformativethanMCC.Instead,
+ifthepositivedatainstancesaremoreimportantthannegativeelementsinaclassification
+(both for ground truth classification and for predictions), F 1score can be more relevant
+thanMatthewscorrelationcoefficient.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page19of22
+In our analysis, we also showed two specific tasks for which bookmaker informedness
+can be more useful than the other confusion matrix rates: to make a fair comparison
+between two different classifiers evaluated on different datasets, and to detect the simi-
+larityofaclassificationtorandomguessing.Moreover,wereportedarealbioinformatics
+scenario,wheretheusageofdifferentratescaninfluencetherankingofclassifiersapplied
+tomicroarraygeneexpression.
+To conclude, as a general rule of thumb, we suggest the readership to focus on MCC
+overBA,BM,andMKforanystudybydefault,andtotrytoobtainavaluecloseto+1for
+it: achievingMCC=+0.9, for example,guaranteesvery highF 1score, accuracy, marked-
+ness, balanced accuracy, and bookmaker informedness, and even very high sensitivity,
+specificity, precision, and negative predictive value. If a specific class is considered more
+important (for example, predictions over ground truth classifications, or positives over
+negatives), or the goal of the study is the comparison of classifiers across datasets or the
+evaluationofthelevelofrandomguessing,weadvisethepractitionertoshifttoBA,BM,
+MK,orF 1score,asmentionedearlier.
+Inthefuture,weplantocomparetheMatthewscorrelationcoefficientwithothermet-
+rics,suchasBrierscore[ 65],Cohen’sKappa[ 66],Kmeasure[ 67],Fowlkes-Mallowsindex
+[68]andH-index[ 69].
+SupplementaryInformation
+Theonlineversioncontainssupplementarymaterialavailableat https://doi.org/10.1186/s13040-021-00244-z .
+Additionalfile1: Knownrandomnesssimulationalgorithmandformulasoftheadditionalmetrics.
+Abbreviations
+AUC:Areaunderthecurve;BA:Balancedaccuracy;BM:Bookmakerinformedness;MCC:Matthewscorrelationcoefficient;
+MK:Markedness;NPV:Negativepredictivevalue;PPV:Positivepredictivevalue;PR:Precision-recall;ROC:Receiver
+operatingcharacteristic;TNR:Truenegativerate;TPR:Truepositiverate
+Authors’contributions
+DCconceivedthestudy;NTandGJexploredthemathematicalrelationships;DCandNTdesignedtheusecases;DC
+designedthebioinformaticsscenario;NTinvestigatedtherandomguessingaspect.Allthethreeauthorsparticipatedto
+thearticlewriting,reviewthearticle,andapprovedthefinalmanuscriptversion.
+Authors’information
+DavideChicco(ORCID: 0000-0001-9655-7142 )iswithKrembilResearchInstitute,Toronto,Ontario,Canada.
+NiklasTötsch(ORCID: 0000-0001-7656-1160 )iswithUniversitätDuisburg-Essen,Essen,Germany.
+GiuseppeJurman(ORCID: 0000-0002-2705-5728 )iswithFondazioneBrunoKessler,Trento,Italy.
+CorrespondenceshouldbeaddressedtoDavideChicco: davidechicco@davidechicco.it
+Funding
+N.T.acknowledgesfundingfromDeutscheForschungsgemeinschaftthroughtheprojectCRC1093/A7.
+Availabilityofdataandmaterials
+OursoftwarecodeispubliclyavailableundertheGNUGeneralPublicLicenseversion3(GPL3.0)at: https://github.com/
+niklastoe/MCC_BM_BA_MK
+Ethicsapprovalandconsenttoparticipate
+Notapplicable.
+Consentforpublication
+Notapplicable.
+Competinginterests
+Theauthorsdeclaretheyhavenocompetinginterests.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page20of22
+Authordetails
+1KrembilResearchInstitute,Toronto,Ontario,Canada.2UniversitätDuisburg-Essen,Essen,Germany.3FondazioneBruno
+Kessler,Trento,Italy.
+Received:1October2020 Accepted:18January2021
+References
+1. LucaO.ModelSelectionandErrorEstimationinaNutshell.Berlin:Springer;2020.
+2. NaserMZ, AlaviA.Insightsintoperformancefitnessanderrormetricsformachinelearning.20201–25.arXivpreprint
+arXiv:2006.00887.
+3. WeiQ,DunbrackJr.RL.Theroleofbalancedtrainingandtestingdatasetsforbinaryclassifiersinbioinformatics.
+PLoSONE.2013;8(7):e67863.
+4. BekkarM, DjemaaHK, AlitoucheTA.Evaluationmeasuresformodelsassessmentoverimbalanceddatasets.JInf
+EngAppl.2013;3(10):27–38.
+5. RamolaR, JainS, RadivojacP.Estimatingclassificationaccuracyinpositive-unlabeledlearning:characterizationand
+correctionstrategies.In:ProceedingsofPacificSymposiumonBiocomputing2019.Singapore:WorldScientific;
+2019. p.124–35.
+6. ParkerC.Ananalysisofperformancemeasuresforbinaryclassifiers.In:ProceedingsofICDM2011–the11thIEEE
+InternationalConferenceonDataMiningWorkshop.Vancouver:IEEE;2011. p.517–26.
+7. SokolovaM, LapalmeG.Asystematicanalysisofperformancemeasuresforclassificationtasks.InfProcessManag.
+2009;45(4):427–37.
+8. RáczA, BajuszD, HébergerK.Multi-levelcomparisonofmachinelearningclassifiersandtheirperformancemetrics.
+Molecules.2019;24(15):2811.
+9. BewickV, CheekL, BallJ.Statisticsreview13:receiveroperatingcharacteristiccurves.CriticCare.2004;8(6):508.
+10. SaitoT, RehmsmeierM.Theprecision-recallplotismoreinformativethantheROCplotwhenevaluatingbinary
+classifiersonimbalanceddatasets.PLoSONE.2015;10(3):e0118432.
+11. HalliganS, AltmanDG, MallettS.Disadvantagesofusingtheareaunderthereceiveroperatingcharacteristiccurve
+toassessimagingtests:adiscussionandproposalforanalternativeapproach.EurRadiol.2015;25(4):932–9.
+12. WaldNJ, BestwickJP.IstheareaunderanROCcurveavalidmeasureoftheperformanceofascreeningor
+diagnostictest?JMedScreen.2014;21(1):51–56.
+13. RaghavanV, BollmannP, JungGS.Acriticalinvestigationofrecallandprecisionasmeasuresofretrievalsystem
+performance.ACMTransInfSyst(TOIS).1989;7(3):205–29.
+14. CaoC, ChiccoD, HoffmanMM.TheMCC-F1curve:aperformanceevaluationtechniqueforbinaryclassification.
+20201–17.arXivpreprintarXiv:2006.11278v1.
+15. ChiccoD, JurmanG.TheadvantagesoftheMatthewscorrelationcoefficient(MCC)overF1scoreandaccuracyin
+binaryclassificationevaluation.BMCGenom.2020;21(1):1–13.
+16. ChiccoD.Tenquicktipsformachinelearningincomputationalbiology.BioDataMin.2017;10(35):1–17.
+17. MatthewsBW.ComparisonofthepredictedandobservedsecondarystructureofT4phagelysozyme.Biochim
+BiophysActa(BBA)ProteinStruct.1975;405(2):442–51.
+18. DingaR, PenninxBW, VeltmanDJ, SchmaalL, MarquandAF.Beyondaccuracy:measuresforassessingmachine
+learningmodels,pitfallsandguidelines.bioRxiv.2019;743138:1–20.
+19. HandelmanGS, KokHK, ChandraRV, RazaviAH, HuangS, BrooksM, LeeMJ, AsadiH.Peeringintotheblackboxof
+artificialintelligence:evaluationmetricsofmachinelearningmethods.AmJRoentgenol.2019;212(1):38–43.
+20. JurmanG, RiccadonnaS, FurlanelloC.AcomparisonofMCCandCENerrormeasuresinmulti-classprediction.PLoS
+ONE.2012;7(8):1–8.
+21. BoughorbelS, JarrayF, El-AnbariM.OptimalclassifierforimbalanceddatausingMatthewsCorrelationCoefficient
+metric.PLoSONE.2017;12(6):1–17.
+22. BrodersenKH, OngCS, StephanKE, BuhmannJM.Thebalancedaccuracyanditsposteriordistribution.In:
+ProceedingsofICPR2010–the20thIAPRInternationalConferenceonPatternRecognition.Istanbul:IEEE;2010.
+p.3121–4.
+23. CarrilloH, BrodersenKH, CastellanosJA.Probabilisticperformanceevaluationformulticlassclassificationusingthe
+posteriorbalancedaccuracy.In:ProceedingsofROBOT2013–the1stIberianRoboticsConference.Madrid:
+Springer;2014. p.347–61.
+24. VelezDR, WhiteBC, MotsingerAA, BushWS, RitchieMD, WilliamsSM, MooreJH.Abalancedaccuracyfunctionfor
+epistasismodelinginimbalanceddatasetsusingmultifactordimensionalityreduction.GenetEpidemiol.2007;31(4):
+306–15.
+25. HardisonNE, FanelliTJ, DudekSM, ReifDM, RitchieMD, Motsinger-ReifAA.Abalancedaccuracyfitnessfunction
+leadstorobustanalysisusinggrammaticalevolutionneuralnetworksinthecaseofclassimbalance.In:Proceedings
+ofGECCO2008–the10thAnnualConferenceonGeneticandEvolutionaryComputation.NewYorkCity:
+AssociationforComputingMachinery;2008. p.353–354.
+26. GuiJ, MooreJH, KelseyKT, MarsitCJ, KaragasMR, AndrewAS.Anovelsurvivalmultifactordimensionality
+reductionmethodfordetectinggene–geneinteractionswithapplicationtobladdercancerprognosis.HumGenet.
+2011;129(1):101–10.
+27. FrickA, GingnellM, MarquandAF, HownerK, FischerH, KristianssonM, WilliamsSCR, FredriksonM, FurmarkT.
+Classifyingsocialanxietydisorderusingmultivoxelpatternanalysesofbrainfunctionandstructure.BehavBrainRes.
+2014;259:330–5.
+28. RanS, LiY, ZinkD, LooL-H.Supervisedpredictionofdrug-inducednephrotoxicitybasedoninterleukin-6and-8
+expressionlevels.BMCBioinformatics.2014;15(16):S16.
+29. BerberT, AlpkocakA, BalciP, DicleO.Breastmasscontoursegmentationalgorithmindigitalmammograms.
+ComputMethodsProgBiomed.2013;110(2):150–9.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page21of22
+30. MorinA, Samper-GonzalezJ, BertrandA, StróerS, DormontD, MendesM, CoupéP, AhdidanJ, LévyM, SamriD,
+HampelH, DuboisB, TeichmannM, EpelbaumS, ColliotO.AccuracyofMRIclassificationalgorithmsinatertiary
+memorycenterclinicalroutinecohort.JAlzheimer’sDis.2020;74:1157–66.
+31. McConechyMK, TalhoukA, Li-ChangHH, LeungS, HuntsmanDG, BlakeGilksC, McAlpineJN.DetectionofDNA
+mismatchrepair(MMR)deficienciesbyimmunohistochemistrycaneffectivelydiagnosethemicrosatelliteinstability
+(MSI)phenotypeinendometrialcarcinomas.GynecolOncol.2015;137(2):306–10.
+32. EllisK, KerrJ, GodboleS, StaudenmayerJ, LanckrietG.Hipandwristaccelerometeralgorithmsforfree-living
+behaviorclassification.MedSciSportsExer.2016;48(5):933.
+33. Szczypi ´nskiPM, KlepaczkoA, ZapotocznyP.Identifyingbarleyvarietiesbycomputervision.ComputElectronAgric.
+2015;110:1–8.
+34. PetersonMR, RaymerML, LamontGB.Balancedaccuracyforfeaturesubsetselectionwithgeneticalgorithms.In:
+ProceedingsofCEC2005–the2005IEEECongressonEvolutionaryComputation,vol.3.Edinburgh:IEEE;2005.
+p.2506–13.
+35. GarcíaV, MollinedaRA, SánchezJS.Indexofbalancedaccuracy:aperformancemeasureforskewedclass
+distributions.In:ProceedingsofIbPRIA2009–the4thIberianConferenceonPatternRecognitionandImage
+Analysis.PovoadeVarzim:Springer;2009. p.441–8.
+36. PowersDM.Recall&precisionversusthebookmaker.In:ProceedingsofICCS2003–the2003International
+ConferenceonCognitiveScience.Berlin:Springer;2003.
+37. PeirceCS.Thenumericalmeasureofthesuccessofpredictions.Science.1884;93(93):453–4.
+38. YoudenWJ.Indexforratingdiagnostictests.Cancer.1950;3(1):32–35.
+39. RuoppMD, PerkinsNJ, WhitcombBW, SchistermanEF.YoudenIndexandoptimalcut-pointestimatedfrom
+observationsaffectedbyalowerlimitofdetection.BiomJMathMethodsBiosci.2008;50(3):419–30.
+40. PerkinsNJ, SchistermanEF.TheYoudenIndexandtheoptimalcut-pointcorrectedformeasurementerror.BiomJ
+MathMethodsBiosci.2005;47(4):428–41.
+41. SchistermanEF, PerkinsNJ, LiuA, BondellH.Optimalcut-pointanditscorrespondingYoudenIndexto
+discriminateindividualsusingpooledbloodsamples.Epidemiology.2005;16(1):73–81.
+42. AtyabiA, LuerssenM, FitzgibbonS, PowersDM.EvolutionaryfeatureselectionandelectrodereductionforEEG
+classification.In:ProceedingsofCEC2012–the2012IEEECongressonEvolutionaryComputation.Hangzhou:IEEE;
+2012. p.1–8.
+43. TaylorD, KitselaarM, PowersDM.Thegeneralisabilityofartificialneuralnetworksusedtoclassifyelectrophoretic
+dataproducedunderdifferentconditions.ForensicSciIntGenet.2019;38:181–4.
+44. AtyabiA, LuerssenMH, FitzgibbonSP, PowersDM.TheimpactofPSObaseddimensionreductiononEEG
+classification.In:ProceedingsofBI2012–the2012InternationalConferenceonBrainInformatics.Macau:Springer;
+2012. p.220–31.
+45. TakayamaN, TakahashiH.Performanceevaluationcriteriaforpartialblursegmentationinclassificationand
+segmentationcontexts.InstImageElectronEngJapan(IIEEJ)TransImageElectronVisComput.2017;5(2):123–33.
+46. AliHB, PowersDM, JiaX, ZhangY.Extendednon-negativematrixfactorizationforfaceandfacialexpression
+recognition.IntJMachLearnComput.2015;5(2):142.
+47. AlvaroN, ConwayM, DoanS, LofiC, OveringtonJ, CollierN.Crowdsourcingtwitterannotationstoidentify
+first-handexperiencesofprescriptiondruguse.JBiomedInf.2015;58:280–7.
+48. FairleyI, MendzilA, TogneriM, ReeveDE.Detailedsedimentclassmappingusingunmannedaerialvehicles.
+CoastalSediments2019,Preprintaheadofpublication.20192472–82.
+49. RahmatiO, KornejadyA, SamadiM, DeoRC, ConoscentiC, LombardoL, DayalK, Taghizadeh-MehrjardiR,
+PourghasemiHR, KumarS, BuiTD.PMT:Newanalyticalframeworkforautomatedevaluationofgeo-environmental
+modellingapproaches.SciTotalEnviron.2019;664:296–311.
+50. GarmonC.Theaccuracyofhospitalmergerscreeningmethods.ResDev(RAND)JEcon.2017;48(4):1068–102.
+51. KruschkeJK.Bayes’rule:DoingBayesianDataAnalysis.Amsterdam:Elsevier;2015,pp.99–120.
+52. LuqueA, CarrascoA, MartínA, delasHerasA.Theimpactofclassimbalanceinclassificationperformancemetrics
+basedonthebinaryconfusionmatrix.PatternRecogn.2019;91:216–31.
+53. TötschN, HoffmannD.Classifieruncertainty:evidence,potentialimpact,andprobabilistictreatment.arXivpreprint
+arXiv:2006.11105.2020.
+54. PowersDM.Evaluation:fromprecision,recallandF-measuretoROC,informedness,markedness&correlation.J
+MachLearnTechnol.2011;2(1):37–63.
+55. SedgwickP.Pearson’scorrelationcoefficient.BrMedJ(BMJ).2012345.
+56. JainAK, MaoJ, MoidinMohiuddinK.Artificialneuralnetworks:atutorial.Computer.1996;29(3):31–44.
+57. AlonU, BarkaiN, NottermanDA, GishK, YbarraS, MackD, LevineAJ.Broadpatternsofgeneexpressionrevealed
+byclusteringanalysisoftumorandnormalcolontissuesprobedbyoligonucleotidearrays.ProcNatlAcadSci
+(PNAS).1999;96(12):6745–50.
+58. BoulesteixA-L, StrimmerK.Partialleastsquares:aversatiletoolfortheanalysisofhigh-dimensionalgenomicdata.
+BriefBioinforma.2006;8(1):32–44.
+59. BoulesteixA-L, DurifG, Lambert-LacroixS, PeyreJ,StrimmerK.Package‘plsgenomics’.2018. https://cran.r-project.
+org/web/packages/plsgenomics/index.html .Accessed10Oct2020.
+60. AlonU, BarkaiNNottermanDA, GishK, YbarraSMackD,LevineAJ.Datapertainingtothearticle‘Broadpatternsof
+geneexpressionrevealedbyclusteringoftumorandnormalcolontissuesprobedbyoligonucleotidearrays’.2000.
+http://genomics-pubs.princeton.edu/oncology/affydata/index.html .Accessed10Oct2020.
+61. TimofeevR.Classificationandregressiontrees(CART)theoryandapplications.Berlin:HumboldtUniversity;2004.
+62. BeyerK, GoldsteinJ, RamakrishnanR, ShaftU.Whenis“nearestneighbor”meaningful?In:InternationalConference
+onDatabaseTheory.Berlin:Springer;1999. p.217–35.
+63. YousefM, NebozhynM, ShatkayH, KanterakisS, ShoweLC, ShoweMK.Combiningmulti-speciesgenomicdatafor
+microRNAidentificationusingaNaïclassifier.Bioinformatics.2006;22(11):1325–34.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+Chiccoetal. BioDataMining           (2021) 14:13 Page22of22
+64. HearstMA, DumaisST, OsunaE, PlattJ, ScholkopfB.Supportvectormachines.IEEEIntellSystAppl.1998;13(4):
+18–28.
+65. RufibachK.UseofBrierscoretoassessbinarypredictions.JClinEpidemiol.2010;63(8):938–9.
+66. CohenJ.Acoefficientofagreementfornominalscales.EducPsycholMeasurement.1960;20(1):37–46.
+67. SebastianiF.Anaxiomaticallyderivedmeasurefortheevaluationofclassificationalgorithms.In:Proceedingsof
+ICTIR2015–theACMSIGIR2015InternationalConferenceontheTheoryofInformationRetrieval.NewYorkCity:
+ACM;2015. p.11–20.
+68. FowlkesEB, MallowsCL.Amethodforcomparingtwohierarchicalclusterings.JAmStatAssoc.1983;78(383):553–69.
+69. CampagnerA, SconfienzaL, CabitzaF.H-accuracy,analternativemetrictoassessclassificationmodelsinmedicine.
+StudHealthTechnolInf.2020;270:242–6.
+Publisher’sNote
+SpringerNatureremainsneutralwithregardtojurisdictionalclaimsinpublishedmapsandinstitutionalaffiliations.
+Content courtesy of Springer Nature, terms of use apply. Rights reserved.
+1.
+2.
+3.
+4.
+5.
+6.Terms and Conditions 
+Springer Nature journal content, brought to you courtesy of Springer Nature Customer Service Center GmbH (“Springer Nature”). 
+Springer Nature supports a reasonable amount of sharing of  research papers by authors, subscribers and authorised users (“Users”), for small-
+scale personal, non-commercial use provided that all copyright, trade and service marks and other proprietary notices are maintained. By
+accessing, sharing, receiving or otherwise using the Springer Nature journal content you agree to these terms of use (“Terms”). For these
+purposes, Springer Nature considers academic use (by researchers and students) to be non-commercial. 
+These Terms are supplementary and will apply in addition to any applicable website terms and conditions, a relevant site licence or a personal
+subscription. These Terms will prevail over any conflict or ambiguity with regards to the relevant terms, a site licence or a personal subscription
+(to the extent of the conflict or ambiguity only). For Creative Commons-licensed articles, the terms of the Creative Commons license used will
+apply. 
+We collect and use personal data to provide access to the Springer Nature journal content. We may also use these personal data internally within
+ResearchGate and Springer Nature and as agreed share it, in an anonymised way, for purposes of tracking, analysis and reporting. We will not
+otherwise disclose your personal data outside the ResearchGate or the Springer Nature group of companies unless we have your permission as
+detailed in the Privacy Policy. 
+While Users may use the Springer Nature journal content for small scale, personal non-commercial use, it is important to note that Users may
+not:  
+use such content for the purpose of providing other users with access on a regular or large scale basis or as a means to circumvent access
+control;
+use such content where to do so would be considered a criminal or statutory offence in any jurisdiction, or gives rise to civil liability, or is
+otherwise unlawful;
+falsely or misleadingly imply or suggest endorsement, approval , sponsorship, or association unless explicitly agreed to by Springer Nature in
+writing;
+use bots or other automated methods to access the content or redirect messages
+override any security feature or exclusionary protocol; or
+share the content in order to create substitute for Springer Nature products or services or a systematic database of Springer Nature journal
+content. 
+In line with the restriction against commercial use, Springer Nature does not permit the creation of a product or service that creates revenue,
+royalties, rent or income from our content or its inclusion as part of a paid for service or for other commercial gain. Springer Nature journal
+content cannot be used for inter-library loans and librarians may not upload Springer Nature journal content on a large scale into their, or any
+other, institutional repository. 
+These terms of use are reviewed regularly and may be amended at any time. Springer Nature is not obligated to publish any information or
+content on this website and may remove it or features or functionality at our sole discretion, at any time with or without notice. Springer Nature
+may revoke this licence to you at any time and remove access to any copies of the Springer Nature journal content which have been saved. 
+To the fullest extent permitted by law, Springer Nature makes no warranties, representations or guarantees to Users, either express or implied
+with respect to the Springer nature journal content and all parties disclaim and waive any implied warranties or warranties imposed by law,
+including merchantability or fitness for any particular purpose. 
+Please note that these rights do not automatically extend to content, data or other material published by Springer Nature that may be licensed
+from third parties. 
+If you would like to use or distribute our Springer Nature journal content to a wider audience or on a regular basis or in any other manner not
+expressly permitted by these Terms, please contact Springer Nature at  
+onlineservice@springernature.com 

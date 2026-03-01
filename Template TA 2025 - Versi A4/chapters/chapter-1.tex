@@ -5,66 +5,83 @@
 \chapter{PENDAHULUAN} \label{Bab I}
 
 \section{Latar Belakang} \label{I.Latar Belakang}
-\textit{Mean Absolute Error} (MAE) \cite{Suryanto2019MAE}
-\lipsum[1-3] % Menampilkan paragraf 1 sampai 2 dari lorem ipsum
+
+Perkembangan teknologi informasi telah mendorong peningkatan pengumpulan dan pemanfaatan data dalam berbagai bidang, mulai dari sektor kesehatan, keuangan, pendidikan, hingga keamanan siber. Data-data tersebut dapat dimanfaatkan untuk membangun model prediktif yang dapat membantu pengambilan keputusan, seperti deteksi penyakit, prediksi kebangkrutan perusahaan, dan identifikasi transaksi penipuan. Oleh karena itu, \textit{machine learning} menjadi pendekatan yang banyak digunakan karena memiliki kemampuan dalam mempelajari pola dari data untuk melakukan klasifikasi atau prediksi pada data baru \cite{Kovacs2019Empirical}.
+
+Salah satu tantangan utama dalam penerapan \textit{machine learning} adalah ketidakseimbangan distribusi kelas pada dataset (\textit{class imbalance}). \textit{Class imbalance} terjadi ketika jumlah sampel pada satu kelas jauh lebih banyak dibandingkan kelas lainnya, seperti pada kasus deteksi penipuan di mana transaksi normal jauh lebih banyak daripada transaksi tidak normal. Ketidakseimbangan data menyebabkan algoritma klasifikasi cenderung memprioritaskan kelas mayoritas dan mengabaikan kelas minoritas yang seringkali menjadi fokus utama analisis \cite{Hou2025XGBoost}. Penelitian menunjukkan bahwa model yang dilatih pada data tidak seimbang dapat mencapai akurasi tinggi secara keseluruhan, namun gagal mendeteksi kelas minoritas dengan baik \cite{VanFC2024Enhancing}.
+
+Berbagai teknik telah dikembangkan untuk mengatasi masalah ketidakseimbangan data, yang secara umum terbagi menjadi dua pendekatan yaitu,\textit{oversampling} dan \textit{undersampling}. Teknik \textit{oversampling} seperti SMOTE (\textit{Synthetic Minority Over-sampling Technique}) bekerja dengan menghasilkan sampel sintetis untuk kelas minoritas, sedangkan \textit{undersampling} mengurangi jumlah sampel pada kelas mayoritas \cite{Taskiran2025Oversampling}. Masing-masing pendekatan memiliki kelemahan, dimana \textit{oversampling} berpotensi menyebabkan \textit{overfitting}, sementara \textit{undersampling} berisiko menghilangkan informasi penting dari kelas mayoritas \cite{Eroglu2024HOUM}. Untuk mengatasi kelemahan tersebut, Eroglu dan Pir mengusulkan metode HOUM (\textit{Hybrid Oversampling and Undersampling Method}) yang menggabungkan Safe-Level SMOTE untuk \textit{oversampling} dan \textit{Support Vector Machine} (SVM) untuk \textit{undersampling} secara iteratif hingga dataset mencapai keseimbangan \cite{Eroglu2024HOUM}.
+
+Metode HOUM memanfaatkan SVM untuk mengidentifikasi dan menghapus data kelas mayoritas yang jauh dari \textit{decision boundary}, sehingga data yang tersisa lebih informatif untuk proses klasifikasi. Namun, performa SVM sangat dipengaruhi oleh pemilihan parameter, khususnya nilai \textit{regularization parameter} (C) dan jenis kernel yang digunakan \cite{Cervantes2020SVM}. Selain itu, komponen \textit{oversampling} pada HOUM menggunakan Safe-Level SMOTE yang memiliki karakteristik berbeda dengan teknik \textit{oversampling} lain seperti ADASYN (\textit{Adaptive Synthetic Sampling}). ADASYN menghasilkan lebih banyak sampel sintetis pada area yang sulit diklasifikasikan, berbeda dengan Safe-Level SMOTE yang mempertimbangkan tingkat keamanan dari \textit{nearest neighbor} \cite{Bunkhumpornpat2009SafeLevel}. Penelitian sebelumnya menunjukkan bahwa pemilihan teknik \textit{oversampling} mempengaruhi hasil klasifikasi, di mana performa SMOTE dan ADASYN bervariasi tergantung pada karakteristik dataset dan algoritma yang digunakan \cite{Tariq2023Oversampling}.
+
+Berdasarkan uraian tersebut, penelitian ini bertujuan untuk menganalisis pengaruh variasi konfigurasi pada metode HOUM terhadap performa klasifikasi data tidak seimbang. Pada komponen \textit{undersampling}, dilakukan \textit{tuning} parameter C pada SVM dengan nilai 0.1, 0.5, 0.75, 1, 1.5, dan 2.5 serta perbandingan tiga jenis kernel yaitu Linear, RBF (\textit{Radial Basis Function}), dan Polynomial. Pada komponen \textit{oversampling}, dilakukan perbandingan antara HOUM yang menggunakan Safe-Level SMOTE dengan HOUM yang menggunakan ADASYN. Performa klasifikasi dievaluasi menggunakan metrik ROC-AUC, G-mean, \textit{Recall}, \textit{Precision}, dan F1-Score yang sesuai untuk menilai kemampuan model dalam menangani data tidak seimbang. Hasil penelitian ini diharapkan dapat memberikan rekomendasi konfigurasi HOUM yang optimal untuk menangani berbagai skenario ketidakseimbangan data.
 
 
 \section{Rumusan Masalah} \label{I.Rumusan Masalah}
 
-Berdasarkan latar belakang yang telah diuraikan di atas, maka permasalahan penelitian dirumuskan sebagai berikut: \par
+Berdasarkan latar belakang, permasalahan penelitian dirumuskan sebagai berikut: \par
 
 \begin{enumerate}[noitemsep]
-	\item Bagaimana
-	\item Bagaimana 
+	\item Bagaimana pengaruh penggunaan teknik oversampling yang berbeda pada metode HOUM terhadap kinerja klasifikasi data tidak seimbang?
+	\item Bagaimana pengaruh nilai parameter regularisasi (C) pada Support Vector Machine dalam metode HOUM terhadap kemampuan klasifikasi kelas minoritas?
+	\item Bagaimana pengaruh pemilihan jenis kernel Support Vector Machine terhadap performa metode HOUM pada data klasifikasi tidak seimbang?
 \end{enumerate}
 
 
 \section{Tujuan Penelitian} \label{I.Tujuan}
-Berdasarkan rumusan masalah yang telah diuraikan di atas, maka tujuan dari penelitian ini adalah: \par
+Berdasarkan rumusan masalah, tujuan dari penelitian adalah sebagai berikut: \par
 
 \begin{enumerate}[noitemsep]
-	\item Menentukan 
-	\item Mengimplementasikan
+	\item Menganalisis pengaruh penggunaan teknik oversampling yang berbeda pada metode HOUM terhadap kinerja klasifikasi data tidak seimbang. 
+	\item Menganalisis pengaruh variasi nilai parameter regularisasi (C) Support Vector Machine terhadap kemampuan metode HOUM dalam mengklasifikasikan kelas minoritas.
+	\item Menganalisis pengaruh pemilihan jenis kernel Support Vector Machine terhadap performa metode HOUM pada data klasifikasi tidak seimbang.
 \end{enumerate}
 
 
 \section{Batasan Masalah} \label{I.Batasan}
-Adapun batasan masalah dari penelitian ini agar sesuai dengan yang diharapkan adalah sebagai berikut: \par
+Adapun batasan masalah dari penelitian  agar sesuai dengan yang diharapkan adalah sebagai berikut: \par
 
 \begin{enumerate}[noitemsep]
-    \item Bahasa pemrograman yang digunakan adalah bahasa pemrograman Python.
-    \item 
+    \item Penelitian ini hanya difokuskan pada data klasifikasi tidak seimbang (\textit{imbalanced classification}) dan tidak mencakup permasalahan regresi.
+    \item Metode penanganan data tidak seimbang yang digunakan dibatasi pada metode \textit{Hybrid Oversampling and Undersampling Method} (HOUM).
+    \item Teknik \textit{oversampling} yang dianalisis pada metode HOUM dibatasi pada Safe-Level SMOTE dan ADASYN.
+    \item Proses \textit{undersampling} pada metode HOUM dibatasi menggunakan algoritma \textit{Support Vector Machine} (SVM) sebagaimana yang diusulkan pada metode asli HOUM.
+    \item Analisis pengaruh konfigurasi SVM dibatasi pada pemilihan jenis kernel, yaitu Linear, \textit{Radial Basis Function} (RBF), dan Polynomial, serta variasi nilai parameter regularisasi (C).
+    \item Nilai parameter regularisasi (C) yang digunakan dalam penelitian ini dibatasi pada nilai 0.1, 0.5, 0.75, 1, 1.5, dan 2.5.
+    \item Evaluasi performa metode HOUM dibatasi menggunakan metrik ROC-AUC, G-Mean, \textit{Recall}, \textit{Precision}, dan F1-Score.
+    \item Implementasi metode HOUM dilakukan dalam bentuk sistem simulasi berbasis perangkat lunak menggunakan bahasa pemrograman Python, tanpa melibatkan perangkat keras atau sistem \textit{real-time}.
 \end{enumerate}
 
 
 \section{Manfaat Penelitian} \label{I.Manfaat}
-Adapun manfaat yang diperoleh dari hasil penelitian ini adalah sebagai berikut: \par
+Adapun manfaat yang diperoleh dari hasil penelitian adalah sebagai berikut: \par
 
 \begin{enumerate}[noitemsep]
-    \item Menghasilkan sistem 
-    \item 
+    \item Memberikan pemahaman empiris mengenai pengaruh variasi teknik \textit{oversampling} dan konfigurasi \textit{Support Vector Machine} terhadap kinerja metode HOUM pada data klasifikasi tidak seimbang.
+    \item Menjadi referensi terkait sensitivitas metode HOUM terhadap pemilihan parameter SVM dan teknik \textit{oversampling}, yang masih terbatas dibahas pada penelitian sebelumnya.
+    \item Menambah pemahaman dan pengalaman penulis dalam menerapkan konsep \textit{machine learning}, khususnya dalam penanganan data klasifikasi tidak seimbang menggunakan metode hybrid HOUM.
 \end{enumerate}
 
 
 \section{Sistematika Penulisan} \label{I.Sistematika}
-Sistematika penulisan berisi pembahasan apa yang akan ditulis disetiap Bab. Sistematika pada umumnya berupa paragraf yang setiap paragraf mencerminkan bahasan setiap Bab. \par
+Penulisan tugas akhir disusun secara sistematis ke dalam lima bab yang saling berkaitan. Berikut adalah uraian  mengenai isi masing-masing bab. \par
 
-\noindent\textbf{Bab I}
+\noindent\textbf{Bab I Pendahuluan}
 
-Bab ini berisikan penjelasan latar belakang dari topik penelitian yang berlangsung, rumusan masalah dari masalah yang dihadapi pada penjelasan di latar belakang, tujuan dari penelitian, batasan dari penelitian, manfaat dari hasil penelitian, dan sistematika penulisan tugas akhir. \par
+Pada bab ini menyajikan gambaran umum penelitian yang meliputi latar belakang permasalahan, rumusan masalah, tujuan penelitian, batasan masalah, manfaat penelitian, serta sistematika penulisan laporan tugas akhir. \par
 
-\noindent\textbf{Bab II}
+\noindent\textbf{Bab II Tinjauan Pustaka}
 
-Bab ini membahas mengenai teori-teori dan penelitian yang berkaitan dengan penelitian ini.
+Pada bab ini menguraikan kajian literatur yang berkaitan dengan topik penelitian, mencakup tinjauan terhadap penelitian-penelitian sebelumnya serta landasan teori yang mendasari metode dan konsep yang digunakan dalam penelitian ini. \par
 
-\noindent\textbf{Bab III}
+\noindent\textbf{Bab III Metodologi Penelitian}
 
-Bab ini berisikan penjelasan alur kerja sistem, alat dan data yang digunakan, metode yang digunakan, dan rancangan pengujian.
+Pada bab ini menjelaskan secara rinci metodologi yang diterapkan dalam penelitian, meliputi tahapan alur kerja, perangkat dan dataset yang digunakan, metode yang diimplementasikan, serta rancangan skenario pengujian yang akan dilakukan. \par
 
-\noindent\textbf{Bab IV}
+\noindent\textbf{Bab IV Hasil dan Pembahasan}
 
-Bab ini membahas hasil implementasi dan pengujian dari penelitian yang dilakukan.
+Pada bab ini memaparkan hasil penelitian yang diperoleh dari implementasi metode, beserta analisis dan pembahasan terhadap hasil pengujian. \par
 
-\noindent\textbf{Bab V}
+\noindent\textbf{Bab V Penutup}
 
-Bab ini membahas kesimpulan dari hasil penelitian dan juga saran untuk penelitian selanjutnya.
+Pada bab ini berisi kesimpulan yang merangkum hasil penelitian berdasarkan tujuan penelitian, serta saran-saran untuk pengembangan dan penyempurnaan pada penelitian selanjutnya.

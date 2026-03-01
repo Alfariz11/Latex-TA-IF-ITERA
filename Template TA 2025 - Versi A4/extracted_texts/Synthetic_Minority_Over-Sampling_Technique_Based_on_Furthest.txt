@@ -1,0 +1,928 @@
+Received March 11, 2020, accepted March 19, 2020. Date of publication xxxx 00, 0000, date of current version xxxx 00, 0000.
+Digital Object Identifier 10.1 109/ACCESS.2020.2983003
+SMOTEFUNA: Synthetic Minority Over-Sampling
+Technique Based on Furthest
+Neighbour Algorithm
+AHMAD S. TARAWNEH
+1, AHMAD B. A. HASSANAT
+2,3,4, (Member, IEEE),
+KHALID ALMOHAMMADI
+3, DMITRY CHETVERIKOV
+1,5,
+AND COLIN BELLINGER
+6
+1Department of Algorithms and Their Applications, Eötvös Loránd University, 1117 Budapest, Hungary
+2Department of Computer Science, Mutah University, Karak 61711, Jordan
+3Department of Computer Science, Community College, University of Tabuk, Tabuk 71491, Saudi Arabia
+4Industrial Innovation and Robotics Center, University of Tabuk, Tabuk 71491, Saudi Arabia
+5Institute for Computer Science and Control, Budapest, Hungary
+6National Research Council, Ottawa, ON K1A 0R6, Canada
+Corresponding author: Ahmad S. Tarawneh (ahmad.trwh@gmail.com)
+The work of Ahmad S. Tarawneh was supported in part by the Hungarian Government, and in part by the European Social Fund, under
+Project EFOP-3.6.3-VEKOP-16-2017-00001 (talent management in autonomous vehicle control technologies). The work of Dmitry
+Chetverikov was supported by a project ED_18-1-2019-0030 (application domain specic highly reliable IT solutions subprogramme)
+implemented with the support of the National Research, Development, and Innovation Fund of Hungary, nanced under the Thematic
+Excellence Programme Funding Scheme.
+ABSTRACT Class imbalance occurs in classication problems in which the ``normal'' cases, or instances,
+signicantly outnumber the ``abnormal'' instances. Training a standard classier on imbalanced data leads
+to predictive biases which cause poor performance on the class(es) with lower prior probabilities. The less
+frequent classes are often critically important events, such as system failure or the occurrence of a rare
+disease. As a result, the class imbalance problem has been considered to be of great importance for many
+years. In this paper, we propose a novel algorithm that utilizes the furthest neighbor of a candidate example
+to generate new synthetic samples. A key advantage of SOMTEFUNA over existing methods is that it does
+not have parameters to tune (such as Kin SMOTE). Thus, it is signicantly easier to utilize in real-world
+applications. We evaluate the benet of resampling with SOMTEFUNA against state-of-the-art methods
+including SMOTE, ADASYN and SWIM using Naive Bayes andSupport Vector Machine classiers. Also,
+we provide a statistical analysis based on Wilcoxon Signed-rank test to validate the signicance of the
+SMOTEFUNA results. The results indicate that the proposed method is an efcient alternative to the current
+methods. Specically, SOMTEFUNA achieves better 5-fold cross validated ROC and precision-recall space
+performance.
+INDEX TERMS Binary classication, data mining algorithm, furthest neighbor, imbalance problem,
+SMOTE.
+I. INTRODUCTION
+Class imbalance appears in classication data where the
+training samples from one class (majority class) signi-
+cantly outnumber the samples from the other class (minor-
+ity class) [1]. The fundamental issue in class imbalance is
+that classiers induced on imbalanced training sets exhibit
+The associate editor coordinating the review of this manuscript and
+approving it for publication was Gianluigi Ciocca
+ .a predictive bias associated with weak performance on the
+minority class.
+The predictive bias is especially problematic because the
+minority class is often of critical importance [2]. This is
+indeed the case in real-world problems such as disease
+detection [3], credit card fraud detection [4], gene prol-
+ing [5], invoice classication [6], face image retrieval [7],
+content-based image retrieval [8], authentication [9], radia-
+tion detection [10], etc.
+VOLUME 8, 2020This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/1
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+Formally, given a supervised machine learning dataset D,
+with nexamples, which belong to mclassesfC1;C2;C3;:::;
+Cmg, if anyjCijj Cjjthen Dis called an imbalanced
+dataset. There are several approaches used to solve this prob-
+lem such as
+Collecting more examples belonging to the minority
+class(es).
+Adjusting the loss function to assign a higher cost to
+the failed detection of the minority class instances, or a
+lower cost to the majority class [11].
+Re-sampling the training set, i.e.,oversampling or syn-
+thetically sampling the minority class, undersampling
+the majority class, or applying a combination of these
+methods.
+In practice, the collection of more data is limited by the
+associated time and cost constraints. Moreover, in some
+domains, the minority class is truly rare, and thus, a sufcient
+number of samples cannot be collected at any cost. Cost
+adjusting has been shown to be an effective approach to deal
+with imbalance; however, it generally requires adjustments
+to the classication algorithm and/or the prior knowledge of
+appropriate misclassication costs. Alternatively, resampling
+is an easy to apply domain independent option, which has
+been shown to be equivalent to cost adjustment under certain
+circumstances [12]. Within the realm of resampling methods,
+synthetic oversampling is particularly effective because it
+avoids the loss of information that is common in random
+undersampling and overtting which can occur due to ran-
+dom oversampling [13].
+In this paper, we propose a novel method of synthetic
+oversampling the minority class, SOMTEFUNA. Unlike Syn-
+thetic Minority Oversampling TEchnique (SMOTE) [13],
+which generates samples within the convex-hull formed by
+the minority samples, our approach is based on nding a
+potential space in the feature space, which forms a (hyper)
+cuboidal shape between selected minority examples. This
+potential space is found by connecting the furthest neighbours
+in the minority class. The key intuition is that within the
+potential space, it is appropriate to generate minority samples.
+Forming the potential space from the furthest neighbour
+has the fundamental advantage of improving diversity in the
+synthetic set, and thus, the generality of the induced classier.
+Alternatively, the traditional methods that generate samples
+between k-nearest minority class examples have a tendency to
+produce synthetic samples that are near replicas of their seeds.
+This risks the induction of model that overts the minority
+class. Thus, we postulate that SOMTEFUNA improves the
+interpolation between the minority examples and helps to
+avoid overtting.
+With SOMTEFUNA, candidate examples are generated at
+random points within the potential space. In the nal step,
+a generated candidate is saved as a synthetic minority sample
+if and only if its nearest neighbour in the training set is also a
+minority class example; otherwise it is deleted. This ensures
+that the synthetic samples do not encroach deep into themajority class space, a problem which can occur with other
+methods.
+For our analysis, we undertake 5-fold cross validated
+experiments on 33 benchmark datasets with Naive Bayes and
+Support Vector machines (SVM) classiers. We utilize ROC
+and precision-recall curves for evaluation and empirically
+show that SOMTEFUNA is an efcient alternative to current
+state-of-the-art synthetic oversampling algorithms including
+SMOTE, ADASYN and SWIM.
+The rest of this paper is structured as follows:
+Section 2 highlights the relevant recent work on class imbal-
+ance. In Section 3, we present the proposed SOMTEFUNA
+oversampling algorithm, and in Section 4, we present and
+discuss the experimental results.
+II. RELATED WORK
+SMOTE [14] is one of the most widely applied methods
+used to mitigate the negative effects of class imbalance.
+It interpolates synthetic instances between nearest neighbours
+in the set of minority class instances in the training set.
+Thus, a synthetic sample is formed as a combination of the
+features of seed examples and randomly selected k-nearest
+neighbours. The kparameter must be set by the user. The
+initial version of the SMOTE algorithm only applied syn-
+thetic oversampling. However, a combination of synthetic
+oversampling and undersampling can be effective [15]. The
+original study empirically evaluated SMOTE on 9 benchmark
+datasets and found it to improve classier performance.
+SMOTEBoost [16] is another approach for learning from
+imbalanced datasets; this method combines SMOTE and
+a standard boosting algorithm. It generates new examples
+from the minority class by applying SMOTE in each round
+of boosting. This enables each learner to learn more from
+the minority class examples. SMOTEBoost was applied to
+four imbalanced datasets, and the results showed a slight
+F-value improvement in the prediction compared to the orig-
+inal SMOTE.
+Pan and co-workers [17] proposed two sampling meth-
+ods to improve imbalanced datasets. The rst is Adaptive-
+SMOTE, which is intended to improve SMOTE by selecting
+collections of inner anddanger data from the minority class.
+This is applied to rm up the distributional characteristics of
+the original data. The second proposed method is based on
+Gaussian oversampling, which combines dimension reduc-
+tion with the Gaussian distribution. Both of these methods
+were applied on 15 imbalanced datasets. The empirical eval-
+uation showed good results obtained by both methods. The
+performance of non-minority classes, however, was found to
+degrade after sampling.
+Another interesting method for learning from imbalanced
+datasets is the adaptive synthetic sampling (ADASYN) [18].
+This method uses a weighted distribution over examples
+that belong to the minority class. This is used to assess
+and address the learning difculty. Specically, more new
+examples are created for hard-to-learn examples, compared
+to those easier-to-learn minority examples. This approach
+2 VOLUME 8, 2020
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+improves the learning process by reducing the bias intro-
+duced by the imbalanced data and shifting the classication
+decision boundary towards the hard-to-learn examples. This
+method was applied to ve imbalanced machine learning
+datasets. The comparison results showed that the F-values of
+the ADASYN were slightly better than those of SMOTE in
+three datasets.
+Sampling with the majority class (SWIM) [19] is a frame-
+work proposed for synthetic oversampling in extreme imbal-
+ance classication. Opposite to most of the aforementioned
+methods, the key feature of this method is the exploitation
+of the density of the well-represented majority class. This is
+used to guide the generation of new examples of the minority
+class. This method was evaluated on 25 datasets with extreme
+levels of imbalance. The results show improvement in the
+classication performance compared to some of the exist-
+ing oversampling techniques. The greatest improvement was
+shown to occur on datasets with the most extreme level of
+imbalance.
+Siriseriwan and Sinapiromsaran proposed a parameter-free
+adaptive algorithm called Adaptive Neighbor Synthetic
+Minority Oversampling Technique (ANSMOT) to change the
+number of neighbors required for oversampling across differ-
+ent minority regions [20]. The major advantage of ANSMOT
+compared to SMOTE is that it removes the need for the
+dataset parameter K. Their experiments on 14 imbalanced
+datasets showed that the F-measures have improved when
+using ANSMOT comparing to the other methods tested.
+An informative review of oversampling methods can be
+found in [21], where a comprehensive empirical analysis
+of 85 minority oversampling methods is presented, discussed,
+and evaluated on 104 imbalanced datasets.
+There are other methods proposed in the literature to
+enhance learning from imbalanced datasets, these include but
+not limited to [22][30]. Despite the success of these methods
+in real-world applications, all of them have their own pros and
+cons, and none of them is perfect, and therefore, there is room
+for enhancement in this research line. This paper proposes
+an efcient method to enhance learning from imbalanced
+datasets, whose results indicate that it is better than some
+popular, state-of-art methods.
+III. METHODOLOGY
+The proposed method is prefaced on generating synthetic
+minority samples at random points within a potential space
+(hyper cuboidal) formed from the furthest neighbours from
+randomly selected minority class examples (seed instances).
+Figures 1(a) and 1(b) show hypothetical minority and
+majority examples (left) and a candidate synthetic instance
+generated from the minority seed and its furthest neigh-
+bour (right). As can be seen in Figure 1(b), one example
+ES1is randomly selected from the minority class (shown
+as a blue cross). The Furthest Neighbour (FN) algorithm
+nds the example with the max distance rfrom the selected
+seed example. In the gure, we denote it as ES2(shown
+in Figure 1(b)). The new synthetic sample is produced
+FIGURE 1. Two hypothetical classes (a) and the potential space for the
+new examples (b).
+by taking a random value between each pair of the two
+vectors. For instance, assuming that ES1D fX 1;Y1gand
+ES2D fX 2;Y2g, the synthetic sample will be ESnewD
+f;g, whereDRandom 
+min 
+X1;X2
+;max 
+X1;X2
+and
+DRandom 
+min 
+Y1;Y2
+;max 
+Y1;Y2
+. This emphasizes
+the distinction that SMOTE would generate a new sample at
+a random point on the line connecting ES1andES2, whereas
+SMOTEFUNA generates the sample between each feature
+value of the two examples, i.e., each feature of the new sample
+is located within the ranges of the two examples chosen from
+the dataset. In this case, the produced example is forced to be
+located within the cuboidal potential space formed between
+the two real examples from the dataset. Figure 1(b) presents
+the potential space as a shaded rectangle, and the hypothetical
+synthetic exampleESnewis a gray cross within the potential
+space (Figure 1(b)).
+Selecting the furthest example provides an advantage of
+allowing for a more diverse set of synthetic samples. At the
+same time, the synthetic distribution is likely to be similar to
+the true minority distribution because the synthetic examples
+are generated from real minority instances. This is because
+the nearest neighbour constraint on each synthetic sample
+ensures that the sample does not intrude on the majority class.
+Figure 2shows a scenario of linearly separable examples
+and their (oversampling) results using SMOTEFUNA com-
+pared to the result of SMOTE, while Figure 3presents a
+variation on our algorithm using nearest neighbour examples
+in the augmentation process.
+As can be clearly seen in Figures 2and3, the proposed
+method provides better coverage of the minority class. In con-
+trast, using the nearest examples in the process of augmenta-
+tion creates clusters of new examples in the original minority
+data. This can distort the resulting distribution when outlier
+examples are located in the decision boundary of the majority
+class (overlapping) [31], [32].
+Data complexity has been shown to be a major factor
+contributing to the degradation of classier performance in
+imbalanced domains [33]. A key aspect of this complexity is
+overlapping class distributions [34][37]. Figure 4(a) depicts
+an articial classication setting in which the classes are
+overlapping. Post-hoc cleaning of the augmented datasets is
+a common way to deal with overlap after synthetic oversam-
+pling. Alternatively, SMOTEFUNA has a built-in check to
+VOLUME 8, 2020 3
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+FIGURE 2. Results of SMOTEFUNA algorithm on a simple linearly
+separable space compared to SMOTE.
+FIGURE 3. The affect of selecting the nearest neighbours for creating
+synthetic examples.
+help prevent synthetic samples from being generated inside
+the majority class. For domains with overlapping classes,
+the potential space will overlap with the majority class. Thus,
+we do not want to blindly generate synthetic samples in the
+overlapping areas. This is demonstrated in Figure 4(b).
+To prevent synthesizing instances in the majority class
+space, we add a constraint based on the candidate sample's
+nearest neighbour. Specically, if its nearest neighbour is
+FIGURE 4. An example of false potential space for creating new examples.
+Algorithm 1 SMOTEFUNA Algorithm
+Input: Imbalanced dataset D
+Output: Balanced dataset OD
+1:Minority D(Minoritysubset )
+2:Majority D(Majoritysubset )
+3:Rate length(Majority) length(Minority)
+4:i 0
+5:while iRate do
+6: nDRandom(1; length(Minority)
+7:ES1 Minority(n)
+8:ES2 The vector with the maximum distance dfrom
+ES1in Minority
+9:ESnew zeros(length(ES1))
+10: forjD1tolength(ES1)do
+11: SnewjDRandom 
+min 
+S1j;S2j
+;max 
+S1j;S2j
+12: ifthen
+13: Synthetic(i)DESnew
+14: iCC
+15: else
+16: go to 5
+17:ODDHConcatenation(Minority; Synthetic; Majority)
+18:ODDRandomShufe(OD)
+from the majority class, then the candidate is discarded and
+new random candidate is generated; otherwise, the candidate
+is accepted and added to the synthetic set.
+Algorithm 1 illustrates the steps employed by
+SMOTEFUNA to generate the synthetic minority set. The
+termDmin(d (ESnew;MinorC )) is the minimum distance
+between the generated example and its nearest example in
+the minority class, and Dmin(d (ESnewj;MajorC )) is the
+minimum distance between the generated example and its
+nearest example in the majority class. MinorC andMajorC
+are the minority and majority examples closest to ESnew,
+respectively. The terms andin Algorithm 1 are the core
+of the built-in checker, which validates any newly generated
+sample. According to our denition, if is smaller than or
+equal to, then the generated sample is closer to the minority
+data, therefore, it can be created since, as we assume, it is
+more likely to be within the decision boundary of the minority
+class. Otherwise, if value is greater than value, then the
+newly generated example is overlapping with the majority
+4 VOLUME 8, 2020
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+data, thus it must be deleted. Step 6 selects a natural random
+number between 1 (assuming the index starts from 1) and
+the length of the minority set. Minority andMajority con-
+tain the minority and majority class samples from the main
+dataset D, respectively. Minority(n) returns the nth example
+in the minority set Minority. The distance function dcan be
+calculated using any distance measurement. We utilized the
+Manhattan distance (Equation 1) because of its simplicity and
+computational efciencyV
+dkDnX
+jD1jS1j Skjj; (1)
+where dkis the distance between the current (randomly
+selected) exampleES1and the kth example in the dataset ESk.
+The variable kvaries from 1 to l, where lDjMinorityj  1,nis
+the number of attributes (features) in the dataset. The distance
+dis calculated between ES1and all the other examples of the
+minority subset in order to nd the furthest one (maximum
+distance) fromES1. Step 9 initializes a vector of zeros whose
+length is the same as an actual example. Synthetic(i) is set
+to the ith instance of the synthetic set. HConcatenation pre-
+forms a horizontal concatenation of the three sets, Minority,
+Synthetic andMajority, in order to form the nal balanced
+dataset. RandomShufe(OD)is an optional step to randomize
+the locations of the synthetic samples in the resulting training
+set. Applying the randomization may help with the induction
+of some classication methods. In particular, it prevents the
+learning from seeing all of the synthetic samples in suc-
+cession during training, e.g.,in a single batch of neural net
+training.
+Figure 5shows scenarios of different data distribu-
+tions and their corresponding oversampling results using
+SMOTEFUNA and SMOTE with KD5.
+Figure 5provides a clear demonstration of the fact that
+SMOTE generates samples that both overlap with the major-
+ity class and result in less coverage of the minority class space
+than SMOTEFUNA. Alternatively, SMOTEFUNA produces
+examples within the same boundary of the minority with
+much better interpolation.
+Figure 6shows another scenario in which the data of the
+minority class are spread as separated groups around the data
+of the majority class.
+As can be seen from Figure 6, even if the minority data
+is separated into different clusters, SMOTEFUNA generates
+the new samples within or near to each cluster. This ability
+of SMOTEFUNA to follow the distribution of the minority
+data is due to the aforementioned main factors, the shape of
+the potential space which provides the exibility to generate
+new samples, and the built-in check, which approves the
+sample produced if it is near the minority class, and otherwise
+deletes it.
+In Figure 7, we illustrate the invariance of SMOTEFUNA
+to outlier examples. By validating the generated exam-
+ple with its nearest neighbour, SMOTEFUNA makes the
+algorithm much less sensitive to a type of outlier where
+FIGURE 5. Different data distributions of minority and majority classes
+(left column), the results of oversampling using SMOTEFUNA (middle
+column) and SMOTE results (right column), blue points are the majority,
+red points are the minority and the red crosses are the new examples.
+FIGURE 6. Minority data forms clusters around the majority data.
+minority examples overlap with majority examples in the
+space. In particular, we present a scenario in which outlier
+instances from the minority class overlap with the majority
+class (Figure 7(a)), and illustrate that SMOTEFUNA does
+not reinforce these outliers by generating additional over-
+lapping synthetic instances (Figure 7(b)). In SMOTE, users
+are required to apply additional post-hoc cleaning meth-
+ods, such as the removal of Tomek links [38], to prevent
+this.
+Figure 8 visualizes several benchmark datasets after pro-
+jecting them to their rst 2 principal components. In the upper
+dimensions, i.e., the number of features is greater than 3,
+the new generated examples seem to be located within the
+same space of the minority examples with respect to the max-
+imum variance in all of the presented datasets (Figure 8). The
+VOLUME 8, 2020 5
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+FIGURE 7. Illustration of how validating the new generated examples
+with the nearest neighbours makes the algorithm less sensitive to outlier,
+blue points are the majority.
+FIGURE 8. Projection of the minority, majority and the new created
+examples using 2 PCA components on different datasets. Datasets names
+correspond to the datasets numbers mentioned in Table 1.
+results of the principal component analysis (PCA) projection
+demonstrate that SMOTEFUNA forces the data to follow the
+distribution of the minority class and prevents the generation
+of synthetic examples in an overlapping manner with the
+majority class.
+IV. EXPERIMENTS AND RESULTS
+In this section, the proposed algorithm is compared with a
+subset of the state-of-the-art methods for synthetic oversam-
+pling. In particular, we evaluate SMOTEFUNA with respect
+to SMOTE [14], ADASYN [18], SWIM [19].
+In our experiments, we utilize naive Bayes (with kernel
+smoothing density estimate) and support vector machines
+(with error-correcting output codes model) classiers. The
+Matlab 2019b environment is used to perform the experi-
+ments involving SMOTE and ADASYN, while Python isTABLE 1. Dataset description. nInes is the number of inestances, nCl is
+the number of classes, IR is the Imbalance ratio and nAt is the number of
+attributes(features).
+used for SWIM1because there is no Matlab implementation
+available.
+A. EVALUATION MEASURES
+To validate the performance of the proposed method,
+each experiment is conducted using 5-fold cross-validation.
+We report the performance in terms of the receiver oper-
+ating characteristic curve (ROC) and area under the ROC
+curve (AUC) [39][41]. As an additional metric of evaluation,
+we utilize Precision-Recall curves (PR curve) and the area
+under PR curve (AUPR). These two measures are commonly
+used to test the performance of oversampling algorithms and
+provide an alternate perspective on performance [42][44].
+ROC and PR curves indicate a good performance when the
+area under each curve is close to 1. The experiments are
+1https://github.com/cbellinger27/SWIM_RBF/.
+6 VOLUME 8, 2020
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+TABLE 2. Number of wins for each algorithm using both classifiers and different evaluation measures, in case of equal performance of two (or more)
+methods, they both considered as winners.
+FIGURE 9. The ROC and PR curves of the proposed method compared to
+the other methods and the original data using NB classifier.
+repeated 30 times using the 5-fold cross validation approach,
+and the mean of the performance measures (AUC and AUPR)
+is considered as the nal result for each method on each
+dataset. Also, the standard deviation of the performance is
+calculated for each method on each dataset to provide an
+overall measure of performance.
+B. DATASETS
+Table 1 outlines the 33 benchmark datasets employed to eval-
+uate the proposed method. These were selected as they vary
+FIGURE 10. The ROC and PR curves of the proposed method compared to
+the other methods and the original data using SVM classifier.
+in their imbalance ratio (IR), the number of instances (nInes)
+and the number of attributes (nAt), while the number of
+classes (nCl) is the same (binary classication). IR is calcu-
+lated as the number of examples in the majority class divided
+by the number of example in the minority class [45], [46].
+In our experiments, each dataset is used considering all of
+its attributes. Also, each dataset is standardized using z-score
+prior to the learning process
+All of the datasets are publicly available to the research
+community. The rst set of datasets can be downloaded
+VOLUME 8, 2020 7
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+TABLE 3. p-value of the Wilcoxon signed-rank test of SMOTEFUNA vs SMOTE, SMOTEFUNA vs AD, SMOTEFUNA vs SWIM and SMOTEFUNA vs OR, using the
+AUC and AUPR obtained by SVM and NB classifiers.
+TABLE 4. Wilcoxon R, WC, and W , separated by ``/'' .
+TABLE 5. AUC results of different methods using SVM classifier, mean Standard deviation (STD) calculated over 30 trials.
+from the PROMISE repository [47], and the second set
+of datasets is available from KEEL website (Imbalanceratio between 1.5 and 9 and imbalance ratio higher
+than 9 - Part I) [48], [49].
+8 VOLUME 8, 2020
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+TABLE 6. AUPR results of different methods using SVM classifier, mean standard deviation (STD) calculated over 30 trials.
+C. RESULTS
+ROC curve provides an efcient evaluation of the learning
+process as it represents the relation between the two important
+measures, true positive rate (TPR) and false positive rate
+(FPR). ROC curve is a plot of TPR as a function of FPR at dif-
+ferent performance thresholds. Figures 9and10compare the
+ROC and PR curves of different methods to SMOTEFUNA
+using several datasets and classiers using the rst fold; the
+averages using all folds (all trials) are provided in the tables
+at Appendix.
+As one can see in Figures 9and10, the performance of the
+proposed method is better than those of the other methods.
+The performance curves of SMOTE and ADASYN follow
+very similar trajectories, which indicates that they cause
+the induced classier to behave similarly. Notably, SMOTE
+and ADASYN do not provide any signicant improve-
+ment with respect to the ROC curves on some datasets.Oppositely, SMOTEFUNA does improve performance in
+these cases. In the case of SWIM, the performance is alter-
+nating. Although it works well on some datasets, it seems to
+not obtain satisfactory results on the majority of the datasets.
+This is a noteworthy result as it was initially proposed for
+extreme levels of imbalance. Our results suggest that under
+certain conditions, it may perform very well on less extreme
+levels of imbalance.
+AUC provides an efcient evaluation of the performance.
+The perfect performance of a classier on a dataset is when
+AUC is equal to 1. Due to difculty of presenting all ROC
+and PR curves for all the datasets, we use AUC and AUPR
+to give a clear vision of the performance of different methods
+using these two measures. The complete tables can be found
+in Appendix. Table 2summarizes the number of wins for
+SMOTEFUNA algorithm on all of the used datasets, com-
+pared to the other algorithms.
+VOLUME 8, 2020 9
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+TABLE 7. AUC results of different methods using NB classifier, Mean Standard deviation (STD) calculated over 30 trials.
+As presented in Table 2, SMOTEFUNA has the highest
+number of wins, compared to other resampling methods,
+followed by SMOTE and ADASYN, respectively. Finally,
+the baseline classier, without resampling (original data), has
+a higher number of wins than SWIM, in term of AUC and
+AUPR values, when SVM is used; and slightly better than
+those of the original data when NB is used. The aggregated
+results in this table suggest that SMOTEFUNA is a reliable
+alternative solution for oversampling imbalance data.
+Tables 5and7illustrate the performance of SMOTEFUNA
+in terms of AUC compared to other methods using SVM and
+NB, respectively. In general, the results are better than that
+of the other methods on most of the tested datasets. In some
+cases, the results were not satisfactory. This is perhaps due
+to a specic type of outliers, where an outlier example(s) is
+far from the minority data and even farther from the majority
+data. In such a case, SMOTEFUNA might add examplesin the space between the minority and the outlier example.
+Such situations need to be investigated in future studies
+in order to improve the performance on machine learning
+datasets, where this phenomenon is more likely to occur.
+Using SVM classier, SMOTEFUNA records higher results
+on 21 datasets out of 33, while it records better results on
+24 datasets using NB, in terms of AUC.
+Tables 6and8present the results of AUPR on the tested
+datasets using the same classiers and the same valida-
+tion approach. For AUPR, SMOTEFUNA is better than the
+other methods compared on 19 datasets using SVM, and on
+20 datasets when NB is used.
+As can be clearly noticed from the results of AUC and
+AUPR, the learning process is improved after oversampling
+using SMOTEFUNA. For example, the AUPR result using
+the original data of D10 (see Table 8) has improved from
+around 53% to98%, and from around 29% to95% when
+10 VOLUME 8, 2020
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+TABLE 8. AUPR results of different methods using NB classifier, Mean Standard deviation (STD) calculated over 30 trials.
+learning from D17, which can be considered as a signicant
+enhancement of the learning process. The rest of the compar-
+ative results are presented in Tables 58.
+D. STATISTICAL ANALYSIS
+To further analyze the results shown in Tables 5,6,7and8,
+and to see if there are any signicant differences between
+the proposed SMOTEFUNA and the other methods com-
+pared, a Wilcoxon signed-rank test is performed on the
+SMOTEFUNA results versus each other method, using SVM
+and NB classiers on both measures (AUC and AUPR) over
+all of the 33 datasets tested. We used SPSS (version 24)
+software for this purpose, the results are recorded in Tables 3
+and4, these results are further veried using an online statis-
+tical tool.2
+2http://www.statskingdom.com/175wilcoxon_signed_ranks.htmlThe Wilcoxon test is suitable for our comparison because
+it is safer than parametric tests (such as t-test) since it
+does not assume homogeneity or normal distribution of
+data. Therefore, it can be applied to error ratios, classica-
+tion results (accuracy, precision, recall), or any other clas-
+sier evaluation measure [50]. The Wilcoxon test aims to
+nd if a null hypothesis is true or not. The null hypoth-
+esis H 0assumes that there is no signicant difference
+between the classication results (observations) obtained
+from two different methods. We assume that the null hypoth-
+esis is rejected if the p-value of the Wilcoxon test is less
+thanD0:05.
+As can be seen from Table 3, the p-values for all the paired
+tests are less than 0.05, and therefore, the H0is rejected for
+all the paired tests. This shows that the differences between
+the (AUC and AUPR) results of SMOTEFUNA and that of
+the other methods compared are big enough to be statistically
+signicant.
+VOLUME 8, 2020 11
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+However, the p-value does not provide information about
+the relationship strength between variables, and does not
+allow us to determine which variable dominates the others,
+i.e., is better [51]. Thus, based solely on the p-values shown
+in Table 3, we cannot tell whether these signicant results are
+in favor of SMOTEFUNA or not, as they have only shown
+that there is a signicant difference between the results of
+SMOTEFUNA and each of the other methods tested.
+Therefore, in order to see which method performs bet-
+ter, we need to look at other measures associated with the
+Wilcoxon test, namely, sum of the positive ranks (W C), sum
+of the negative ranks (W  ), and the effect size (R), which
+serve such purpose well. The effect sizes of the Wilcoxon
+signed-rank test can be calculated using
+RDjZjp
+N;
+where Zis the test statistic, and Nthe total number of paired
+samples, which is equal to 33 in our case. The sizes of effects
+can be categorized as small (R 0:1), medium (0:1 <
+R<0:5), or large (R0:5) [52]. The three mentioned
+measures are shown in Table 4, which were obtained by the
+same Wilcoxon test, whose p-values are shown in Table 3.
+The results in Table 4show the magnitude of effects
+obtained by the comparison of SMOTEFUNA with the other
+methods. Since the results of the other methods were sub-
+tracted from those of the SMOTEFUNA, WCis counted for
+SMOTEFUNA, while W- is counted for the other method
+compared. The effect size is considered as large in most
+cases (12 cases) and medium in the remaining 4 cases.
+Another interesting note is that WCis signicantly higher
+than W for all the paired tests, i.e. SMOTEFUNA is the
+winner of most datasets, regardless the classier or the mea-
+sure used. This proves that the signicant difference shown
+by the p-values is in the favor of our proposed SMOTEFUNA
+method in all cases (two different classiers and two different
+measures).
+V. CONCLUSION
+In this paper, we present a novel, parameter-free algorithm
+for performing synthetic oversampling on imbalanced data
+sets, for the purpose of better learning from imbalanced
+data. The proposed method, SMOTEFUNA, is evaluated on
+33 benchmark machine learning datasets using two different
+classiers. The experimental results show that, in general,
+SMOTEFUNA outperforms SMOTE, ADASYN and SWIM
+in terms of ROC and PR curves as well as AUC and AUPR
+values.
+Our analysis reveals that, although SMOTEFUNA typi-
+cally performs well, it may be negatively impacted, partic-
+ularly when an outlier example of minority class is isolated
+from both the minority and majority classes. In such a case,
+the potential spaces of the new examples will be shifted away
+from the ideal decision boundary, and towards the outlier
+example. In future implementations, this can be managed
+by detecting and removing the outliers prior to utilizingSMOTEFUNA [53][56]. Alternatively, the outlier problem
+can be alleviated using a distance metric that is not affected
+by outliers, such as [57], [58].
+Our future efforts will include further evaluation of
+SMOTEFUNA compared to a larger number of related meth-
+ods, and extending of SMOTEFUNA to work on multi-class
+imbalanced data, nominal and big datasets.
+APPENDIX
+A. TABULAR RESULTS
+See Tables 58
+ACKNOWLEDGMENT
+A. S. Tarawneh would like to thank the Tempus Public Foun-
+dation TPF for sponsoring his Ph.D. study and SZTAKI for
+providing the required facilities.
+REFERENCES
+[1] G. Haixiang, L. Yijing, J. Shang, G. Mingyun, H. Yuanyue, and G. Bing,
+``Learning from class-imbalanced data: Review of methods and applica-
+tions,'' Expert Syst. Appl., vol. 73, pp. 220239, May 2017.
+[2] N. V. Chawla, ``Data mining for imbalanced datasets: An overview,'' in
+Data Mining and Knowledge Discovery Handbook. Boston, MA, USA:
+Springer, 2009, pp. 875886.
+[3] M. Fatima and M. Pasha, ``Survey of machine learning algorithms for
+disease diagnostic,'' J. Intell. Learn. Syst. Appl., vol. 9, no. 1, pp. 116,
+2017.
+[4] U. Fiore, A. De Santis, F. Perla, P. Zanetti, and F. Palmieri, ``Using
+generative adversarial networks for improving classication effectiveness
+in credit card fraud detection,'' Inf. Sci., vol. 479, pp. 448455, Apr. 2019.
+[5] R. Pearson, G. Goney, and J. Shwaber, ``Imbalanced clustering for microar-
+ray time-series,'' in Proc. ICML, vol. 3, 2003, pp. 18.
+[6] A. S. Tarawneh, A. B. Hassanat, D. Chetverikov, I. Lendak, and C. Verma,
+``Invoice classication using deep features and machine learning tech-
+niques,'' in Proc. IEEE Jordan Int. Joint Conf. Elect. Eng. Inf. Technol.
+(JEEIT), Apr. 2019, pp. 855859.
+[7] A. S. Tarawneh, A. B. Hassanat, C. Celik, D. Chetverikov, M. S. Rahman,
+and C. Verma, ``Deep face image retrieval: A comparative study with
+dictionary learning,'' in Proc. 10th Int. Conf. Inf. Commun. Syst. (ICICS),
+Jun. 2019, pp. 185192.
+[8] A. S. Tarawneh, C. Celik, A. B. Hassanat, and D. Chetverikov, ``Detailed
+investigation of deep features with sparse representation and dimensional-
+ity reduction in CBIR: A comparative study,'' Intell. Data Anal., vol. 24,
+no. 1, pp. 4768, Feb. 2020.
+[9] M. Z. Al-Shamaileh, A. B. Hassanat, A. S. Tarawneh, M. Sohel Rahman,
+C. Celik, and M. Jawthari, ``New Online/Ofine text-dependent ara-
+bic handwriting dataset for writer authentication and identication,''
+inProc. 10th Int. Conf. Inf. Commun. Syst. (ICICS), Jun. 2019,
+pp. 116121.
+[10] C. Bellinger, C. Drummond, and N. Japkowicz, ``Manifold-based synthetic
+oversampling with manifold conformance estimation,'' Mach. Learn.,
+vol. 107, no. 3, pp. 605637, Mar. 2018.
+[11] S. Wang, W. Jiang, and K.-L. Tsui, ``Adjusted support vector machines
+based on a new loss function,'' Ann. Oper. Res., vol. 174, no. 1, pp. 83101,
+Feb. 2010.
+[12] M. A. Maloof, ``Learning when data sets are imbalanced and when costs
+are unequal and unknown,'' in Proc. Workshop Learn. Imbalanced Data
+Sets II (ICML), vol. 2, 2003, pp. 12.
+[13] N. V. Chawla, N. Japkowicz, and A. Kotcz, ``Special issue on learning
+from imbalanced data sets,'' ACM SIGKDD Explor. Newslett., vol. 6, no. 1,
+pp. 16, 2004.
+[14] N. V. Chawla, K. W. Bowyer, L. O. Hall, and W. P. Kegelmeyer, ``SMOTE:
+Synthetic minority over-sampling technique,'' J. Artif. Intell. Res., vol. 16,
+pp. 321357, Jun. 2002.
+[15] D. Elreedy and A. F. Atiya, ``A comprehensive analysis of synthetic
+minority oversampling technique (SMOTE) for handling class imbalance,''
+Inf. Sci., vol. 505, pp. 3264, Dec. 2019.
+12 VOLUME 8, 2020
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+[16] N. V. Chawla, A. Lazarevic, L. O. Hall, and K. W. Bowyer, ``SMOTEBoost:
+Improving prediction of the minority class in boosting,'' in Proc. Eur. Conf.
+Princ. Data Mining Knowl. Discovery. Berlin, Germany: Springer, 2003,
+pp. 107119.
+[17] T. Pan, J. Zhao, W. Wu, and J. Yang, ``Learning imbalanced datasets based
+on SMOTE and Gaussian distribution,'' Inf. Sci., vol. 512, pp. 12141233,
+Feb. 2020.
+[18] H. He, Y. Bai, E. A. Garcia, and S. Li, ``ADASYN: Adaptive synthetic
+sampling approach for imbalanced learning,'' in Proc. IEEE Int. Joint
+Conf. Neural Netw. (IEEE World Congr. Comput. Intelligence), Jun. 2008,
+pp. 13221328.
+[19] C. Bellinger, S. Sharma, N. Japkowicz, and O. R. Zaïane, ``Framework
+for extreme imbalance classication: SWIMSampling with the majority
+class,'' Knowl. Inf. Syst., vol. 62, pp. 841866, Jul. 2019.
+[20] W. Siriseriwan and K. Sinapiromsaran, ``Adaptive neighbor synthetic
+minority oversampling technique under 1NN outcast handling,'' Songk-
+lanakarin J. Sci. Technol, vol. 39, pp. 565576, Sep. 2017.
+[21] G. Kovács, ``An empirical comparison and evaluation of minority over-
+sampling techniques on a large number of imbalanced datasets,'' Appl. Soft
+Comput., vol. 83, Oct. 2019, Art. no. 105662.
+[22] H. He and E. A. Garcia, ``Learning from imbalanced data,'' IEEE Trans.
+Knowl. data Eng., vol. 21, no. 9, pp. 12631284, Jun. 2009.
+[23] M. Galar, A. Fernández, E. Barrenechea, and F. Herrera, ``EUSBoost:
+Enhancing ensembles for highly imbalanced data-sets by evolution-
+ary undersampling,'' Pattern Recognit., vol. 46, no. 12, pp. 34603471,
+Dec. 2013.
+[24] C. Beyan and R. Fisher, ``Classifying imbalanced data sets using similar-
+ity based hierarchical decomposition,'' Pattern Recognit., vol. 48, no. 5,
+pp. 16531672, May 2015.
+[25] F. Ren, P. Cao, W. Li, D. Zhao, and O. Zaiane, ``Ensemble based adaptive
+over-sampling method for imbalanced data learning in computer aided
+detection of microaneurysm,'' Computerized Med. Imag. Graph., vol. 55,
+pp. 5467, Jan. 2017.
+[26] S. Chen, H. He, and E. A. Garcia, ``RAMOBoost: Ranked minority
+oversampling in boosting,'' IEEE Trans. Neural Netw., vol. 21, no. 10,
+pp. 16241642, Oct. 2010.
+[27] J. Xie, M. Hao, W. Liu, and Y. Lin, ``Fused variable screening for massive
+imbalanced data,'' Comput. Statist. Data Anal., vol. 141, pp. 94108,
+Jan. 2020.
+[28] T. Zhu, Y. Lin, and Y. Liu, ``Improving interpolation-based oversampling
+for imbalanced data learning,'' Knowl.-Based Syst., vol. 187, Jan. 2020,
+Art. no. 104826.
+[29] H. Ghaderi Zefrehi and H. Altnçay, ``Imbalance learning using het-
+erogeneous ensembles,'' Expert Syst. Appl., vol. 142, Mar. 2020,
+Art. no. 113005.
+[30] S. Tyagi and S. Mittal, ``Sampling approaches for imbalanced data classi-
+cation problem in machine learning,'' in Proc. ICRIC. Cham, Switzerland:
+Springer, 2020, pp. 209221.
+[31] H. Han, W.-Y. Wang, and B.-H. Mao, ``Borderline-SMOTE: A new over-
+sampling method in imbalanced data sets learning,'' in Proc. Int. Conf.
+Intell. Comput. Berlin, Germany: Springer, 2005, pp. 878887.
+[32] V. García, J. S. Sánchez, R. Martín-Félez, and R. A. Mollineda, ``Surround-
+ing neighborhood-based SMOTE for learning from imbalanced data sets,''
+Prog. Artif. Intell., vol. 1, no. 4, pp. 347362, Dec. 2012.
+[33] C. Bellinger, S. Sharma, O. R. Zaane, and N. Japkowicz, ``Sampling
+a longer life: Binary versus one-class classication revisited,'' in Proc.
+1st Int. Workshop Learn. Imbalanced Domains, Theory Appl. , 2017,
+pp. 6478.
+[34] N. Japkowicz and S. Stephen, ``The class imbalance problem: A systematic
+study,'' Intell. Data Anal., vol. 6, no. 5, pp. 429449, Oct. 2002.
+[35] V. García, J. Sánchez, and R. Mollineda, ``An empirical study of the
+behavior of classiers on imbalanced and overlapped data sets,'' in Proc.
+Iberoamerican Congr. Pattern Recognit. Berlin, Germany: Springer, 2007,
+pp. 397406.
+[36] S.-W. Kim and B. J. Oommen, ``On using prototype reduction schemes to
+enhance the computation of volume-based inter-class overlap measures,''
+Pattern Recognit., vol. 42, no. 11, pp. 26952704, Nov. 2009.
+[37] H. Lu, Y. Meng, K. Yan, and Z. Gao, ``Kernel principal component analysis
+combining rotation forest method for linearly inseparable data,'' Cognit.
+Syst. Res., vol. 53, pp. 111122, Jan. 2019.
+[38] I. Tomek, ``Two modications of CNN,'' IEEE Trans. Syst., Man, Cybern.,
+vol. SMC-6, no. 11, pp. 769772, Nov. 1976.
+[39] F. Provost and T. Fawcett, ``Robust classication for imprecise environ-
+ments,'' Mach. Learn., vol. 42, no. 3, pp. 203231, 2001.[40] T. Fawcett, ``An introduction to ROC analysis,'' Pattern Recognit. Lett.,
+vol. 27, no. 8, pp. 861874, Jun. 2006.
+[41] R. Shatnawi, ``The application of ROC analysis in threshold identication,
+data imbalance and metrics selection for software fault prediction,'' Innov.
+Syst. Softw. Eng., vol. 13, nos. 23, pp. 201217, Sep. 2017.
+[42] A. Sun, E.-P. Lim, and Y. Liu, ``On strategies for imbalanced text classi-
+cation using SVM: A comparative study,'' Decis. Support Syst., vol. 48,
+no. 1, pp. 191201, Dec. 2009.
+[43] L. A. T. Nguyen, O. Hirose, X. T. Dang, T. K. T. Le, T. Saethang,
+V. A. Tran, M. Kubo, Y. Yamada, and K. Satou, ``Improving the pre-
+diction of protein-protein interaction sites using a novel over-sampling
+approach and predicted shape strings,'' Annu. Rev. Res. Biol., vol. 3, no. 2,
+pp. 92106, 2013.
+[44] S. T. Jishan, R. I. Rashu, N. Haque, and R. M. Rahman, ``Improving
+accuracy of students' nal grade prediction model using optimal equal
+width binning and synthetic minority over-sampling technique,'' Decis.
+Anal., vol. 2, no. 1, p. 1, 2015.
+[45] A. Amin, S. Anwar, A. Adnan, M. Nawaz, N. Howard, J. Qadir,
+A. Hawalah, and A. Hussain, ``Comparing oversampling techniques to
+handle the class imbalance problem: A customer churn prediction case
+study,'' IEEE Access, vol. 4, pp. 79407957, 2016.
+[46] A. Luque, A. Carrasco, A. Martín, and A. de las Heras, ``The impact of
+class imbalance in classication performance metrics based on the binary
+confusion matrix,'' Pattern Recognit., vol. 91, pp. 216231, Jul. 2019.
+[47] J. Sayyad Shirabad and T. Menzies, ``The PROMISE repository of
+software engineering databases,'' School Inf. Technol. Eng., Univ.
+Ottawa, Ottawa, ON, Canada, 2005. [Online]. Available: http://promise.
+site.uottawa.ca/SERepository
+[48] A. Fernández, S. García, M. J. del Jesus, and F. Herrera, ``A study of
+the behaviour of linguistic fuzzy rule based classication systems in the
+framework of imbalanced data-sets,'' Fuzzy Sets Syst., vol. 159, no. 18,
+pp. 23782398, Sep. 2008.
+[49] A. Fernández, M. J. del Jesus, and F. Herrera, ``Hierarchical fuzzy
+rule based classication systems with genetic rule selection for imbal-
+anced data-sets,'' Int. J. Approx. Reasoning, vol. 50, no. 3, pp. 561577,
+Mar. 2009.
+[50] J. Dem²ar, ``Statistical comparisons of classiers over multiple data sets,''
+J. Mach. Learn. Res., vol. 7, pp. 130, Jan. 2006.
+[51] M. Tomczak and E. Tomczak, ``The need to report effect size estimates
+revisited. An overview of some recommended measures of effect size,''
+Trends Sport Sci., vol. 1, no. 21, pp. 1925, 2014.
+[52] E. Drebitz, L.-P. Rausch, and A. K. Kreiter, ``A novel approach for remov-
+ing micro-stimulation artifacts and reconstruction of broad-band neuronal
+signals,'' J. Neurosci. Methods, vol. 332, Feb. 2020, Art. no. 108549.
+[53] Y. Yang, J. Zhang, J. Carbonell, and C. Jin, ``Topic-conditioned novelty
+detection,'' in Proc. 8th ACM SIGKDD Int. Conf. Knowl. Discovery Data
+Mining (KDD), 2002, pp. 688693.
+[54] M. Markou and S. Singh, ``Novelty detection: A reviewPart 1: Statistical
+approaches,'' Signal Process., vol. 83, no. 12, pp. 24812497, 2003.
+[55] M.-R. Bouguelia, S. Nowaczyk, and A. H. Payberah, ``An adaptive algo-
+rithm for anomaly and novelty detection in evolving data streams,'' Data
+Mining Knowl. Discovery, vol. 32, no. 6, pp. 15971633, Nov. 2018.
+[56] M. Sabokrou, M. Khalooei, M. Fathy, and E. Adeli, ``Adversarially learned
+one-class classier for novelty detection,'' in Proc. IEEE/CVF Conf. Com-
+put. Vis. Pattern Recognit., Jun. 2018, pp. 33793388.
+[57] A. B. Hassanat, ``Dimensionality invariant similarity measure,'' J. Amer.
+Sci., vol. 10, no. 8, pp. 221226, 2014.
+[58] H. A. Abu Alfeilat, A. B. A. Hassanat, O. Lasassmeh, A. S. Tarawneh,
+M. B. Alhasanat, H. S. Eyal Salman, and V. B. S. Prasath, ``Effects of
+distance measure choice on K-Nearest neighbor classier performance:
+A review,'' Big Data, vol. 7, no. 4, pp. 221248, Dec. 2019.
+AHMAD S. TARAWNEH was born in Karak,
+Jordan. He received the B.S. and M.S. degrees
+in computer science from Mutah University,
+in 2013 and 2015, respectively. He is currently
+pursuing the Ph.D. degree in computer sci-
+ence with the Eötvös Loránd University (ELTE),
+Hungary, Budapest. He is currently working on
+the project of EFOP (image and video processing),
+which is sponsored by Hungarian government and
+co-nanced by the European Social Fund. His
+main research interests include computer vision, deep learning, machine
+learning, and data mining.
+VOLUME 8, 2020 13
+A. S. Tarawneh et al.: SMOTEFUNA: Synthetic Minority Over-Sampling Technique Based on Furthest Neighbor Algorithm
+AHMAD B. A. HASSANAT (Member, IEEE) was
+born and grew up in Jordan. He received the B.S.
+degree in computer science from Mutah Univer-
+sity, Jordan, in 1995, the M.S. degree in com-
+puter science from Al al-Bayt University, Jordan,
+in 2004, and the Ph.D. degree in computer science
+from the University of Buckingham, U.K., in 2010.
+He has been a Faculty Member of the Depart-
+ment of Information Technology, Mutah Univer-
+sity, since 2010. He is currently doing a sabbatical
+with the University of Tabuk, Saudi Arabia. His main research interests
+include computer vision, machine learning, big data, and pattern recognition.
+KHALID ALMOHAMMADI received the
+bachelor's degree in computer science from Taibah
+University, Saudi Arabia, the M.Sc. degree (Hons.)
+in computer science from Newcastle University,
+U.K., in 2011, and the Ph.D. degree in computer
+science from Essex University, U.K. He then pur-
+sued a profession in teaching at Tabuk University.
+Building on this experience, he was awarded a
+scholarship to complete the master's degree in
+computer science (M.Sc.) at Newcastle University,
+which he obtained with distinction. His Ph.D. degree enables him to incorpo-
+rate all his previous knowledge and experience in education and e-learning.
+The focus of his research is the development of theoretical and practical
+environments to enhance students' learning experience and engagement by
+using fuzzy logic systems. He currently works as an Assistant Professor with
+the Department of Computer Science, Community College, University of
+Tabuk.
+DMITRY CHETVERIKOV received the Ph.D. and
+D.Sc. degrees, in 1988 and 2004, respectively.
+He is currently a Professor with the Eötvös Loránd
+University (ELTE) and a Scientic Adviser with
+the Institute for Computer Science and Control
+(SZTAKI), Budapest, Hungary. He is the author
+or coauthor of over 200 scientic articles (Google
+scholar H-index: 30). In general, he works in
+computer vision, 3D sensing, and sensor fusion.
+He took part in numerous research and application
+projects including those related to autonomous systems and vehicles. Since
+2003, he has been a regular reviewer of proposals for EU FP6, FP7, and
+H2020. From 2008 to 2012, he was a member of the ERC Advanced Grants
+Committee PE6 (informatics and computer science).
+COLIN BELLINGER received the Ph.D. degree
+from the University of Ottawa, in 2016. He is
+a Research Ofcer in data science for complex
+systems with the National Research Council of
+Canada. He held a Postdoctoral Fellowship with
+the Alberta Machine Intelligence Institute, Uni-
+versity of Alberta, Edmonton, Canada, and the
+Donald Hill Fellowship in computer science with
+Dalhousie University, Halifax, Canada. He has
+coauthored more than 20 articles in international
+conferences and journals focused on machine learning, data mining, and
+health and computational security, and received two best paper awards.
+He was the Program Chair of the Graduate Students' AI Symposium,
+in 2017 and 2019. He has participated on numerous program committees
+and reviewed over ten international journals.
+14 VOLUME 8, 2020

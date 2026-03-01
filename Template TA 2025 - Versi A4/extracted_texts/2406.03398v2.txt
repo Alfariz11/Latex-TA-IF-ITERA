@@ -1,0 +1,1752 @@
+Springer Nature 2021 L ATEX template
+Methods for Class-Imbalanced Learning with
+Support Vector Machines: A Review and an
+Empirical Evaluation
+Salim Rezvani1, Farhad Pourpanah2*, Chee Peng Lim3
+and Q. M. Jonathan Wu3
+1Department of Computer Science, Toronto Metropolitan
+University, Toronto, Ontario, Canada.
+2Department of Electrical and Computer Engineering, Queen’s
+University, Kingston, Ontario, Canada.
+3Institute for Intelligent Systems Research and Innovation,
+Deakin University, Geelong, Victoria, Australia.
+4Department of Electrical and Computer Engineering, University
+of Windsor, Windsor, Ontario, Canada.
+*Corresponding author(s). E-mail(s): farhad.086@gmail.com ;
+Contributing authors: salim.rezvani@torontom.ca;
+chee.lim@deakin.edu.au; jwu@uwindsor.ca;
+Abstract
+This paper presents a review on methods for class-imbalanced learn-
+ing with the Support Vector Machine (SVM) and its variants. We first
+explain the structure of SVM and its variants and discuss their inef-
+ficiency in learning with class-imbalanced data sets. We introduce a
+hierarchical categorization of SVM-based models with respect to class-
+imbalanced learning. Specifically, we categorize SVM-based models into
+re-sampling, algorithmic, and fusion methods, and discuss the prin-
+ciples of the representative models in each category. In addition, we
+conduct a series of empirical evaluations to compare the performances
+of various representative SVM-based models in each category using
+benchmark imbalanced data sets, ranging from low to high imbalanced
+ratios. Our findings reveal that while algorithmic methods are less
+time-consuming owing to no data pre-processing requirements, fusion
+methods, which combine both re-sampling and algorithmic approaches,
+1arXiv:2406.03398v2  [cs.LG]  12 Jun 2024
+Springer Nature 2021 L ATEX template
+2 Class Imbalanced Learning with SVM
+generally perform the best, but with a higher computational load. A
+discussion on research gaps and future research directions is provided.
+Keywords: Machine learning, support vector machine, class imbalanced
+data, data classification
+1 Introduction
+Learning class imbalanced data, i.e., one or more target (majority) classes
+contain far more samples than those from other (minority) classes, poses a
+major challenge in supervised learning. In many real-world applications, such
+as medical diagnosis [1], credit card fraud detection [2], condition monitoring
+systems [3] and natural disasters [4], it is difficult and expensive to obtain data
+samples with respect to minority (e.g., abnormal) or minority classes [5–7].
+As such, the number of samples belonging to the majority or normal classes
+is often larger than that of the minority classes. Standard supervised classifi-
+cation algorithms, which work well with less skewed data sample distribution
+problems, can become biased towards the majority classes; therefore failing to
+yield favorable accuracy scores for the minority classes [8].
+Over the years, many methods have been developed to enhance the per-
+formance of standard classification algorithms in learning class-imbalanced
+data. In general, the available methods to solve this issue can be catego-
+rized into three groups: re-sampling, algorithmic, and fusion methods [9].
+Re-sampling methods, which focus on data pre-processing, change the prior
+distributions of both minority and majority classes [10]. Algorithmic methods
+modify the algorithm structure to enhance their robustness in learning imbal-
+anced data [11]. Fusion methods combine different techniques or ensemble
+models for addressing class imbalanced data [12].
+The support vector machine (SVM) [13, 14] is an effective kernel-
+based learning algorithm for solving data classification problems. It aims to
+find a hyperplane to optimally separate data samples with maximal mar-
+gins [15–17]. Due to its structural risk minimization capability, SVM can
+effectively reduce overfitting and avoid local minima [18]. Since its introduc-
+tion, many SVM variants have been proposed, e.g., fuzzy SVM (FSVM) [19],
+twin SVM (TSVM) [20], fuzzy TSVM (FTSVM) [21], intuitionistic FTSVM
+(IFTSM) [16], etc. Despite their success in handling balanced data sets, their
+performances are severely affected by imbalanced data distribution [22]. This
+is caused by treating all samples equally and ignoring the difference among
+both majority and minority classes. As a result, a decision boundary biases
+toward the majority class samples is established when the underlying SVM
+models learn from imbalanced data.
+There are several reviews of imbalanced classification methods in the litera-
+ture [6, 23–26]. In 2004, the study in [23] discussed the weaknesses of traditional
+SVM models in solving imbalanced classification problems and explained why
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 3
+the conventional under-sampling methods are not the best choice. In 2009,
+the study in [6] provided a critical review of imbalanced learning methods
+along with several assessment metrics. Moreover, challenging issues and future
+research directions were presented. In 2012, the study in [24] introduced a
+taxonomy of ensemble-based methods to address class imbalanced issues and
+provided empirical evaluations with respect to the representative ones of each
+category. On the other hand, the study in [25] presented an in-depth review
+of rare event detection in imbalanced learning problems between 2006 and
+2016. In 2013, the study in [27] reviewed SVM-based re-sampling and algo-
+rithmic methods. While these surveys have been conducted years ago, none
+of them provide an in-depth and comprehensive review of SVM-based meth-
+ods for addressing class-imbalanced learning problems. As such, our review
+presented in this paper aims to fill this gap. Firstly, we explain SVM and its
+variants and discuss why they cannot effectively learn from class imbalanced
+data. Then, we provide a hierarchical categorization of SVM-related methods
+for tackling class imbalanced problems and present the representative ones of
+each category. In addition, we conduct a thorough empirical comparison of
+these methods. In short, the main contributions of this paper are as follows:
+•a comprehensive review of SVM-based methods for tackling class imbalanced
+problems;
+•a hierarchical categorization of imbalanced SVM methods along with the
+representative ones of each category;
+•a comprehensive performance evaluation of SVM-based class imbalanced
+learning methods;
+•a discussion on the key research gaps and future research directions.
+This review paper consists of five sections. Section 2 explains the structures
+of SVM, FSVM and TSVM, and discusses why these methods are not able
+to handle imbalanced classification problems. Section 3 reviews imbalanced
+SVM-based methods. Specifically, a hierarchical categorization of imbalanced
+SVM-based methods is presented, and each category is further divided into
+several constituents. Section 4 presents an empirical study on the performance
+of various SVM-based models. The results are discussed and analyzed. Finally,
+Section 5 presents the concluding remarks and suggestions for future research.
+2 Preliminaries
+In this section, we explain the structures and principles of SVM, FSVM
+and TSVM. Importantly, we discuss the issues of these models in handling
+imbalanced data classification problems.
+2.1 Support Vector Machine
+Let{(xi, yi)}N
+i=1represent a binary classification problem where xi∈RDis a
+D-dimensional input data sample and yi∈ {− 1,1}indicates the target class.
+To learn an optimal hyperplane, SVM transforms the input sample into a
+Springer Nature 2021 L ATEX template
+4 Class Imbalanced Learning with SVM
+high dimensional feature space using a non-linear mapping function Φ. The
+optimal hyperplane pertaining to the transformed feature space can be written
+as follows:
+w.Φ(x) +b= 0 (1)
+where w∈RDandb∈Rare the weight vector and bias, respectively. For
+linear classification problems, the maximal margin optimization problem is
+solved to obtain the hyperplane, as follows:
+min(1
+2w.w), (2)
+s.t.yi(w.Φ(xi) +b)≥1, i= 1,2, ..., N
+For non-linear classification problems, even though the input samples are
+transformed into a high-dimensional feature space, they are not completely
+separable by linear functions. To alleviate this issue, a set of slack variables
+ξi≥0 is integrated into (2):
+min(1
+2w.w+CNX
+i=1ξi) (3)
+s.t.yi(w.Φ(xi) +b)≥1−ξi
+ξi≥0, i= 1,2, ..., N.
+wherePN
+i=1ξiis the penalty factor that measures the total error, and Cis a
+parameter to balance the trade-off between maximizing the margin and mini-
+mizing the error. To solve this quadratic optimization problem, the Lagrangian
+optimization is constructed, as follows:
+max{lX
+i=1αi−1
+2lX
+i=1lX
+j=1αiαjyiyjΦ(xi)Φ(xj)} (4)
+s.t.lX
+i=1yiαi= 0,0≤αi≤C, i = 1,2, ..., N,
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 5
+where αi(i= 1,2, ..., l) represent the Lagrangian multipliers that satisfy the
+Karush-Kuhn-Tucker (KKT) [28] conditions:
+αi(yi(w.ϕ(xi) +b)−1 +ξi) = 0 , i= 1,2, ..., N, (5)
+(C−αi)ξi= 0, i= 1,2, ..., N. (6)
+In SVM, it is not necessary to know the exact mapping function Φ( xi).
+As such, a kernel function, i.e., K(xi, xj) = Φ( xi).Φ(xj), can be applied to
+transform the dual optimization problem in (4) into:
+max{NX
+i=1αi−1
+2NX
+i=1NX
+j=1αiαjyiyjK(xi, xj)} (7)
+s.t.lX
+i=1yiαi= 0,0≤αi≤C, i = 1,2, ..., N
+After finding the optimal values of αiby solving (7), wis obtained as
+follows:
+w=NX
+i=1αiyiΦ(xi). (8)
+Then, bis computed using (6). Finally, the decision function with respect
+toxcan be obtained as follows:
+f(x) =sign(w.Φ(x) +b) =sign(NX
+i=1αiyiK(xi, x) +b). (9)
+Algorithm 1 summarizes the overall procedure of the original SVM model
+for binary classification problems.
+2.2 Fuzzy support vector machines
+Let{(xi, yi, si)}N
+i=1represent a data set with Nsamples, where si(σ≤si≤1)
+is the fuzzy membership of i-th sample and σ > 0 is a small positive value,
+while z=ϕ(x) indicates a mapping ϕfrom RDto a feature space z[19, 29].
+The optimal hyperplane is obtained by:
+min1
+2wT.w+CNX
+i=1siξi (10)
+Springer Nature 2021 L ATEX template
+6 Class Imbalanced Learning with SVM
+Algorithm 1 SVM for Binary Classification.
+1:Input:
+2: Training dataset: {(xi, yi)}N
+i=1where xi∈RDandyi∈ {− 1,1}
+3:Output:
+4: SVM model parameters ( w,b)
+5:Procedure:
+6:Define the feature space transformation Φ.
+7:Formulate the optimization problem:
+8: For linear problems:
+9: min(1
+2w.w) subject to yi(w.Φ(xi) +b)≥1
+10: For non-linear problems:
+11: min(1
+2w.w+CPN
+i=1ξi) subject to yi(w.Φ(xi)+b)≥1−ξi&ξi≥0
+12:Solve the optimization problem using Lagrangian multipliers:
+13: max{PN
+i=1αi−1
+2PN
+i=1PN
+j=1αiαjyiyjK(xi, xj)}
+14: subject toPN
+i=1yiαi= 0 and 0 ≤αi≤C
+15:Compute wusing w=PN
+i=1αiyiΦ(xi).
+16:Compute busing KKT conditions.
+17:Construct the decision function f(x):
+18: f(x) = sign(PN
+i=1αiyiK(xi, x) +b).
+s.t. y i(w.zi+b)≥1−ξi, ξi≥0, i= 1, ..., N,
+The Lagrangian is constructed to solve this problem as follows:
+L(w, b, ξ, α, β ) =1
+2wT.w+ClX
+i=1siξi−lX
+i=1αi(yi(w.zi+b)−1 +ξi)−lX
+i=1βiξi.
+(11)
+To find the saddle point of L(w, b, ξ, α, β ), the following conditions should
+be satisfied:
+∂L(w, b, ξ, α, β )
+∂w=w−NX
+i=1αiyizi= 0 (12)
+∂L(w, b, ξ, α, β )
+∂b=−NX
+i=1αiyi= 0 (13)
+∂L(w, b, ξ, α, β )
+∂ξi=siC−αi−βi= 0. (14)
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 7
+By applying (12-14) into (10) and (11):
+maximize W(α) =NX
+i=1αi−1
+2NX
+i=1NX
+j=1αiαjyiyjK(xi, xj) (15)
+s.t.NX
+i=1yiαi= 0,0≤αi≤siC, i = 1, ..., N.
+and the KKT conditions can be written as:
+¯αi(yi( ¯w.zi+¯b)−1 +¯ξi) = 0 , i= 1, ..., N (16)
+(siC−¯αi)ξi= 0, i= 1, ..., N.
+The input sample xiwith ¯ αi>0 is denoted as the support vector. FSVM
+contains two types of support vectors: (i)support vector with 0 <¯αi< siC,
+which lies on the hyperplane margin, and (ii)the support vector with ¯ αi=
+siC,which indicates misclassification. In general, fuzzy-based SVM models can
+reduce the sensitivity of conventional SVM toward handling noisy samples.
+2.3 Twin Support Vector Machine
+TSVM [20] consists of two non-parallel hyperplanes, i.e., a hyperplane with
+respect to data samples of each class, as follows:
+w1.xi+b1= 0, w 2xi+b2= 0 (17)
+where wjandbjare the weight vector and bias of the j-th hyperplane,
+respectively. A quadratic optimization problem is formulated to obtain both
+hyperplanes, as follows:
+min
+w1,b1,ξ21
+2(Aw1+e1b1)T(Aw1+e1b1) +p1eT
+2ξ2 (18)
+s.t.−(Bw1+e2b1) +ξ2≥e2, ξ2≥0,
+and
+min
+w2,b2,ξ11
+2(Bw2+e2b2)T(Bw2+e2b2) +p2eT
+1ξ1 (19)
+s.t. (Aw2+e1b2) +ξ1≥e1, ξ1≥0,
+Springer Nature 2021 L ATEX template
+8 Class Imbalanced Learning with SVM
+0 0.2 0.4 0.6 0.8 100.20.40.60.81
+0
+0
+0class +
+class -
+Hyperplane
+(a)
+0 0.2 0.4 0.6 0.8 100.20.40.60.81
+000 class +
+class -
+Hyperplane (b)
+Fig. 1 : (a) A hyperplane formed by SVM for an imbalanced data set; (b) an
+ideal hyperplane that is expected to be formed by SVM-based methods for an
+imbalanced data set.
+where AandBindicate data samples belonging to classes +1 and −1, respec-
+tively, e1ande2are vectors of ones, and p1andp2are penalty parameters.
+Once the optimal parameters, i.e., ( w∗
+1, b∗
+1) and ( w∗
+2, b∗
+2), are achieved, a test
+sample, x, can be classified, as follows:
+f(x) = arg min
+j∈{1,2}|(w∗
+j)Tx+b∗
+j|
+∥w∗
+i∥. (20)
+2.4 Reasons for Poor Performance of SVM with
+Imbalanced Data sets
+Fig. 1 shows an example of SVM hyperplane (Fig. 1a) and an ideal hyperplane
+(Fig. 1b) for a class imbalanced data set. As can be observed in Fig. 1a, SVM
+learns a decision boundary close toward the majority class and far away from
+the minority class [23, 30]. The first reason is the distribution of imbalanced
+data, in which data samples of the minority class are far away from the ideal
+decision boundary. The second reason is because of the weakness associated
+with soft margins. As stated earlier, the objective function of SVM aims to
+(i)maximize the margin by minimizing the regularization term, and (ii)mini-
+mize the total error by minimizingPN
+i=1ξi. Constant Cspecifies the trade-off
+between maximizing margin and minimizing error. To reduce the penalty, the
+total error should be reduced, because of assigning the same error cost to all
+samples by SVM. For an imbalanced data set, a small Cmakes the margin
+large, leading to incorrect consideration of the minority class samples as noise.
+As such, SVM learns all samples as from the majority class with (close to) zero
+error on negative samples and small error on the minority class samples. This
+results in learning a decision boundary close (skewed) towards the majority
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 9
+Class imbalance
+learning with SVM
+Re-sampling
+methodsAlgorithmic
+methodsFusion
+methods
+Under-
+samplingOver-
+samplingCombined
+methodsDifferent
+constsKernel
+modificationsHybrid
+methodsEnsemble
+methods
+Fig. 2 : A hierarchical categorization of SVM-based methods for class
+imbalanced learning.
+class. One solution to alleviate this issue is to change the trade-off based on
+the imbalanced rate [31, 32].
+The third reason is the imbalanced rate of support vectors [30]. When the
+ratio of imbalanced samples increases, the rate of support vectors with respect
+to the majority and minority classes becomes more imbalanced. This causes
+the neighborhood of a test sample near the decision boundary to be dominated
+by support vectors of the majority class; hence, SVM tends to classify it as a
+majority class sample. Due to the KKT condition in (5) and (6), the summation
+ofα’s related to the support vectors of the majority class should be equal to
+the summation of α’s related to those of the minority class. Since the number
+of support vectors belonging to the minority class is far fewer than those of
+the majority class, their α’s are larger than those of the majority class. These
+α’s operate as weights during prediction. As such, the support vectors of the
+minority class receive higher weights than those of the majority class, offsetting
+the effect of support vector imbalanced.
+3 Imbalanced Support Vector Machine
+As stated earlier, the original SVM and its variants are susceptible to imbal-
+anced data issue. Methods to improve SVM capabilities for solving imbalanced
+data problems have been developed. In general, the existing methods can be
+grouped into three broad categories (Fig. 2), as follows:
+•Re-sampling methods pre-process the data set and attempt to balance
+the numbers of samples belonging to different majority and minority classes
+before training the learning model. This can be achieved by under-sampling
+the majority class (Fig. 3b), over-sampling the minority class (Fig. 3c) or a
+combination of under-sampling and over-sampling (Fig. 3d), as discussed in
+Sub-section 3.1.
+•Algorithmic methods modify the learning model in a way that penalizes
+the misclassification rate of the minority class by using different cost-
+sensitive metrics or modifying the underlying kernel. Sub-section 3.2 presents
+these methods and introduces the representative models.
+•Fusion methods combine various techniques to learn from imbalanced
+data. The strategies can be fusion of a re-sampling method with an
+Springer Nature 2021 L ATEX template
+10 Class Imbalanced Learning with SVM
+-4 -3 -2 -1 0 1 2 3-3-2-10123class +
+class -
+(a)
+-4 -3 -2 -1 0 1 2 3-3-2-10123class +
+class - (b)
+-4 -3 -2 -1 0 1 2 3-3-2-10123
+(c)
+-4 -3 -2 -1 0 1 2 3-3-2-10123 (d)
+Fig. 3 : Examples of (a) an imbalanced data set, (b) under-sampling, (c) over
+sampling, and (d) combined re-sampling.
+algorithmic method or ensemble method. Sub-section 3.3 reviews hybrid
+methods.
+3.1 Re-sampling Methods
+Many studies have shown that most base classifiers, including SVM and its
+variants, can produce good results in learning with a balanced data set,
+as compared with an imbalanced one [33]. The findings indicate the neces-
+sity of employing re-sampling methods for learning with imbalanced data. In
+this regard, many re-sampling methods have been proposed to improve the
+performance of SVM and its variants in tackling imbalanced data [34–40].
+These methods can be further categorized into two: under-sampling and over-
+sampling. In the following sub-sections, we discuss both categories and present
+several representative models of each category. It is noteworthy to mention
+that after applying re-sampling methods, a variety of algorithms can be used
+to perform classification. In this paper, we review studies that employ SVM
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 11
+and its variants as a base classifier. Study [41] evaluated popular re-sampling
+methods and concluded that under-sampling produces better results.
+3.1.1 Under-sampling methods
+This category covers straightforward methods for handling imbalanced data.
+The data distribution among different classes is made balanced by selecting
+fewer samples from the majority class (see Fig. 3b). According to [42], the
+majority class samples can be divided into four groups: (i)samples that con-
+tain class-label noise, (ii)samples that are located along the decision boundary
+between the majority and minority classes, which are unreliable, (iii) redun-
+dant samples that can be replaced by other samples, and (iv)safe samples
+which are worth keeping for classification. The study indicated that the clas-
+sification performance can be improved if safe samples of the majority class
+along with samples of the minority class are used for training.
+Over the years, a number of under-sampling techniques have been devel-
+oped. Among them, random sampling is the most popular one, which randomly
+selects a subset of majority class samples to train a classifier [43–46]. In [47],
+two ensemble strategies were introduced: EasyEnsemble and BalanceCascade.
+After randomly grouping the majority class samples into several subsets,
+EasyEnsemble uses each subset to train one classifier, and then combines all
+classifiers. BalanceCascade uses a trained classifier to guide the sampling pro-
+cess in a way that correctly classified majority class samples are removed. This
+procedure is repeated until an equal number of samples for both majority and
+minority classes remain.
+Early random sampling methods rely on the single random under-sampling
+(SRU) strategy. SRU randomly selects majority class samples only once, which
+could select inappropriate samples, resulting in inferior results. To address
+this issue, a repeatedly random under-sampling (RRU) strategy was proposed
+in [44]. RRU sets a threshold, i.e., the area under the receiver operating charac-
+teristic curve (AUC) >0.9, to enhance the generalization capacity of a classifier
+during each iteration. However, random sampling methods cannot guarantee
+good results from the trained classifier. To alleviate this issue, optimized RRU
+was introduced in [45]. It adopts an AUC comparison among the SRU-based
+classifiers. In [46], the majority class samples that could cause misclassifica-
+tion of minority class samples are firstly identified. Then, an under-sampling
+algorithm, which uses an internal interpolation of several samples to retain
+sample information, is applied to remove samples from a data set. Besides
+that, weighted under-sampling (WU) [18] groups the majority class samples
+into sub-regions (SRs) and assigns a weight to each SR based on the Euclidean
+distance with respect to a hyperplane. The samples in SR with a higher weight
+have a higher chance to be sampled in each iteration.
+Another popular under-sampling method is data clustering. Data sam-
+ples are firstly clustered into several groups before utilizing different
+under-sampling methods [48–52]. As an example, support cluster machines
+Springer Nature 2021 L ATEX template
+12 Class Imbalanced Learning with SVM
+(SCMs) [48] adopt the k-means algorithm to cluster the majority class sam-
+ples into several disjoint clusters in the feature space. An SVM is then trained
+using the minority class samples. Using the trained SVM, the support vectors
+are approximately identified. A shrinkage technique is used to remove data
+samples that are not support vectors. This procedure is repeated until a ter-
+mination condition is satisfied. In diversified sensitivity-based under-sampling
+(DSUS) [49], the data samples from both majority and minority classes are
+grouped into kclusters separately using the k-mean algorithm. In each cluster,
+the sample closest to the cluster center is identified for both classes, and the
+similarity measure (SM) score of each sample is computed using the stochas-
+tic sensitivity measure. The sample with the highest SM score is selected from
+each class to form the initial data set for training the base classifier. This pro-
+cedure is repeated until a balanced set of samples can yield a high sensitivity
+rate is obtained.
+The study [53] introduced two strategies. In the first strategy, the cluster
+centers are used to represent the majority class samples, while in the second
+strategy, the nearest neighbours are used to represent them. The study in [52]
+adopted the fuzzy adaptive resonance theory (ART) neural network [54] for
+data clustering. Operating as an incremental learning algorithm, Fuzzy ART is
+used to cluster all training samples and identify clusters that contain only the
+majority class samples. Then, the cluster centers, instead of data samples, are
+utilized to train an intuitionistic FTSM (IFTSVM) [16] model for performing
+classification.
+In [55, 56], an active learning-based selection strategy was developed.
+Firstly, an SVM is trained using imbalanced data. Then, the closest samples
+to the hyperplane are identified and added to the training set. This procedure
+is continued until a termination condition is satisfied.
+3.1.2 Over-sampling methods
+This category of re-sampling methods synthesizes artificial samples for the
+minority class to balance the numbers of samples between both minority and
+majority classes (see Fig. 3c). The synthetic minority over-sampling technique
+(SMOTE) [34] generates synthetic samples. It computes the difference between
+the feature vectors of a sample and its nearest neighbour, and then multiplies
+the computed difference with a random number and adds it to the feature
+vector of the sample. SMOTE performs better than random over-sampling
+techniques, as empirically demonstrated in [57]. Since then, several enhanced
+SMOTE algorithms have been developed. The study in [58] introduced a graph
+using the K-nearest neighbour for the minority class samples. The most infor-
+mative samples are identified based on the minimum spanning tree. Then,
+artificial samples are generated using SMOTE. According to [59], LR-SMOTE
+locates newly generated samples close to the sample centers. The study in [60],
+an Orchard SMOTE (OSMOTE) model was devised. It uses Orchard’s algo-
+rithm to find the nearest neighbours of the minority class samples. Due to
+its linear nature, SMOTE is ineffective in dealing with non-linear problems.
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 13
+To alleviate this issue, weighted kernel-based SMOTE (WK-SMOTE) [61]
+performs over-sampling in the feature space of SVM.
+Borderline Over-sampling (BOS) [62] performs over-sampling using the
+minority class samples located near the decision boundary. BOS exploits sup-
+port the support vectors of an SVM trained with the original training set.
+It then randomly generates new samples along the trajectory that joins each
+minority class support vector with a number of its nearest neighbours. The
+majority weighted minority over-sampling technique (MWMOTE) [63] first
+assigns weights to the hard-to-learn informative minority class samples based
+on their Euclidean distance from the majority class samples. It then adopts
+a clustering algorithm to generate the synthetic samples from the weighted
+minority class samples. Cluster-MWMOTE [64], which is an extension of
+MWMOTE, combines MWMOTE with agglomerative hierarchical clustering
+to avoid neglecting small subclusters of minority class samples.
+The study in [65] selected the most informative majority class samples
+located along the decision boundary. The separating hyperplane is obtained
+by training an SVM using the original imbalanced data set. Then, a random
+over-sampling technique is applied to duplicate the number of minority class
+samples. On the other hand, the synthetic informative minority oversampling
+(SIMO) [66] algorithm performs over-sampling on the minority class sam-
+ples located close to the decision boundary. Weighted SIMO (W-SIMO) [66]
+focuses on the incorrectly classified minority class samples. Accordingly, incor-
+rectly classified minority class samples are over-sampled, as compared with
+the correctly classified minority class samples. Noise reduction a priori syn-
+thetic over-sampling (NRAS) [67] performs noise removal in the minority
+class samples before generating new samples. In this regard, the knear-
+est neighbour of each minority class sample is checked. If the neighbour
+has a value of membership lower than a threshold, the sample is removed.
+Generative over-sampling [68] generates data samples using the learned param-
+eters from certain probability distribution. OOLASVM [69] is a hybrid active
+sample selection and over-sampling method for learning a new boundary.
+The sample-characteristic over-sampling technique (SCOTE) [70] offers a
+multi-class imbalanced fault diagnosis method. It transforms a multi-class
+imbalanced problem into multiple binary problems. Then, SCOTE uses the
+KNN to remove noisy samples in each binary imbalanced problem. After train-
+ing using the least squares SVM (LS-SVM), the minority class samples are
+sorted based on their importance, i.e., misclassification error of the minority
+class. Finally, the new samples are generated based on the informative samples.
+3.1.3 Combined re-sampling methods
+These methods combine over-sampling the minority class samples and under-
+sampling the majority class samples in a pre-processing phase (see Fig. 3d).
+Under-sampling is useful when there are sufficient minority class samples
+despite an imbalanced ratio. It reduces the burden on storage and requires a
+Springer Nature 2021 L ATEX template
+14 Class Imbalanced Learning with SVM
+shorter execution duration. However, it can lead to the loss of useful infor-
+mation by removing data samples located along the decision boundary. In
+particular, random under-sampling does not take into consideration informa-
+tive samples along the decision boundary. Moreover, since the data distribution
+is normally unknown, most classifiers attempt to approximate it through sam-
+ple distribution. In under-sampling, the data samples are not considered as
+random. In this regard, the study in [23] empirically analyzed the factors asso-
+ciated with this limitation. Explanations on why under-sampling may not be
+the best choice for SVM are provided.
+In contrast, over-sampling can result in over-fitting owing to duplicating
+the available samples or generating new samples based on existing ones. It
+also increases the computational burden during training. To alleviate these
+shortcomings, the study in [34] empirically combined random under-sampling
+and SMOTE can perform better than under-sampling and over-sampling tech-
+niques. Combining under-sampling and over-sampling reverses the initial bias
+of the classification algorithm towards the majority class in favour of the
+minority class.
+3.2 Algorithmic Methods
+Many modifications from the algorithm perspective have been developed to
+enable SVM and its variants for learning imbalanced data [71–77]. The key
+modifications are discussed in the following sub-sections.
+3.2.1 Different error costs (DEC)
+This category of algorithmic methods uses different cost functions for the
+majority and minority class samples, as follows [32, 78]:
+min1
+2w.w+ (C+lX
+i|yi=+1ξi+C−lX
+i|yi=−1ξi) (21)
+s.t. y i(w.Φ(xi) +b)≥1−ξiξi≥0i= 1,2, ..., l (22)
+where C+andC−indicate the error rates of the minority and majority classes,
+respectively. The formulation in (22) reduces the impact of class imbalanced
+by assigning a higher error rate for the minority class samples than that of
+majority class samples [32]. It prevents skewing the separating hyperplane to
+the minority class samples. The associated Lagrangian function is as follows:
+max{lX
+i=1αi−1
+2lX
+i=1lX
+j=1αiαjyiyjK(xi, xj)} (23)
+s.t.lX
+i=1yiαi= 0,0≤α+
+i≤C+,0≤α−
+i≤C−i= 1, ..., l
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 15
+where α+
+i(α−
+i) describes the Lagrangian multipliers of minority (majority)
+class samples. A good classification performance can be achieved by tun-
+ingC−/C+. However, there is no defined indication pertaining to the values
+that should be selected for the penalty term. As an example, in Kowalczk
+and Raskutti [79, 80] set C+andC−are set to C(1−B)/n+andCB/n −,
+respectively. Where n+(n−) indicates the number of minority (majority) class
+samples, C > 0 is a regularization constant, and 0 ≤B≤1 is the balance fac-
+tor. Note that B= 0 indicates the extreme case of learning from the minority
+class samples only (one-class learning), and vice versa.
+zSVM [81] focuses on adjusting the learned hyperplane to obtain an optimal
+margin between the decision boundary separating the majority and minority
+classes. To achieve this, the general decision function, i.e., (9), is changed to:
+f(x) =sign(lX
+i=1αiyiK(x, xi) +b)
+=sign(n+X
+i=1α+
+iyiK(x, xi) +n−X
+j=1α−
+jyjK(x, xj) +b),(24)
+where α+
+j(α−
+i) is the coefficient of the positive (negative) support vectors.
+zSVM increases α+
+iin the positive support vectors by multiplying them with a
+positive value, z. The resulting decision function in (25) reduces bias towards
+the majority class samples. The weights of the positive support vectors in (25)
+are increased by adjusting α+
+i.
+f(x) =sign(z∗l1X
+i=1α+
+iyiK(x, xi) +l2X
+j=1α−
+iyiK(x, xj) +b). (25)
+Several studies devise cost-sensitive SVM (CS-SVM) models for learning
+from imbalanced data sets. The study in [82] formulated the error surfaces
+based on cross-validation (CV-SES). Specifically, a bi-parameter space par-
+tition algorithm computes a two-dimensional solution surface for CS-SVM,
+which can fit the CS-SVM solutions for the regularization parameters. Then, a
+two-dimensional validation error surface for each CV fold is computed, which
+can fit the CS-SVM validation errors for the regularization parameters. Then,
+the global minimum CV error of CS-SVM is found by obtaining the CV error
+surface through superposing Kvalidation error surfaces. The study in [83]
+used an inverted proportional regularized penalty to change the weight of
+imbalanced data. CSRankSVM [84], which is a cost-sensitive ranking SVM,
+improves the performance of ranking-oriented defect predictions. The stud-
+ies in [85, 86] proposed incremental learning models using cost-sensitive SVM
+models to tackle imbalanced classification problems in online learning envi-
+ronments. In addition, the study in [87] developed a feature selection strategy
+to penalize the cardinality of the feature set using a scaling factor technique.
+Springer Nature 2021 L ATEX template
+16 Class Imbalanced Learning with SVM
+Two variants of SVM, i.e, CS-SVM and support vector data description [88],
+are utilized to handle high-dimensional class imbalanced data.
+Due to less sensitivity to support vectors and noisy samples, fuzzy-based
+SVM models are leveraged to tackle imbalanced classification problems. A
+membership function is assigned to each class according to the importance of
+different training samples [19, 29], i.e.,
+s+
+i=f(x+
+i)r+, (26)
+s−
+i=f(x−
+i)r−, (27)
+where s+
+i(s−
+i) indicates the membership values of the minority (majority) class
+samples, 0 ≤f(xi)≤1 indicates the significance of xiin its class, while r−and
+r+indicate class imbalanced setting. The misclassification cost for minority
+(majority) class samples is set to s+
+iC(s−
+iC), which allocates a value in [0 ,1]
+([0, r]), and r <1.
+Over the years, various functions have been introduced, e.g. (26) and (27),
+based on the distance of each sample from the class center [29] and hyper-
+plane [89]. In addition, the study in [29] defined f(xi) according to the distance
+from the class center. Eqs. (28) and (29) present f(xi) for linear and non-linear
+cases, respectively.
+flin(xi) = 1−(dcen
+i
+max(dcen
+i) +δ), (28)
+where δis a small positive value, dcen
+iis the Euclidean distance of xifrom its
+corresponding class center.
+fexp(xi) =2
+1 +exp(dcen
+i∗β), (29)
+where β∈[0,1] defines the decay steepness.
+The study [90] improved a bilateral-weighted fuzzy support vector machine
+(B-FSVM) [91] to tackle imbalanced classification problems. Denoted as B-
+FSVM-CIL, different membership functions are defined for the minority and
+majority classes to overcome class imbalanced issues. An entropy-based fuzzy
+SVM [92] leverages the entropy measure of class certainty by computing the
+probability of a sample belonging to each class. The study in [93] proposed
+an entropy-based FTSVM, known as EFTSVM-CIL, for solving binary class
+imbalanced problems.
+3.2.2 Kernel modifications
+This category of algorithmic methods makes the SVM models less sensitive to
+imbalanced data by modifying the kernel function. The available methods can
+be categorized into three groups [94]. The first group works by aligning the
+decision boundary [30, 95]. Adaptive conformal transformation (ACT) [30, 94]
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 17
+changes the spatial resolution around the decision boundary using conformal
+transformation (CT) [96]. CT maps elements X∈Dto elements Y∈T(D)
+in a way that preserves the local angles between elements after mapping. It
+adaptively controls the transformation based on the skewness of the decision
+boundary, i.e., the kernel matrix is modified when the data samples do not
+have a vector-space representation.
+The second group leverages on kernel alignment [97, 98]. The class
+probability-based FSVM (ACFSVM) [99] model uses affinity computed by the
+support vector description domain (SVDD) to identify outliers and data sam-
+ples in the majority class that are close to the decision boundary. The kernel
+k-nearest neighbour algorithm computes the class probability of all majority
+class samples. ACFSVM reduces the contribution of data samples with lower
+class probabilities, i.e., noisy samples, and focuses on the majority class sam-
+ples with higher affinities and class probabilities, therefore skewing the decision
+boundary toward the majority class. Enhanced automatic twin support vector
+machine (EATWSVM) [100] learns a kernel function through Gaussian similar-
+ity and improves data separability by incorporating a centered alignment-based
+technique. The study in [98] extended the kernel alignment technique [97] to
+measure the degree of agreement between a kernel and a classification task.
+The definition of alignment is modified using different weights for the majority
+and minority class samples. Other kernel alignment methods include regular-
+ized orthogonal weighted least squares (ROWLSs)) [101], kernel neural gas
+(KNG) [102] and P2P communication paradigm (P2PKNNC) [28] to tackle
+data imbalanced issues.
+Third group focuses on margin alignment. Maximum margin TSVM
+(MMTSSVM) [103] identifies two homocentric spheres for tackling imbalanced
+data. It uses a small sphere to capture as many majority class samples as possi-
+ble, and increases the distance between two margins to separate most minority
+class samples using a large sphere.
+3.3 Fusion Methods
+Many fusion methods for handling class-imbalanced data have been proposed.
+They can be broadly divided into two: hybrid and ensemble methods.
+3.3.1 Hybrid techniques
+This category combines SVM and its variants with other techniques for learn-
+ing from class imbalanced data. As an example, SMOTE with Different
+Costs (SDC) [23] combines SMOTE and the method in [32], and changes the
+Lagrangian function in (18) to:
+Lp=∥w∥2
+2+C+n+X
+{i|yi=+1}ξi+C−n−X
+{j|yj=−1}ξj
+Springer Nature 2021 L ATEX template
+18 Class Imbalanced Learning with SVM
+−nX
+i=1αi[yi(w.xi+b)−1 +ξi]−nX
+i=1riξi,(30)
+With the following conditions:
+(1) If yi= +1, then 0 ≤αi≤C+,
+(2) If yi=−1, then 0 ≤αi≤C−.
+where ξi≥0 [31]. Thus, the non-zero error cost on negative/positive support
+vectors leads to a smaller/larger αi. This results in pushing the class boundary
+toward the direction of the majority class samples. To better establish the class
+boundary, SMOTE is used to make the minority class samples more densely
+distributed.
+A hybrid model for feature selection with maximal between-class separa-
+bility and a variant of SVM (CCSVM), i.e. feature vector regression [104], was
+proposed in [105]. In addition, NN-CSSVM was devised in [106]. It is a hybrid
+model of neural networks and CSSVM for handling class imbalanced data with
+multiple modalities. In [107], a hybrid model of recursive feature elimination
+(RFE) and SMOTE was proposed for credit card fraud detection. This model
+uses the RFE technique to select an optimal subset of features and SMOTE
+to overcome the class imbalanced problem. In [108], a two-stage hybrid screen-
+ing rule based on variational inequality and duality gap was introduced to
+accelerate the learning speed of nonparallel SVM [109].
+3.3.2 Ensemble methods
+Ensemble methods train multiple ( M) learning models fi:X→Yfor
+i= 1, . . . , M to perform prediction. The outputs are combined using different
+techniques to deduce the final decision. In regression, averaging is the simplest
+ensemble technique for combining the predictions of Mmodels fave:X→Y,
+as follows:
+fave(x) =1
+MMX
+i=1fi(x). (31)
+Majority voting is a common scheme for fusing the predictions of multiple
+classifiers to reach an output class, c= 1, . . . , K , as follows:
+fmajority (x) = arg max
+cMX
+i=1I(fi(x) =c). (32)
+Bagging [110] and boosting [111] are two popular ensemble methods. Bag-
+ging trains Mindependent classifiers on Mdifferent subsets of randomly drawn
+samples from the original data set. In [112], bagging was used to generate sev-
+eral re-sampled ensemble input data and training subsets. The training subsets
+are used to train a number of base classifiers, i.e., SVM, while ensemble input
+data samples are employed by all base classifiers. Then, a deep belief network
+(DBN) [113] is adopted to produce the final output by combining the decisions
+generated by an ensemble of base classifiers.
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 19
+Boosting aims to train a classifier and correct its errors in previous itera-
+tions. Adaptive boosting (AdaBoost) [114] and its variants [115–117] have been
+extensively used with SVM to deal with class imbalanced problems. The data
+samples are re-weighted at each training iteration of a classifier. Specifically, it
+reduces the weights of correctly classified samples, and vice versa. Therefore,
+the classifier pays more attention to the misclassified samples from the previ-
+ous iteration. Other useful boosting techniques for tackling class imbalanced
+problems include Adacost [118], RareBoost [119], and SMOTEBoost [120].
+Over the years, many ensemble models that adopt SVM or its variants as
+the base classifiers have been devised to deal with class imbalanced problems.
+Hybrid kernel machines into an ensemble (HKME) [121] consists of two base
+classifiers, namely SVM and vSVC [122], which is a one-class SVM classifier.
+HKME trains SVM with a balanced data set achieved by re-sampling and
+trains vSVC with the majority class samples. Then, an averaging strategy is
+used to combine the decisions for reaching the final decision. the study in [123]
+proposed an ensemble one-class classifier [88] for hypertension detection, i.e.,
+a multi-class imbalanced problem. A one-class classifier is trained to identify
+the majority class samples from outliers. The original multi-class problem is
+decomposed using an ensemble of one-class classifier to distinguish between
+five types of hypertension. Then, the error-correcting output codes [124] is
+employed to reconstruct the multi-class problem from multiple single-class
+responses.
+The study in [125] developed an ensemble model based on CS-SVM
+for recognizing cardiotocography signal abnormality. Specifically, weighting,
+selecting, and voting techniques are used for producing predictions by combin-
+ing the outcomes of ensemble members. EasyEnsemble [43, 126] and methods
+in [127–135] divide the majority class samples into several sub-samples that
+contain the same number of samples as that of the minority class samples using
+different strategies, e.g. random sampling, clustering or bootstrapping. Then,
+several SVM classifiers are trained and ensemble techniques are used to yield
+the prediction.
+The study in [136] leveraged an active learning strategy for training boost-
+ing SVM to exploit the most informative samples. Each ensemble member
+is trained using data samples that have significant impact on the previous
+classifier. Specifically, data samples located along the decision boundary are
+considered. The penalty terms are computed based on local cardinalities of the
+majority and minority class samples.
+4 Empirical Studies
+In this section, two experiments are conducted to compare the performance of
+various SVM-based models for imbalanced data learning in binary classification
+settings. The first evaluates different algorithmic methods, while the second
+assesses several re-sampling and fusion methods. A total of 36 benchmark
+Springer Nature 2021 L ATEX template
+20 Class Imbalanced Learning with SVM
+Table 1 : Details of the UCI data sets, including the numbers of samples for
+the minority and majority classes, total numbers of samples, dimensions, and
+imbalanced ratio.
+Data # Data set Minority Majority Instance Dimension Imbalance ratio
+1 Ripley 650 650 1,250 3 1
+2 Wisconsin 239 444 683 10 1.86
+3 Pima 268 500 768 9 1.87
+4 Yeast 1 429 1,055 1,484 9 2.64
+5 Vehicle 2 218 628 864 19 2.88
+6 Vehicle 1 217 629 864 19 2.90
+7 Transfusion 178 570 748 5 3.20
+8 Wpbc 47 151 198 34 3.22
+9 Segment 329 1979 2,308 19 6.02
+10 Yeast 3 163 1,321 1,484 9 8.10
+11 Page blocks 560 4,913 5,473 11 8.78
+12 Yeast 2-vs-4 463 51 514 9 9.08
+13 Ecoli 0-2-3-4-vs-5 20 182 202 8 9.10
+14 Yeast 0-3-5-9-vs-7-8 50 456 506 9 9.12
+15 Yeast 0-2-5-6-vs-3-7-8-9 99 905 1,004 9 9.14
+16 Ecoli 0-4-6-vs-5 20 183 203 8 9.15
+17 Ecoli 0-1-vs-2-3-5 24 220 244 8 9.17
+18 Yeast 0-5-6-7-9-vs-4 51 477 528 9 9.35
+19 Vowel 90 898 988 11 9.98
+20 Ecoli 0-6-7-vs-5 20 200 220 7 10
+21 Led7digit 0-2-4-5-6-7-8-9-vs-1 37 406 443 8 10.97
+22 Ecoli 0-1-vs-5 20 220 240 7 11
+23 Ecoli 0-1-4-7-vs-5-6 25 307 332 7 12.28
+24 Ecoli 0-1-4-6-vs-5 20 260 280 7 13
+25 Shuttle c0-vs-c4 123 1,706 1,829 10 13.87
+26 Glass 4 201 13 214 10 15.46
+27 Ecoli 4 20 316 336 8 15.80
+28 Yeast 1-4-5-8-Vs-7 30 663 693 8 22.10
+29 Glass 5 9 205 214 10 22.78
+30 Yeast 2-Vs-8 20 462 482 9 23.10
+31 Yeast 4 51 1,433 1,484 9 28.10
+32 Yeast 1-2-8-9-Vs-7 30 917 947 9 30.57
+33 Yeast 5 44 1,440 1,484 8 32.73
+34 Ecoli 0-1-3-7-vs-2-6 7 274 281 8 39.14
+35 Yeast 6 35 1,449 1,484 9 41.40
+36 Abalone 19 32 4,142 4,174 8 129.44
+classification problems from the UCI1and KEEL2repositories are used. As
+shown in Table 1, these data sets contain imbalanced ratios from 1 to close
+to 130. Multi-class data sets are converted into binary classification tasks, as
+shown in Table 1. All data samples are normalized between 0 and 1, and the
+results of five-fold cross-validation are reported.
+The SVM parameters are set as follows. The best Cvalue is determined
+using a grid search scheme covering {2i|i=−10,−9, ...,0, ...,9,10},ϵwhich
+is a small value, is selected from 0 ,0.1,0.2,0.3. The optimal Gaussian kernel
+function is utilized to deal with non-linear cases, i.e., K(x1, x2) =exp(− ∥
+x1−x2∥2/σ2) and σ∈ {2σmin:σmax}with σmin=−10,σmax= 10.
+The geometric mean (G-mean) and AUC are computed for performance
+evaluation. G-means measures the trade-off between the classification perfor-
+mance of both majority and minority classes, while AUC indicates the ability
+of a classifier in distinguishing between the majority and minority classes.
+1http:// archive.ics.uci.edu/ml/datasets.html
+2https://sci2s.ugr.es/keel/imbalanced.php
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 21
+Table 2 : AUC (%) rates of SVM-based models for imbalanced data sets with
+a linear kernel function.
+Data # TSVM[20] FTSVM[21] EFSVM[92] FSVM-CIL[29] zSVM[137] EFTWSVM-CIL[93]
+1 88.12 88.31 83.29 89.59 85.53 88.53
+2 95.32 96.23 97.11 96.87 93.56 95.81
+3 73.18 73.01 66.89 74.99 72.51 75.42
+5 96.12 93.88 92.48 97.30 95.69 96.37
+6 78.31 80.40 65.46 82.13 79.08 79.95
+7 49.01 49.01 49.01 54.82 52.32 52.34
+8 65.12 64.41 69.84 68.14 62.67 67.14
+12 87.91 89.88 81.53 90.04 85.98 87.91
+13 95.24 96.76 92.15 96.57 94.28 96.76
+17 88.36 88.36 70.01 88.82 84.80 88.36
+18 76.15 78.80 71.89 78.97 75.34 79.64
+19 91.67 90.62 83.44 93.76 89.57 91.67
+21 87.91 86.56 90.47 88.20 84.37 88.12
+22 94.31 94.31 86.84 92.22 88.28 94.35
+24 97.86 97.86 87.61 97.40 92.81 97.86
+25 100 100 99.32 99.98 97.47 100
+33 95.48 96.76 70.18 95.45 91.11 96.76
+34 94.54 91.31 85.77 95.36 90.41 94.54
+Average 86.37 86.47 80.18 87.81 84.21 87.30
+4.1 Performance comparison among algorithmic methods
+In this experiment, six SVM-based models, namely TSVM [20], FTSVM [21],
+EFSVM [92], FSVM-CIL [29], zSVM [137] and EFTWSVM-CIL [93], are
+employed for evaluation. TSVM [20] and FTSVM [21] are originally proposed
+for tackling balanced data while EFSVM [92], FSVM-CIL [29], zSVM [137]
+and EFTWSVM-CIL [93] are algorithmic methods for handling imbalanced
+data. To have a fair comparison, the same parameters are set for all models
+and two kernel functions, i.e., linear and nonlinear, are used.
+Tables 2 and 3, respectively, show the AUC and G-mean scores with
+different imbalanced ratios using a linear kernel function.FSVM-CIL [29]
+and EFTWSVM-CIL [93] rank first and second in terms of average AUC
+and G-mean rates. FSVM-CILFSVM-CIL [29] produces AUC and G-mean
+results of 87.81% and 87.15%, respectively. In addition, FSVM-CIL [29] and
+EFTWSVM-CIL [93] obtain the best AUC rates for 8 and 7 data sets,
+respectively, and outperform 10 and 5 data sets in term of G-mean.
+AUC and G-mean of algorithmic models with a nonlinear kernel function
+are shown in Tables 4 and 5, respectively. Overall, FSVM-CIL [29] outperforms
+other models in terms of AUC (88.26%) and G-mean (86.66%). EFTWSVM-
+CIL [93] is the second best method with AUC and G-man of 87.95% and
+85.72%, respectively. Both models produce the best AUC rates for 6 data sets.
+In term of G-mean, FSVM-CIL [29] outperforms other methods for 12 data
+sets.
+Springer Nature 2021 L ATEX template
+22 Class Imbalanced Learning with SVM
+Table 3 : G-Mean (%) rates of SVM-based models for imbalanced data sets
+with a linear kernel function.
+Data # TSVM[20] FTSVM[21] EFSVM[92] FSVM-CIL[29] zSVM[137] EFTWSVM-CIL[93]
+1 85.68 85.87 80.99 87.11 83.16 86.08
+2 93.31 94.20 95.06 95.83 91.49 93.79
+3 73.02 72.85 66.74 75.68 72.25 75.25
+5 89.69 87.60 86.29 92.54 88.35 89.92
+6 65.99 67.75 55.16 72.58 69.14 67.37
+7 56.90 56.95 56.95 67.33 64.28 60.82
+8 62.45 61.77 66.98 66.28 63.26 64.39
+12 84.59 86.49 78.45 86.64 82.73 84.59
+13 94.68 96.19 91.61 96.23 91.89 96.32
+17 91.98 91.95 72.85 92.42 88.25 91.95
+18 75.84 78.45 71.66 78.62 75.01 79.29
+19 87.41 86.41 79.56 89.43 85.39 87.41
+21 89.29 87.92 91.89 89.58 85.50 89.50
+22 94.31 94.31 86.84 92.18 88.13 94.31
+24 92.80 92.96 83.22 92.41 88.09 92.85
+25 99.96 99.98 99.32 99.97 95.44 99.98
+33 73.09 73.94 86.37 95.63 91.27 96.94
+34 98.09 98.16 89.05 98.17 93.73 98.01
+Average 83.84 84.10 79.94 87.15 83.19 86.04
+Table 4 : AUC (%) rates of SVM-based models for imbalanced data sets with
+a nonlinear kernel function.
+Data set TSVM[20] FTSVM[21] EFSVM[92] FSVM-CIL[29] zSVM[137] EFTWSVM-CIL[93]
+1 88.69 88.71 84.37 89.62 86.54 88.97
+2 96.01 96.59 97.84 97.12 94.07 96.54
+3 73.87 73.43 67.35 75.28 72.78 75.69
+5 96.53 94.27 92.84 97.63 96.04 96.89
+6 78.74 81.15 65.93 82.78 79.58 80.45
+7 50.52 50.47 50.39 55.16 53.38 53.68
+8 65.80 65.10 70.43 68.97 63.42 68.01
+12 88.38 90.46 82.09 90.87 86.67 88.56
+13 95.87 97.14 93.58 97.19 95.07 97.41
+17 88.89 88.87 71.69 88.98 85.73 89.02
+18 76.77 79.55 72.36 79.47 76.30 80.23
+19 92.16 91.72 84.18 94.29 90.35 92.49
+21 88.36 86.85 91.24 89.39 85.44 89.40
+22 94.75 94.42 87.28 92.89 89.01 94.61
+24 98.14 98.27 88.36 97.82 93.79 98.47
+25 100 100 99.76 99.99 98.18 100
+33 96.23 97.42 82.13 95.88 92.41 97.36
+34 95.11 91.85 86.34 95.67 91.29 95.30
+Average 86.93 87.01 81.56 88.26 85.01 87.95
+4.2 Performance comparison between re-sampling and
+fusion methods
+In this experiment, we compare the performance of eight different re-sampling
+and fusion methods, i.e., FSVM [19], SVM-SMOTE [62], SVM-OSS [138],
+SVM-RUS [138], SVM [47], EasyEnsemble [47], AdaBoost [24] and 1-NN [24],
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 23
+Table 5 : G-Mean (%) rates of SVM-based models for imbalanced data sets
+with a nonlinear kernel function.
+Data set TSVM[20] FTSVM[21] EFSVM[92] FSVM-CIL[29] zSVM[137] EFTWSVM-CIL[93]
+1 86.49 86.08 82.16 87.97 83.98 87.01
+2 93.85 94.48 96.11 96.50 92.13 94.89
+3 70.80 71.48 73.91 74.21 70.85 73.55
+5 93.51 93.29 93.12 93.68 90.13 92.96
+6 66.85 68.22 56.36 73.07 70.71 67.81
+7 63.09 64.76 62.69 66.59 63.88 64.87
+8 62.00 62.01 59.89 63.01 60.17 63.84
+12 86.88 86.51 86.92 88.42 84.51 88.97
+13 92.71 92.10 93.06 93.55 90.01 92.71
+17 93.53 92.68 91.45 92.27 89.43 92.73
+18 72.16 70.99 75.41 76.78 73.25 74.51
+19 87.82 87.18 79.76 89.88 86.01 88.21
+21 89.67 88.34 92.17 90.07 85.98 89.89
+22 90.02 90.00 84.93 90.48 86.60 90.02
+24 93.01 93.27 93.27 93.77 89.39 93.27
+25 99.38 99.58 99.43 99.60 95.19 99.62
+33 80.83 89.16 72.82 90.91 87.67 89.33
+34 98.51 98.73 89.66 98.79 94.31 98.79
+Average 84.51 84.94 82.39 86.66 83.01 85.72
+Table 6 : AUC (%) rates of re-sampling and fusion-based SVM models for
+imbalanced data sets.
+Data # FSVM[19] SVM-SMOTE[62] SVM-OSS[138] SVM-RUS[138] SVM[13] EasyEnsemble[47] AdaBoost[24] 1-NN[24]
+2 96.32 ±1.44 96.64 ±0.86 96.61 ±0.58 96.35 ±1.32 96.81±0.54 96.58±0.81 94.43 ±2.01 94.40 ±1.12
+3 71.10 ±2.11 72.31 ±3.49 70.53 ±3.98 72.46 ±1.02 70.87 ±3.36 75.22±1.68 72.09±2.53 65.47 ±2.19
+4 69.54 ±2.68 70.18 ±2.26 68.55 ±2.03 69.68 ±3.06 71.83 ±2.34 73.46±3.74 67.39±3.23 64.42 ±2.25
+5 69.41 ±4.42 72.40 ±3.88 67.31 ±4.90 68.17 ±4.96 74.14 ±5.72 97.64±1.21 96.83±0.85 91.49 ±2.14
+6 61.75 ±1.09 65.35 ±4.10 68.59 ±4.22 68.72 ±3.54 65.20 ±3.47 79.45±3.59 67.79±3.58 59.81 ±1.78
+9 82.44 ±2.59 85.56 ±2.36 79.28 ±3.22 83.68 ±2.98 81.46 ±2.74 99.62±0.29 99.53±0.70 99.01 ±1.35
+10 90.08 ±2.86 92.47 ±1.54 89.65 ±2.06 90.12 ±1.94 89.29 ±5.16 93.03±3.14 87.48±2.18 80.59 ±2.22
+11 59.33 ±5.96 65.71 ±10.82 62.01 ±4.53 65.64 ±4.26 61.93 ±9.72 96.16±1.01 89.63±0.86 88.49 ±2.39
+12 87.31 ±3.84 88.98 ±1.14 89.81 ±3.46 88.81 ±3.32 87.48 ±3.69 93.15±2.01 84.49±4.01 86.11 ±5.41
+13 91.32 ±10.21 91.48 ±9.14 92.16 ±9.43 95.68±4.81 92.21±11.91 91.59 ±8.64 91.38 ±10.19 87.35 ±11.36
+14 68.86 ±6.24 73.71 ±4.01 66.44 ±5.49 72.38 ±3.89 68.42 ±5.08 75.64±4.52 66.29±4.15 68.42 ±4.99
+15 78.12 ±6.84 81.44±4.83 81.23±4.01 79.44 ±4.39 80.38 ±4.34 80.47 ±4.58 72.40 ±3.14 77.12 ±2.76
+16 93.42±9.81 92.18±9.13 91.42 ±10.33 90.73 ±8.01 93.21 ±6.86 89.56 ±5.87 87.68 ±12.80 87.68 ±12.57
+17 88.31 ±6.35 89.12±7.98 88.26±10.19 88.34 ±7.29 88.46 ±8.82 87.84 ±6.72 80.16 ±10.03 80.48 ±12.38
+18 80.48 ±6.47 81.73 ±4.42 81.56 ±5.85 82.27±4.25 79.12±6.10 80.20 ±5.24 68.65 ±5.82 71.34 ±6.16
+19 86.43 ±3.10 90.39 ±3.45 87.90 ±5.21 89.36 ±3.45 91.45 ±2.23 96.72 ±2.54 94.68 ±4.86 100.00 ±0.00
+20 90.14±6.40 90.01±5.55 90.01 ±6.48 88.68 ±5.35 88.52 ±4.89 86.14 ±5.68 77.81 ±4.33 85.04 ±4.76
+21 91.32 ±3.49 91.46±4.84 88.76±6.46 89.91 ±4.22 90.26 ±2.48 87.98 ±7.78 87.15 ±6.49 62.79 ±7.56
+22 92.27 ±6.14 92.27 ±6.01 93.14±7.12 92.44±4.37 91.49 ±5.98 87.70 ±10.84 85.12 ±13.45 88.43 ±12.11
+23 89.42 ±3.01 91.79±3.76 90.04±5.48 90.11 ±3.20 88.72 ±7.96 90.34 ±2.28 88.37 ±9.49 88.43 ±7.51
+24 91.50 ±9.63 91.64 ±9.99 92.68±4.48 90.69±9.83 90.69 ±9.96 89.76 ±6.62 79.01 ±14.18 87.48 ±10.33
+25 99.75 ±0.17 99.75 ±0.19 99.75 ±0.18 99.75 ±0.19 99.70 ±0.18 99.82±0.15 51.06±0.01 99.68 ±1.01
+26 88.11 ±10.40 91.22 ±9.84 88.94 ±11.68 92.18 ±3.49 95.98±1.32 86.32±11.48 87.47 ±10.12 93.89 ±8.87
+27 93.45 ±5.32 94.71 ±4.89 93.84 ±6.21 94.64 ±4.13 95.44±2.01 90.56±5.03 84.39 ±13.70 88.78 ±4.39
+28 58.36 ±3.78 67.42±6.92 63.38±4.50 65.72 ±7.14 61.64 ±18.69 65.59 ±5.12 52.13 ±0.16 57.18 ±5.75
+29 88.68 ±8.26 92.45±8.78 81.25±11.65 89.35 ±2.99 79.18 ±13.42 87.43 ±10.19 80.41 ±18.64 85.68 ±15.34
+30 77.46 ±10.51 78.56 ±10.19 77.24 ±7.14 79.28 ±8.09 80.71 ±12.61 81.34±9.75 75.44±7.78 75.36 ±7.60
+31 80.68 ±5.09 85.12±0.98 82.53±3.22 84.58 ±2.73 81.76 ±4.93 82.61 ±3.16 59.40 ±4.88 67.59 ±6.69
+32 65.83 ±8.39 73.68 ±5.15 66.45 ±6.89 75.71±4.21 63.51±19.80 71.98 ±10.88 60.37 ±7.76 56.49 ±4.16
+33 95.76 ±1.25 96.52±0.67 95.76±1.21 96.27 ±1.32 95.96 ±1.01 95.91 ±1.39 86.42 ±6.58 84.53 ±2.98
+34 89.51 ±17.30 89.56±17.41 85.78±15.54 85.40 ±16.11 87.44 ±8.39 77.43 ±14.60 65.79 ±17.19 85.59 ±15.48
+35 88.45 ±7.61 91.34±4.82 87.20±5.75 89.48 ±5.32 89.34 ±6.59 85.28 ±4.71 73.66 ±10.12 78.84 ±8.82
+36 55.49 ±9.99 66.13 ±7.28 54.38 ±8.01 67.36 ±6.15 50.45 ±19.14 71.46±12.89 50.51±0.95 52.19 ±3.15
+Average 82.16 84.64 82.19 84.04 82.53 86.18 77.74 80
+are compared. Note that SVM [47], FSVM [19] and 1-NN [24] are proposed
+Springer Nature 2021 L ATEX template
+24 Class Imbalanced Learning with SVM
+Table 7 : G-MEAN (%) rates of re-sampling and fusion-based SVM models
+for imbalanced data sets.
+Data set FSVM[19] SVM-SMOTE[47] SVM-OSS[47] SVM-RUS[47] SVM[47] EasyEnsemble[47] AdaBoost[24] 1-NN[24]
+2 96.28±3.86 94.59±2.30 94.56 ±1.55 94.31 ±3.54 94.76 ±1.45 94.53 ±2.17 92.53 ±5.39 92.30 ±3.00
+3 71.23 ±3.33 72.44 ±5.51 70.66 ±6.28 72.59 ±1.61 71.00 ±5.30 74.36±2.65 72.22±3.99 65.59 ±3.46
+4 69.51 ±3.44 70.15 ±2.90 68.52 ±2.61 69.65 ±3.93 71.80 ±3.00 73.40±4.80 67.36±4.15 64.39 ±2.89
+5 87.42 ±1.74 89.18 ±1.53 82.77 ±1.93 83.86 ±1.95 91.38 ±2.25 95.20±0.48 94.82±0.33 92.23 ±0.84
+6 67.58 ±3.82 71.52 ±6.37 72.06 ±6.78 73.21 ±5.40 69.35 ±5.16 75.32±5.58 72.19±4.82 63.46 ±2.29
+9 94.59 ±0.81 95.17 ±0.74 87.96 ±1.01 93.11 ±0.93 90.47 ±0.86 99.11±0.09 99.08±0.22 99.01 ±0.42
+10 87.51 ±3.14 89.83 ±1.69 87.09 ±2.26 87.55 ±2.13 86.74 ±5.67 90.38±3.45 84.98±2.39 78.29 ±2.44
+11 79.98 ±3.95 78.24 ±7.17 73.28 ±3.00 78.15 ±2.82 73.18 ±6.44 93.54±0.67 90.37±0.57 89.84 ±1.58
+12 85.73 ±8.19 87.37 ±2.43 88.18 ±7.38 87.20 ±7.08 84.37 ±7.87 91.46±4.29 82.96±8.55 84.55 ±11.54
+13 95.36 ±4.51 95.53 ±4.04 96.24 ±4.16 97.93±2.12 96.29±5.26 95.64 ±4.26 95.42 ±5.03 91.21 ±5.02
+14 68.01 ±1.42 72.80 ±0.91 65.62 ±1.25 71.49 ±0.88 67.57 ±1.16 74.71±1.03 65.47±0.94 67.57 ±1.13
+15 76.48 ±8.80 79.70±6.21 79.49±5.16 77.74 ±5.65 75.45 ±5.58 78.75 ±5.89 70.85 ±4.04 75.47 ±3.55
+16 89.32±8.57 88.13±7.97 87.41 ±9.02 86.75 ±7.00 89.12 ±5.99 85.63 ±5.13 83.83 ±11.18 83.80 ±10.98
+17 91.90 ±8.88 92.74±11.16 91.85±12.25 91.93 ±10.19 92.06 ±12.33 91.41 ±9.40 83.42 ±9.54 83.75 ±10.12
+18 78.39 ±8.09 79.61 ±5.53 79.44 ±7.31 80.13±5.31 77.06±7.63 78.12 ±6.55 66.87 ±7.28 69.49 ±7.70
+19 86.28 ±6.02 90.23 ±6.70 87.75 ±10.12 89.20 ±6.70 91.29 ±4.33 95.55 ±4.39 93.51 ±9.44 99.83±0.20
+20 88.13±6.40 88.00±5.50 87.89 ±6.44 86.70 ±5.31 86.55 ±4.86 84.22 ±5.64 76.07 ±4.30 83.14 ±4.73
+21 87.58 ±8.62 87.71±11.95 85.12±12.95 86.23 ±10.42 86.56 ±6.12 84.38 ±13.21 83.58 ±11.02 60.22 ±13.67
+22 90.48 ±3.95 92.27±3.87 90.41±4.58 90.65 ±2.81 89.71 ±3.85 86.00 ±6.97 83.47 ±8.65 86.71 ±7.79
+23 92.84 ±2.03 95.30±2.54 93.48±3.70 93.19 ±2.16 92.11 ±5.37 93.79 ±1.54 91.75 ±6.40 91.82 ±5.06
+24 91.90 ±1.48 92.04 ±1.53 93.08±0.69 91.00±1.51 91.09 ±1.53 90.15 ±1.02 79.35 ±2.18 87.86 ±1.59
+25 99.86 ±0.11 99.89 ±0.05 99.86 ±0.7 99.87 ±0.05 99.81 ±0.07 99.93±0.04 81.09±0.41 99.79 ±0.65
+26 85.58 ±9.96 88.60 ±9.42 86.39 ±11.18 89.53 ±3.34 90.84±2.22 83.84±10.99 84.96 ±9.69 90.19 ±8.49
+27 93.05 ±5.11 94.30 ±4.70 93.44 ±5.96 94.23 ±3.97 94.43±1.93 90.17±4.83 84.03 ±13.16 88.40 ±4.22
+28 61.30 ±6.81 70.82±12.57 66.57±8.11 69.03 ±12.86 64.74 ±15.66 68.89 ±9.22 54.76 ±0.29 60.06 ±10.36
+29 73.43 ±10.28 76.55±10.93 67.28±14.50 73.98 ±3.72 65.56 ±16.70 72.39 ±12.68 66.58 ±13.19 70.95 ±13.09
+30 71.94 ±6.61 72.96 ±6.41 70.73 ±4.49 73.63 ±5.09 74.96 ±7.93 75.54±6.13 70.06±4.89 69.99 ±4.78
+31 80.80 ±5.76 85.25±1.11 82.65±3.64 84.70 ±3.09 81.88 ±5.58 82.73 ±3.58 59.49 ±5.52 67.69 ±7.57
+32 66.22 ±4.54 74.11 ±4.54 66.84 ±6.07 74.61±3.71 63.89±11.44 72.36 ±9.58 60.73 ±6.83 56.82 ±3.66
+33 90.42 ±2.21 91.14±1.18 90.38±2.14 90.91 ±2.33 90.61 ±1.79 90.56 ±2.46 81.60 ±11.63 79.82 ±5.27
+34 98.24 ±3.42 98.29±3.44 94.15±3.07 93.73 ±3.18 95.97 ±1.66 84.98 ±2.89 72.21 ±3.40 93.94 ±3.06
+35 89.57 ±4.20 92.50±2.66 88.30±3.17 90.61 ±2.94 90.47 ±3.64 86.36 ±2.60 74.59 ±5.59 79.83 ±4.87
+36 54.74 ±2.54 65.25 ±1.85 53.64 ±2.04 66.45 ±1.56 49.77 ±4.87 70.49±3.28 49.83±0.24 51.48 ±0.80
+Average 83.08 85.22 82.52 84.36 82.75 84.97 77.88 79.38
+for tackling balanced classification problems. All SVMs use linear kernel func-
+tions. Tables 6 and 7 present the AUC and G-mean scores along with their
+standard deviation (SD). Overall, EasyEnsemble [47] and SVM-SMOTE [62]
+outperform other methods in terms of average AUC (86.18%) and G-mean
+(85.22%), respectively.
+5 Discussion
+This section analyzes and discusses the main findings of this review and high-
+lights several future research directions along with several research questions.
+SVM and its variants for learning imbalanced data can be broadly cate-
+gorized into three: re-sampling, algorithmic, and fusion methods. Re-sampling
+methods pre-process data samples by attempting to balance between the
+numbers of majority and minority class samples. This can be achieved by
+under-sampling the majority class samples, over-sampling the minority class
+samples, or their combination. Despite the success of re-sampling methods,
+several limitations exist. These methods require pre-processing of data sam-
+ples before model training. Although under-sampling strategies can reduce the
+computational burden, useful information could be eliminated by removing
+data samples close to the decision boundary. On the other hand, over-sampling
+strategies could lead to the overfitting problem, and they require longer
+execution durations.
+Comparing with re-sampling methods, algorithmic models do not require
+data pre-processing, therefore a lower computational burden. In general, two
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 25
+algorithmic strategies that enable the SVM and its variants to effectively deal
+with imbalanced data are: (i) applying different cost functions to the majority
+and minority class samples; (ii) modifying the underlying kernel functions. On
+the other hand, fusion models combine re-sampling and algorithmic methods or
+employ an ensemble of learning models, usually weak learners, to tackle class-
+imbalanced learning problems. As reported in the literature, fusion models
+usually outperform algorithmic methods. However, they are computationally
+expensive, as it is necessary to train multiple models in fusion methods. Table
+8 presents a comparison of the three categories of SVM-based models from
+different aspects. Table 8 presents a comparison of the three categories of
+SVM-based models from different aspects. The following sub-section presents
+several directions that need further investigation.
+Table 8 : Comparative analysis of SVM-based techniques for imbalanced class
+learning.
+Aspect Re-sampling Methods Algorithmic Methods Fusion Methods
+Description Pre-process data samples
+to balance the numbers of
+majority and minority class
+samples.Modify the underlying algo-
+rithm of SVM and its vari-
+ants directly without data
+pre-processing.Integrate two or more
+methods into a single
+framework.
+Techniques Under-sampling or over-
+sampling, or a combination
+of both.Use different cost functions.
+Modify kernel functions.Combine re-sampling and
+algorithmic techniques.
+Ensemble of learning mod-
+els.
+Advantages Reduce computational
+burden (under-sampling).
+Enhance minority class
+representation (over-
+sampling).Possess a lower computa-
+tional load. Direct modifi-
+cation of SVM algorithms.Generally perform better
+than algorithmic methods
+alone. Address both data
+and algorithmic issues.
+Disadvantages Risk of information loss
+(under-sampling). Risk
+of overfitting (over-
+sampling). Require data
+pre-processing.Potentially less effective in
+handling highly imbalanced
+data.Computationally expensive
+owing to the need to train
+multiple models.
+Execution
+TimeVary subject to the extent
+of re-sampling.Generally faster as no data
+pre-processing is needed.Time-consuming owing to
+the complexity and multi-
+ple model training.
+5.1 Future research directions
+Despite the success of SVM and its variants in solving imbalanced data learning
+problems, there are a number of challenging issues pertaining to the availabil-
+ity of sufficient minority class samples for training purposes. Several future
+research directions that require further investigations are:
+•Noisy data sets: SVM and its variants are highly sensitive to noisy sam-
+ples, which becomes more challenging in tackling imbalanced data. Although
+Springer Nature 2021 L ATEX template
+26 Class Imbalanced Learning with SVM
+several studies have discussed this issue, comprehensive theoretical and
+empirical analyses are still lacking.
+•Large scale data sets: The advent of big data has resulted in various
+tasks with large-scale and low-quality data. When large data samples are
+available for training, the underlying learning methods should be adaptive
+toward both space and time requirements. This challenge becomes more
+significant when dealing with imbalanced data. Like many other machine
+learning algorithms, SVM and its variants can be improved when they are
+applied to processing large-scale imbalanced data sets.
+•Extremely imbalanced data sets: In big data, identifying the minority
+class samples becomes more difficult due to bias towards the majority class
+samples. Such a biased learning process can result in recognizing all instances
+as the majority class samples and producing deceptively high accuracy rates.
+Many studies in the current literature lack in-depth investigations on both
+theoretical and practical aspects of SVM and its variants, making it difficult
+to conclude whether one method is more effective and efficient than another
+in tackling extremely imbalanced data.
+Based on the above analysis, a number of research questions that are of
+interest to both researchers and practitioners are as follows:
+•What is the impact of class noise on classification algorithms trained on
+highly skewed data sets?
+•Are the effects of class noise in imbalanced data sets uniform across different
+classification alhorithms?
+•How do sampling procedures, which are often used to alleviate class
+imbalanced issues, perform in the presence of class noise?
+•How do different sampling techniques work with respect to different levels
+of noise in different proportions of both majority and minority classes?
+5.2 Concluding remarks
+Enabling SVM to learn from class imbalanced data is useful for handling
+many real-world applications, such as medical diagnosis or fault detection, in
+which obtaining sufficient samples for all classes is impractical. In this study, a
+review of SVM-based models for class imbalanced learning has been presented.
+Specifically, we have categorized the existing methods into three: re-sampling,
+algorithmic and fusion methods. We have also discussed the principles of sev-
+eral representative models of each category, and conducted an empirical study
+to compare the relevant methods. The outcome indicates that fusion methods
+usually perform better than other methods. Nonetheless, they are computa-
+tionally expensive, as they require the use of multiple classifiers. In addition,
+several directions for future research have been discussed, and our reviews
+provide the necessary guidelines for researchers from different fields to utilize
+SVM and its variants for effectively learning from class-imbalanced data sets.
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 27
+Declaration of competing interest :
+The corresponding author certifies that all authors have read the manuscript
+before submission, and there is no conflict of interest associated with this
+publication, and there has been no financial support for this work that could
+have influenced its outcome.
+Data availability statement :
+The data that support the findings of this study are openly available in UCI
+and KEEL repositories at http:// archive.ics.uci.edu/ml/datasets.html and
+https://sci2s.ugr.es/keel/imbalanced.php, respectively.
+Credit authorship contribution statement :
+Salim Rezvani : Data curation and validation. Farhad Pourpanah : Con-
+ceptualization, Investigation, Writing –original draft, review & editing,
+Supervision. Chee Peng Lim : Writing – review & editing, Supervision. Q.
+M. Jonathan Wu : Funding acquisition, Supervision.
+==========
+References
+[1] Wang, J., He, Z., Huang, S., Chen, H., Wang, W., Pourpanah, F.: Fuzzy
+measure with regularization for gene selection and cancer prediction.
+International Journal of Machine Learning and Cybernetics, 1–17 (2021).
+https://doi.org/10.1007/s13042-021-01319-3
+[2] Randhawa, K., Loo, C.K., Seera, M., Lim, C.P., Nandi, A.K.: Credit
+card fraud detection using adaboost and majority voting. IEEE Access
+6, 14277–14284 (2018). https://doi.org/10.1109/ACCESS.2018.2806420
+[3] Pourpanah, F., Zhang, B., Ma, R., Hao, Q.: Anomaly detection and
+condition monitoring of uav motors and propellers. In: IEEE SENSORS,
+pp. 1–4 (2018). https://doi.org/10.1109/ICSENS.2018.8589572
+[4] Maalouf, M., Trafalis, T.B.: Robust weighted kernel logistic regression
+in imbalanced and rare events data. Computational Statistics & Data
+Analysis 55(1), 168–183 (2011). https://doi.org/10.1016/j.csda.2010.06.
+014
+[5] Pourpanah, F., Abdar, M., Luo, Y., Zhou, X., Wang, R., Lim, C.P.,
+Wang, X.-Z., Wu, Q.M.J.: A review of generalized zero-shot learning
+methods. IEEE Transactions on Pattern Analysis and Machine Intel-
+ligence 45(4), 4051–4070 (2023). https://doi.org/10.1109/TPAMI.2022.
+3191696
+Springer Nature 2021 L ATEX template
+28 Class Imbalanced Learning with SVM
+[6] He, H., Garcia, E.A.: Learning from imbalanced data. IEEE Transactions
+on Knowledge and Data Engineering 21(9), 1263–1284 (2009). https:
+//doi.org/10.1109/TKDE.2008.239
+[7] Wang, X., Zhao, Y., Pourpanah, F.: Recent advances in deep learning.
+International Journal of Machine Learning and Cybernetics 11, 747–750
+(2020). https://doi.org/10.1007/s13042-020-01096-5
+[8] Jimenez-Castano, C., Alvarez-Meza, A., Orozco-Gutierrez, A.: Enhanced
+automatic twin support vector machine for imbalanced data classifica-
+tion. Pattern Recognition 107, 107442 (2020). https://doi.org/10.1016/
+j.patcog.2020.107442
+[9] Liu, J.: Fuzzy support vector machine for imbalanced data with border-
+line noise. Fuzzy Sets and Systems 413, 64–73 (2021). https://doi.org/
+10.1016/j.fss.2020.07.018. Data Science
+[10] Barua, S., Islam, M.M., Yao, X., Murase, K.: Mwmote–majority
+weighted minority oversampling technique for imbalanced data set learn-
+ing. IEEE Transactions on knowledge and data engineering 26(2),
+405–425 (2012). https://doi.org/10.1016/j.eswa.2020.113504
+[11] Khan, S.H., Hayat, M., Bennamoun, M., Sohel, F.A., Togneri, R.: Cost-
+sensitive learning of deep feature representations from imbalanced data.
+IEEE Transactions on neural networks and learning systems 29(8), 3573–
+3587 (2017). https://doi.org/10.1109/TNNLS.2017.2732482
+[12] Sun, Z., Song, Q., Zhu, X., Sun, H., Xu, B., Zhou, Y.: A novel ensem-
+ble method for classifying imbalanced data. Pattern Recognition 48(5),
+1623–1637 (2015). https://doi.org/10.1016/j.patcog.2014.11.014
+[13] Cortes, C., Vapnik, V.: Support-vector networks. Machine learning
+20(3), 273–297 (1995). https://doi.org/10.1007/BF00994018
+[14] Vapnik, V.: The Nature of Statistical Learning Theory, (2000). https:
+//doi.org/10.1007/978-1-4757-3264-1
+[15] Tao, D., Jin, L., Liu, W., Li, X.: Hessian regularized support vector
+machines for mobile image annotation on the cloud. IEEE Transactions
+on Multimedia 15(4), 833–844 (2013). https://doi.org/10.1109/TMM.
+2013.2238909
+[16] Rezvani, S., Wang, X., Pourpanah, F.: Intuitionistic fuzzy twin support
+vector machines. IEEE Transactions on Fuzzy Systems 27(11), 2140–
+2151 (2019). https://doi.org/10.1109/TFUZZ.2019.2893863
+[17] Cristianini, N., Shawe-Taylor, J.: An Introduction to Support Vector
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 29
+Machines and Other Kernel-based Learning Methods. Cambridge Uni-
+versity Press, ??? (2000). https://doi.org/10.1017/CBO9780511801389
+[18] Kang, Q., Shi, L., Zhou, M., Wang, X., Wu, Q., Wei, Z.: A distance-
+based weighted undersampling scheme for support vector machines and
+its application to imbalanced classification. IEEE Transactions on Neural
+Networks and Learning Systems 29(9), 4152–4165 (2018). https://doi.
+org/10.1109/TNNLS.2017.2755595
+[19] Lin, C.-F., Wang, S.-D.: Fuzzy support vector machines. IEEE trans-
+actions on neural networks 13(2), 464–471 (2002). https://doi.org/10.
+1109/72.991432
+[20] Jayadeva, Khemchandani, R., Chandra, S.: Twin support vector
+machines for pattern classification. IEEE Transactions on Pattern Anal-
+ysis and Machine Intelligence 29(5), 905–910 (2007). https://doi.org/10.
+1109/TPAMI.2007.1068
+[21] Gao, B.-B., Wang, J.-J., Wang, Y., Yang, C.-Y.: Coordinate descent
+fuzzy twin support vector machine for classification. In: IEEE Inter-
+national Conference on Machine Learning and Applications, pp. 7–12
+(2015). https://doi.org/10.1109/ICMLA.2015.35
+[22] K¨ oknar-Tezel, S., Latecki, L.J.: Improving svm classification on imbal-
+anced data sets in distance spaces. In: IEEE International Conference on
+Data Mining, pp. 259–267 (2009). https://doi.org/10.1109/ICDM.2009.
+59
+[23] Akbani, R., Kwek, S., Japkowicz, N.: Applying support vector machines
+to imbalanced datasets. in Proceedings of the European Confer-
+ence on Machine Learning, 39–50 (2004). https://doi.org/10.1007/
+978-3-540-30115-8 7
+[24] Galar, M., Fernandez, A., Barrenechea, E., Herrera, F.: A review
+on ensembles for the class imbalance problem: bagging, boosting,
+and hybrid-based approaches. IEEE Transactions on Systems, Man,
+and Cybernetics, Part C 42, 463–484 (2012). https://doi.org/10.1109/
+TSMCC.2011.2161285
+[25] Haixiang, G., Yijing, L., Shang, J., Mingyun, G., Yuanyue, H., Bing,
+G.: Learning from class-imbalanced data: Review of methods and appli-
+cations. Expert Systems with Applications 73, 220–239 (2017). https:
+//doi.org/10.1016/j.eswa.2016.12.035
+[26] He, H., Ma, Y.: Imbalanced Learning: Foundations, Algorithms, and
+Applications, 1st edn. Wiley-IEEE Press, ??? (2013). https://doi.org/
+10.1002/9781118646106
+Springer Nature 2021 L ATEX template
+30 Class Imbalanced Learning with SVM
+[27] Batuwita, R., Palade, V.: Class imbalance learning methods for sup-
+port vector machines. Imbalanced learning: Foundations, algorithms, and
+applications, 83–99 (2013). https://doi.org/10.1002/9781118646106.ch5
+[28] Yu, X.-P., Yu, X.-G.: Novel text classification based on k-nearest neigh-
+bor. in Proceedings of the International Conference on Machine Learning
+and Cybernetics, 3425–3430 (2007). https://doi.org/10.1109/ICMLC.
+2007.4370740
+[29] Batuwita, R., Palade, V.: Fsvm-cil: fuzzy support vector machines for
+class imbalance learning. IEEE Transactions on Fuzzy Systems 18, 558–
+571 (2010). https://doi.org/10.1109/TFUZZ.2010.2042721
+[30] Wu, G., Chang, E.Y.: Class-boundary alignment for imbalanced dataset
+learning. In: In ICML Workshop on Learning from Imbalanced Data
+Sets, pp. 49–56 (2003)
+[31] Cristianini, N., Shawe-Taylor, J., et al. : An Introduction to Sup-
+port Vector Machines and Other Kernel-based Learning Meth-
+ods. Cambridge university press, ??? (2000). https://doi.org/10.1017/
+CBO9780511801389
+[32] Veropoulos, K., Campbell, C., Cristianini, N.: Controlling the sensitiv-
+ity of support vector machines. Proceedings of the International Joint
+Conference on AI, 55–60 (1999)
+[33] Estabrooks, A., Jo, T., Japkowicz, N.: A multiple resampling method for
+learning from imbalanced data sets. Computational intelligence 20(1),
+18–36 (2004). https://doi.org/10.1111/j.0824-7935.2004.t01-1-00228.x
+[34] Chawla, N., Bowyer, K., Hall, L., Kegelmeyer, W.: Smote: Synthetic
+minority over-sampling technique. Journal of Artificial Intelligence
+Research 16, 321–357 (2002). https://doi.org/10.1613/jair.953
+[35] Chen, J., Casique, M., Karakoy, M.: Classification of lung data by
+sampling and support vector machine. In Proceedings of the Annual
+International Conference of the IEEE Engineering in Medicine and Biol-
+ogy Society 2, 3194–3197 (2004). https://doi.org/10.1109/IEMBS.2004.
+1403900
+[36] Fu, Y., Ruixiang, S., Yang, Q., Simin, H., Wang, C., Wang, H., Shan,
+S., Liu, J., Gao, W.: A block-based support vector machine approach to
+the protein homology prediction task in kdd cup 2004. SIGKDD Explo-
+ration Newsletters 6, 120–124 (2004). https://doi.org/10.1145/1046456.
+1046475
+[37] Lessmann, S.: Solving imbalanced classification problems with support
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 31
+vector machines. in Proceedings of the International Conference on
+Artificial Intelligence, 214–220 (2004)
+[38] Batuwita, R., V.Palade: An improved non-comparative classification
+method for human microrna gene prediction. in Proceedings of the Inter-
+national Conference on Bioinformatics and Bioengineering, 1–6 (2008).
+https://doi.org/10.1109/BIBE.2008.4696724
+[39] Batuwita, R., Palade, V.: Micropred: Effective classification of pre-
+mirnas for human mirna gene prediction. Bioinformatics 25, 989–995
+(2009). https://doi.org/10.1093/bioinformatics/btp107
+[40] Hoyos-Osorio, J., Alvarez-Meza, A., Daza-Santacoloma, G., Orozco-
+Gutierrez, A., Castellanos-Dominguez, G.: Relevant information under-
+sampling to support imbalanced data classification. Neurocomputing
+436, 136–146 (2021). https://doi.org/10.1016/j.neucom.2021.01.033
+[41] Tyagi, S., Mittal, S.: Sampling approaches for imbalanced data classi-
+fication problem in machine learning. Proceedings of ICRIC, 209–221
+(2019). https://doi.org/10.1007/978-3-030-29407-6 17
+[42] Kubat, M., Matwin, S.: Addressing the curse of imbalanced training sets:
+One-sided selection. In: In Proceedings of the Fourteenth International
+Conference on Machine Learning, pp. 179–186. Morgan Kaufmann, ???
+(1997). https://doi.org/10.1.1.43.4487
+[43] Liu, X., Wu, J., Zhou, Z.: Exploratory undersampling for class-imbalance
+learning. IEEE Transactions on Systems, Man, and Cybernetics, Part B
+(Cybernetics) 39(2), 539–550 (2009). https://doi.org/10.1109/TSMCB.
+2008.2007853
+[44] Tang, X., Hong, H., Shu, Y., Tang, H., Li, J., Liu, W.: Urban waterlog-
+ging susceptibility assessment based on a pso-svm method using a novel
+repeatedly random sampling idea to select negative samples. Journal of
+Hydrology 576, 583–595 (2019). https://doi.org/10.1016/j.jhydrol.2019.
+06.058
+[45] Tang, X., Machimura, T., Li, J., Liu, W., Hong, H.: A novel opti-
+mized repeatedly random undersampling for selecting negative samples:
+A case study in an svm-based forest fire susceptibility assessment. Jour-
+nal of Environmental Management 271, 111014 (2020). https://doi.org/
+10.1016/j.jenvman.2020.111014
+[46] Hengyu, Z.: An under-sampling algorithm based on svm. In: IEEE Inter-
+national Conference on Artificial Intelligence and Industrial Design, pp.
+64–68 (2021). https://doi.org/10.1109/AIID51893.2021.9456573
+Springer Nature 2021 L ATEX template
+32 Class Imbalanced Learning with SVM
+[47] Liu, X.-Y., Wu, J., Zhou, Z.-H.: Exploratory undersampling for class-
+imbalance learning. IEEE Transactions on Systems, Man, and Cyber-
+netics, Part B (Cybernetics) 39(2), 539–550 (2008). https://doi.org/10.
+1109/TSMCB.2008.2007853
+[48] Yuan, J., Li, J., , Zhang, B.: Learning concepts from large scale imbal-
+anced data sets using support cluster machines. in Proceedings of the
+annual ACM international conference on Multimedia, 441–450 (2006).
+https://doi.org/10.1145/1180639.1180729
+[49] Ng, W.W.Y., Hu, J., Yeung, D.S., Yin, S., Roli, F.: Diversified
+sensitivity-based undersampling for imbalance classification problems.
+IEEE Transactions on Cybernetics 45(11), 2402–2412 (2015). https:
+//doi.org/10.1109/TCYB.2014.2372060
+[50] Di, Z., Kang, Q., Peng, D., Zhou, M.: Density peak-based pre-clustering
+support vector machine for multi-class imbalanced classification. In:
+IEEE International Conference on Systems, Man and Cybernetics, pp.
+27–32 (2019). https://doi.org/10.1109/SMC.2019.8914451
+[51] Shukla, P., Bhowmick, K.: To improve classification of imbalanced
+datasets. In: International Conference on Innovations in Information,
+Embedded and Communication Systems, pp. 1–5 (2017). https://doi.
+org/10.1109/ICIIECS.2017.8276044
+[52] Rezvani, S., Wang, X.: Class imbalance learning using fuzzy art and
+intuitionistic fuzzy twin support vector machines. Information Sciences
+578, 659–682 (2021). https://doi.org/10.1016/j.ins.2021.07.010
+[53] Lin, W.-C., Tsai, C.-F., Hu, Y.-H., Jhang, J.-S.: Clustering-based under-
+sampling in class-imbalanced data. Information Sciences 409, 17–26
+(2017). https://doi.org/10.1016/j.ins.2017.05.008
+[54] Carpenter, G.A., Grossberg, S., Rosen, D.B.: Fuzzy art: Fast stable
+learning and categorization of analog patterns by an adaptive resonance
+system. Neural Networks 4(6), 759–771 (1991). https://doi.org/10.1016/
+0893-6080(91)90056-B
+[55] Ertekin, S., Huang, J., Giles, L.: Active learning for class imbalance prob-
+lem. in Proceedings of the Annual International ACM SIGIR Conference
+on Research and Development in Information Retrieval, 823–824 (2007).
+https://doi.org/10.1145/1277741.1277927
+[56] Ertekin, S., Huang, J., Bottou, L., Giles, L.: Learning on the border:
+active learning in imbalanced data classification. in Proceedings of the
+ACM Conference on Information and Knowledge Management, 127–136
+(2007). https://doi.org/10.1145/1321440.1321461
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 33
+[57] Kerdprasop, N., Kerdprasop, K.: Predicting rare classes of primary
+tumors with over-sampling techniques. In: Database Theory and Appli-
+cation, Bio-Science and Bio-Technology, pp. 151–160 (2011). https://doi.
+org/10.1007/978-3-642-27157-1 17
+[58] Wang, J., Yao, Y., Zhou, H., Leng, M., Chen, X.: A new over-sampling
+technique based on svm for imbalanced diseases data. In: Proceedings
+of the International Conference on Mechatronic Sciences, Electric Engi-
+neering and Computer, pp. 1224–1228 (2013). https://doi.org/10.1109/
+MEC.2013.6885254
+[59] Liang, X.W., Jiang, A.P., Li, T., Xue, Y.Y., Wang, G.T.: Lr-smote —
+an improved unbalanced data set oversampling based on k-means and
+svm. Knowledge-Based Systems 196, 105845 (2020). https://doi.org/10.
+1016/j.knosys.2020.105845
+[60] Sreejith, S., Khanna Nehemiah, H., Kannan, A.: Clinical data clas-
+sification using an enhanced smote and chaotic evolutionary feature
+selection. Computers in Biology and Medicine 126, 103991 (2020).
+https://doi.org/10.1016/j.compbiomed.2020.103991
+[61] Mathew, J., Pang, C.K., Luo, M., Leong, W.H.: Classification of imbal-
+anced data by oversampling in kernel space of support vector machines.
+IEEE Transactions on Neural Networks and Learning Systems 29(9),
+4065–4076 (2018). https://doi.org/10.1109/TNNLS.2017.2751612
+[62] Nguyen, H.M., Cooper, E.W., Kamei, K.: Borderline over-sampling for
+imbalanced data classification. Int. J. Knowl. Eng. Soft Data Paradigm.
+3(1), 4–21 (2011). https://doi.org/10.1504/IJKESDP.2011.039875
+[63] Barua, S., Islam, M.M., Yao, X., Murase, K.: Mwmote–majority
+weighted minority oversampling technique for imbalanced data set learn-
+ing. IEEE Transactions on Knowledge and Data Engineering 26(2),
+405–425 (2014). https://doi.org/10.1016/j.eswa.2020.113504
+[64] Wei, J., Huang, H., Yao, L., Hu, Y., Fan, Q., Huang, D.: New imbalanced
+fault diagnosis framework based on cluster-mwmote and mfo-optimized
+ls-svm using limited and complex bearing data. Engineering Applications
+of Artificial Intelligence 96, 103966 (2020). https://doi.org/10.1016/j.
+engappai.2020.103966
+[65] R.Batuwita, Palade, V.: Efficient resampling methods for training sup-
+port vector machines with imbalanced datasets. in Proceedings of the
+International Joint Conference on Neural Networks, 1–8 (2010). https:
+//doi.org/10.1109/IJCNN.2010.5596787
+Springer Nature 2021 L ATEX template
+34 Class Imbalanced Learning with SVM
+[66] Piri, S., Delenb, D., Liu, T.: A synthetic informative minority over-
+sampling (simo) algorithm leveraging support vector machine to enhance
+learning from imbalanced datasets. Decision Support Systems 106, 15–29
+(2018). https://doi.org/10.1016/j.dss.2017.11.006
+[67] A.Rivera, W.: Noise reduction a priori synthetic over-sampling for class
+imbalanced data sets. Information Sciences 408, 146–161 (2017). https:
+//doi.org/10.1016/j.ins.2017.04.046
+[68] Liu, A., Martin, C., La Cour, B., Ghosh, J.: Effects of oversampling ver-
+sus cost-sensitive learning for bayesian and svm classifiers. In: Data Min-
+ing, pp. 159–192 (2010). https://doi.org/10.1007/978-1-4419-1280-0 8
+[69] Himaja, D., Maruthi Padmaja, T., Radha Krishna, P.: Oversample based
+large scale support vector machine for online class imbalance problem.
+In: Mondal, A., Gupta, H., Srivastava, J., Reddy, P.K., Somayajulu,
+D.V.L.N. (eds.) Big Data Analytics, pp. 348–362. Springer, ??? (2018).
+https://doi.org/10.1007/978-3-030-04780-1 24
+[70] Wei, J., Huang, H., Yao, L., Hu, Y., Fan, Q., Huang, D.: New imbalanced
+bearing fault diagnosis method based on sample-characteristic oversam-
+pling technique (scote) and multi-class ls-svm. Applied Soft Computing
+101, 107043 (2021). https://doi.org/10.1016/j.asoc.2020.107043
+[71] Ganaie, M.A., Tanveer, M., Suganthan, P.N.: Regularized robust fuzzy
+least squares twin support vector machine for class imbalance learning.
+In: International Joint Conference on Neural Networks, pp. 1–8 (2020).
+https://doi.org/10.1109/IJCNN48605.2020.9207724
+[72] Yanze, L., OGAI, H.: Quasi-linear svm with local offsets for high-
+dimensional imbalanced data classification. In: Annual Conference of
+the Society of Instrument and Control Engineers of Japan, pp. 882–887
+(2020). https://doi.org/10.23919/SICE48898.2020.9240376
+[73] Cao, B., Liu, Y., Hou, C., Fan, J., Zheng, B., Yin, J.: Expediting the
+accuracy-improving process of svms for class imbalance learning. IEEE
+Transactions on Knowledge and Data Engineering, 1–1 (2020). https:
+//doi.org/10.1109/TKDE.2020.2974949
+[74] Liu, J.: Fuzzy support vector machine for imbalanced data with border-
+line noise. Fuzzy Sets and Systems 413, 64–73 (2021). https://doi.org/
+10.1016/j.fss.2020.07.018. Data Science
+[75] Tanveer, M., Sharma, A., Suganthan, P.N.: Least squares knn-based
+weighted multiclass twin svm. Neurocomputing (2020). https://doi.org/
+10.1016/j.neucom.2020.02.132
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 35
+[76] Wu, G., Zheng, R., Tian, Y., Liu, D.: Joint ranking svm and binary rele-
+vance with robust low-rank learning for multi-label classification. Neural
+Networks 122, 24–39 (2020). https://doi.org/10.1016/j.neunet.2019.10.
+002
+[77] Cao, P., Zhao, D., Zaiane, O.: An optimized cost-sensitive svm for imbal-
+anced data learning. In: Pei, J., Tseng, V.S., Cao, L., Motoda, H., Xu, G.
+(eds.) Advances in Knowledge Discovery and Data Mining, pp. 280–292
+(2013). https://doi.org/10.1007/978-3-642-37456-2 24
+[78] Bach, F., Heckerman, D., Horvitz, E.: Considering cost asymmetry in
+learning classifiers. J. MACHINE LEARNING RESEARCH 7, 1713–
+1741 (2006). https://doi.org/10.5555/1248547.1248610
+[79] Kowalczyk, A., Raskutti, B.: One class svm for yeast regulation predic-
+tion. SIGKDD Exploration Newsletters 4, 99–100 (2002). https://doi.
+org/10.1145/772862.772878
+[80] Raskutti, B., Kowalczyk, A.: Extreme re-balancing for svms: a case
+study. SIGKDD Exploration Newsletters 6, 60–69 (2004). https://doi.
+org/10.1145/1007730.1007739
+[81] Imam, T., Ting, K., Kamruzzaman, J.: z-svm: an svm for improved
+classification of imbalanced data. in Proceedings of the Australian joint
+conference on Artificial Intelligence: advances in Artificial Intelligence,
+264–273 (2006). https://doi.org/10.1007/11941439 30
+[82] Gu, B., Sheng, V.S., Tay, K.Y., Romano, W., Li, S.: Cross validation
+through two-dimensional solution surface for cost-sensitive svm. IEEE
+Transactions on Pattern Analysis and Machine Intelligence 39(6), 1103–
+1121 (2017). https://doi.org/10.1109/TPAMI.2016.2578326
+[83] Yang, C.Y., Yang, J.S., Wang, J.-J.: Margin calibration in svm class
+imbalanced learning. Neurocomputing 73, 397–411 (2009). https://doi.
+org/10.1016/j.neucom.2009.08.006
+[84] Yu, X., Liu, J., Keung, J.W., Li, Q., Bennin, K.E., Xu, Z., Wang, J., Cui,
+X.: Improving ranking-oriented defect prediction using a cost-sensitive
+ranking svm. IEEE Transactions on Reliability 69(1), 139–153 (2020).
+https://doi.org/10.1109/TR.2019.2931559
+[85] Xu, G., Zhou, H., Chen, J.: Cnc internal data based incremental cost-
+sensitive support vector machine method for tool breakage monitoring
+in end milling. Engineering Applications of Artificial Intelligence 74,
+90–103 (2018). https://doi.org/10.1016/j.engappai.2018.05.007
+[86] Ma, Y., Zhao, K., Wang, Q., Tian, Y.: Incremental cost-sensitive support
+Springer Nature 2021 L ATEX template
+36 Class Imbalanced Learning with SVM
+vector machine with linear-exponential loss. IEEE Access 8, 149899–
+149914 (2020). https://doi.org/10.1109/ACCESS.2020.3015954
+[87] Maldonadoa, S., L´ opez, J.: Dealing with high-dimensional class-
+imbalanced datasets: Embedded feature selection for svm classification.
+Applied Soft Computing 67, 94–105 (2018). https://doi.org/10.1016/j.
+asoc.2018.02.051
+[88] Tax, D.M.J., Duin, R.P.W.: Support vector data description.
+Mach. Learn. 54(1), 45–66 (2004). https://doi.org/10.1023/B:MACH.
+0000008084.60811.49
+[89] C.F.Lin, S.D.Wang: Training algorithms for fuzzy support vector
+machines with noisy data. Pattern Recognition Letters 14, 1647–1656
+(2004). https://doi.org/10.1109/NNSP.2003.1318051
+[90] Ma, H., Wang, L., Shen, B.: A new fuzzy support vector machines
+for class imbalance learning. International Conference on Electrical and
+Control Engineering, 3781–3784 (2011). https://doi.org/10.1155/2014/
+536434
+[91] Wang, Y., Wang, S., Lai, K.K.: A new fuzzy support vector machine to
+evaluate credit risk. IEEE Transactions on Fuzzy Systems 13, 820–831
+(2005). https://doi.org/10.1109/TFUZZ.2005.859320
+[92] Fan, Q., Wang, Z., Li, D., Gao, D., Zha, H.: Entropy-based fuzzy support
+vector machine for imbalanced datasets. Knowledge-Based Systems 115,
+87–99 (2017). https://doi.org/10.1016/j.knosys.2016.09.032
+[93] Gupta, D., Richhariya, B., Borah, P.: A fuzzy twin support vector
+machine based on information entropy for class imbalance learning. Neu-
+ral Computing and Applications 31, 7153–7164 (2019). https://doi.org/
+10.1007/s00521-018-3551-9
+[94] Wu, G., E.Chang: Adaptive feature-space conformal transformation for
+imbalanced-data learning. in Proceedings of the International Conference
+on Machine Learning, 816–823 (2003). https://doi.org/10.5555/3041838.
+3041941
+[95] G.Wu, Chang, E.: Kba: Kernel boundary alignment considering imbal-
+anced data distribution. IEEE Transactions on Knowledge and Data
+Engineering 17, 786–795 (2005). https://doi.org/10.1109/TKDE.2005.
+95
+[96] Amari, S., Wu, S.: Improving support vector machine classifiers by
+modifying kernel functions. Neural Networks 12(6), 783–789 (1999).
+https://doi.org/10.1016/S0893-6080(99)00032-5
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 37
+[97] Cristianini, N., Kandola, J., Elissee, A., Shawe-Taylor, J.: On kernel-
+target alignment. in Advances in Neural Information Processing Systems
+14, MIT Press, 367–373 (2002). https://doi.org/10.7551/mitpress/1120.
+001.0001
+[98] Kandola, J., Shawe-taylor, J.: Refining kernels for regression and uneven
+classifocation problems. in Proceedings of International Conference on
+Artificial Intelligence and Statistics (2003)
+[99] Tao, X., Li, Q., Ren, C., Guo, W., He, Q., Liu, R., Zou, J.: Affinity
+and class probability-based fuzzy support vector machine for imbalanced
+data sets. Neural Networks 122, 289–307 (2020). https://doi.org/10.
+1016/j.neunet.2019.10.016
+[100] Jimenez-Castano, C., Alvarez-Meza, A., Orozco-Gutierrez, A.: Enhanced
+automatic twin support vector machine for imbalanced data classifica-
+tion. Pattern Recognition 107, 107442 (2020). https://doi.org/10.1016/
+j.patcog.2020.107442
+[101] Hong, X., Chen, S., Harris, C.: kernel-based two-class classifier for imbal-
+anced data sets. IEEE Transactions on Neural Networks 18, 28–41
+(2007). https://doi.org/10.1109/TNN.2006.882812
+[102] Qin, A., Suganthan, P.: Kernel neural gas algorithms with application
+to cluster analysis. in Proceedings of the 17th International Conference
+on Pattern Recognition, IEEE Computer Society, 617–620 (2004). https:
+//doi.org/10.1109/ICPR.2004.1333848
+[103] Xu, Y.: Maximum margin of twin spheres support vector machine for
+imbalanced data classification. IEEE Transactions on Cybernetics 47(6),
+1540–1550 (2017). https://doi.org/10.1109/TCYB.2016.2551735
+[104] Liu, J., Zio, E.: Feature vector regression with efficient hyperparame-
+ters tuning and geometric interpretation. Neurocomputing 218, 411–422
+(2016). https://doi.org/10.1016/j.neucom.2016.08.093
+[105] Liu, J., Zio, E.: Integration of feature vector selection and support vector
+machine for classification of imbalanced data. Applied Soft Comput-
+ing Journal 79, 702–7011 (2019). https://doi.org/10.1016/j.asoc.2018.
+11.045
+[106] Kim, K.H., Sohn, S.Y.: Hybrid neural network with cost-sensitive sup-
+port vector machine for class-imbalanced multimodal data. Neural
+Networks 130, 176–184 (2020). https://doi.org/10.1016/j.neunet.2020.
+06.026
+[107] Rtayli, N., Enneya, N.: Enhanced credit card fraud detection based on
+Springer Nature 2021 L ATEX template
+38 Class Imbalanced Learning with SVM
+svm-recursive feature elimination and hyper-parameters optimization.
+Journal of Information Security and Applications 55, 102596 (2020).
+https://doi.org/10.1016/j.jisa.2020.102596
+[108] Wu, W., Xu, Y., Pang, X.: A hybrid acceleration strategy for nonparal-
+lel support vector machine. Information Sciences 546, 543–558 (2021).
+https://doi.org/10.1016/j.ins.2020.08.067
+[109] Tian, Y., Qi, Z., Ju, X., Shi, Y., Liu, X.: Nonparallel support vector
+machines for pattern classification. IEEE Transactions on Cybernetics
+44(7), 1067–1079 (2014). https://doi.org/10.1109/TCYB.2013.2279167
+[110] Breiman, L.: Bagging predictors. Machine Learning 24(2), 123–140
+(1996). https://doi.org/10.1007/BF00058655
+[111] Freund, Y.: Boosting a weak learning algorithm by majority. Information
+and Computation 121(2), 256–285 (1995). https://doi.org/10.1006/inco.
+1995.1136
+[112] Yua, L., Zhou, R., Tang, L., Chenca, R.: A dbn-based resampling svm
+ensemble learning paradigm for credit classification with imbalanced
+data. Applied Soft Computing 69, 192–202 (2018). https://doi.org/10.
+1016/j.asoc.2018.04.049
+[113] Hinton, G.E., Osindero, S., Teh, Y.W.: A fast learning algorithm for deep
+beliefnets. Neural Comput 18(7), 1527–1554 (2006). https://doi.org/10.
+1162/neco.2006.18.7.1527
+[114] Freund, Y., Schapire, R.E.: Experiments with a new boosting algorithm.
+In: Proceedings of the International Conference on Machine Learning,
+pp. 148–156 (1996). https://doi.org/10.5555/3091696.3091715
+[115] Schapire, R.E., Singer, Y.: Improved boosting algorithms using
+confidence-rated predictions. Machine Learning 37(3), 297–336 (1999).
+https://doi.org/10.1023/A:1007614523901
+[116] Sun, J., Li, H., Fujita, H., Fu, B., Ai, W.: Class-imbalanced dynamic
+financial distress prediction based on adaboost-svm ensemble combined
+with smote and time weighting. Information Fusion 54, 128–144 (2020).
+https://doi.org/10.1016/j.inffus.2019.07.006
+[117] Mehmood, Z., Asghar, S.: Customizing svm as a base learner with
+adaboost ensemble to learn from multi-class problems: A hybrid
+approach adaboost-msvm. Knowledge-Based Systems, 106845 (2021).
+https://doi.org/10.1016/j.knosys.2021.106845
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 39
+[118] Fan, W., Stolfo, S., Zhang, J., Chan, P.: Adacost: Misclassification cost-
+sensitive boosting. in Proceedings of the 16th International Conference
+on Machine Learning, 97–105 (1999). https://doi.org/10.1145/3373509.
+3373548
+[119] Joshi, M., Kumar, V., Agarwal, C.: Evaluating boosting algorithms to
+classify rare classes: Comparison and improvements. in Proceedings of
+the IEEE International Conference on Data Mining, 257–264 (2001).
+https://doi.org/10.1109/ICDM.2001.989527
+[120] Chawla, N., Lazarevic, A., Hall, L., Bowyer, K.: Smoteboost: Improv-
+ing prediction of the minority class in boosting. in Proceedings of
+the Principles of Knowledge Discovery in Databases, 107–119 (2003).
+https://doi.org/10.1007/978-3-540-39804-2 12
+[121] Li, P., Chan, K., Fang, W.: Hybrid kernel machine ensemble for imbal-
+anced data sets. in Proceedings of the IEEE International Conference on
+Pattern Recognition, 1108–1111 (2006). https://doi.org/10.1109/ICPR.
+2006.643
+[122] Sch¨ olkopf, B., Platt, J.C., Shawe-Taylor, J., Smola, A.J., Williamson,
+R.C.: Estimating the support of a high-dimensional distribution. Neu-
+ral Computation 13(7), 1443–1471 (2001). https://doi.org/10.1162/
+089976601750264965
+[123] Krawczyk, B., Wo´ zniak, M.: Hypertension type classification using
+hierarchical ensemble of one-class classifiers for imbalanced data.
+In: ICT Innovations, pp. 341–349 (2015). https://doi.org/10.1007/
+978-3-319-09879-1 34
+[124] Wilk, T., Wozniak, M.: Soft computing methods applied to combination
+of one-class classifiers. Neurocomputing 75(1), 185–193 (2012). https:
+//doi.org/10.1016/j.neucom.2011.02.023
+[125] Zeng, R., Lu, Y., Long, S., Wang, C., Bai, J.: Cardiotocography signal
+abnormality classification using time-frequency features and ensemble
+cost-sensitive svm classifier. Computers in Biology and Medicine 130,
+104218 (2021). https://doi.org/10.1016/j.compbiomed.2021.104218
+[126] Liu, X.-y., Wu, J., Zhou, Z.-h.: Exploratory under-sampling for class-
+imbalance learning. In: International Conference on Data Mining, pp.
+965–969 (2006). https://doi.org/10.1109/ICDM.2006.68
+[127] Lin, Z., Hao, Z., Yang, X., Liu, X.: Several svm ensemble methods inte-
+grated with under-sampling for imbalanced data learning. in Proceedings
+of the International Conference on Advanced Data Mining and Applica-
+tions, 536–544 (2009). https://doi.org/10.1007/978-3-642-03348-3 54
+Springer Nature 2021 L ATEX template
+40 Class Imbalanced Learning with SVM
+[128] Kang, P., Cho, S.: Eus svms: ensemble of under-sampled svms for
+data imbalance problems. in Proceedings of the international conference
+on Neural Information Processing, 837–846 (2006). https://doi.org/10.
+1007/11893028 93
+[129] Liu, Y., An, A., Huang, X.: Boosting prediction accuracy on imbalanced
+datasets with svm ensembles. in Proceedings of the 10th Pacific-Asia
+conference on Advances in Knowledge Discovery and Data Mining, 107–
+118 (2006). https://doi.org/10.1007/11731139 15
+[130] Wang, B., Japkowicz, N.: Boosting support vector machines for imbal-
+anced data sets. Knowledge and Information Systems 25, 1–20 (2010).
+https://doi.org/10.1007/s10115-009-0198-y
+[131] Liu, X., Yi, G.Y., Bauman, G., He, W.: Ensembling imbalanced-spatial-
+structured support vector machine. Econometrics and Statistics 17, 145–
+155 (2021). https://doi.org/10.1016/j.ecosta.2020.02.003
+[132] Bao, L., Juan, C., Li, J., Zhang, Y.: Boosted near-miss under-sampling
+on svm ensembles for concept detection in large-scale imbalanced
+datasets. Neurocomputing 172, 198–206 (2016). https://doi.org/10.
+1016/j.neucom.2014.05.096
+[133] Lee, W., Jun, C.-H., Lee, J.-S.: Instance categorization by support vector
+machines to adjust weights in adaboost for imbalanced data classifica-
+tion. Information Sciences 381, 92–103 (2017). https://doi.org/10.1016/
+j.ins.2016.11.014
+[134] Tashk, A., Faez, K.: Boosted bayesian kernel classifier method for face
+detection. in Proceedings of the Third International Conference on
+Natural Computation, IEEE Computer Society, 533–537 (2007). https:
+//doi.org/10.1109/ICNC.2007.287
+[135] Badrinath, N., Gopinath, G., Ravichandran, K.S., Soundhar, R.G.: Esti-
+mation of automatic detection of erythemato-squamous diseases through
+adaboost and its hybrid classifiers. Artificial Intelligence Review 45,
+471–488 (2016). https://doi.org/10.1007/s10462-015-9436-8
+[136] Zieba, M., Tomczak, J.M.: Boosted svm with active learning strategy
+for imbalanced data. Soft Computing 19, 3357–3368 (2015). https://doi.
+org/10.1007/s00500-014-1407-5
+[137] Imam, T., Ting, K.M., Kamruzzaman, J.: z-svm: An svm for improved
+classification of imbalanced data. In: Sattar, A., Kang, B.-h. (eds.) AI
+2006: Advances in Artificial Intelligence, pp. 264–273. Springer, Berlin,
+Heidelberg (2006). https://doi.org/10.1007/11941439 30
+Springer Nature 2021 L ATEX template
+Class Imbalanced Learning with SVM 41
+[138] Balc´ azar, J., Dai, Y., Watanabe, O.: A random sampling technique for
+training support vector machines. In: Algorithmic Learning Theory, pp.
+119–134 (2001). https://doi.org/10.1007/3-540-45583-3 11
