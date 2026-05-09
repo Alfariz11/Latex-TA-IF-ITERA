@@ -2,15 +2,32 @@
 \chapter{KESIMPULAN DAN SARAN} \label{Bab V}
 
 \section{Kesimpulan} \label{V.Kesimpulan}
-Berdasarkan penelitian yang telah dilakukan, maka kesimpulan yang diperoleh adalah sebagai berikut:
+Berdasarkan hasil eksperimen dan analisis yang telah dilakukan, diperoleh beberapa kesimpulan sebagai berikut:
 \begin{enumerate}
-    \item Berdasarkan pengujian 
-    \item mengimplementasikan
+    \item Pengaruh teknik \textit{oversampling} pada metode HOUM terhadap kinerja klasifikasi:
+    \begin{enumerate}[label=\alph*.]
+        \item HOUM-SLSMOTE menghasilkan \textit{recall} yang selalu di atas HOUM-ADASYN pada ketiga dataset: 0,6481 berbanding 0,6296 pada Diabetes, 0,3750 berbanding 0,3125 pada Haberman, dan 0,7500 berbanding 0,6667 pada Transfusion. Selisih terbesar terjadi pada Transfusion (0,0833), yang menunjukkan bahwa Safe-Level SMOTE lebih stabil dalam meningkatkan deteksi kelas minoritas pada dataset dengan ketidakseimbangan tinggi. Safe-Level SMOTE membatasi data sintetis pada area yang didominasi tetangga sekelas sehingga tidak menambah tumpang tindih yang sudah ada.
+        \item HOUM-ADASYN unggul pada \textit{precision} di Diabetes (0,7234) dan Haberman (0,2778) berbanding Safe-Level SMOTE (0,6863 dan 0,2500). Namun, pada Transfusion, \textit{precision} ADASYN justru lebih rendah (0,3810 berbanding 0,4030) dan \textit{recall}-nya turun dari 0,7500 menjadi 0,6667. Penurunan ini terjadi karena ADASYN menempatkan data sintetis di area dengan campuran kedua kelas, yang pada dataset dengan tumpang tindih tinggi justru memperburuk pemisahan. Tidak terdapat teknik \textit{oversampling} yang mutlak unggul karena efektivitasnya bergantung pada dimensi dan tingkat tumpang tindih dataset.
+    \end{enumerate}
+    \item Pengaruh variasi parameter $C$ dan jenis kernel SVM terhadap kinerja HOUM:
+    \begin{enumerate}[label=\alph*.]
+        \item Nilai $C=0,5$ menghasilkan G-Mean tertinggi pada Diabetes (0,7401) dan Haberman (0,4778). Pada $C$ rendah, \textit{margin} SVM yang lebar menempatkan lebih banyak sampel mayoritas di luar batas keputusan, sehingga lebih banyak sampel dihapus oleh komponen \textit{undersampling}. Pada Diabetes, kenaikan $C$ dari 0,5 ke 1 pada kernel RBF menurunkan G-Mean dari 0,7401 ke 0,7055 karena \textit{margin} yang menyempit mengurangi jumlah sampel mayoritas yang dihapus.
+        \item Pada Transfusion, $C=2$ memberikan G-Mean tertinggi (0,6977) dengan \textit{recall} 0,7500. Kenaikan $C$ ke 2,5 memang menaikkan \textit{recall} menjadi 0,7778, namun G-Mean turun menjadi 0,6861 dan \textit{precision} turun menjadi 0,3836. Pada rentang $C$ yang sudah tinggi, \textit{margin} yang semakin sempit menyebabkan penghapusan berlebih, yaitu sampel mayoritas yang informatif turut terhapus sehingga model kehilangan informasi tentang batas kelas mayoritas. Efek ini semakin parah pada $C=3$ di mana \textit{recall} turun drastis ke 0,6667.
+        \item Kernel RBF mencatat performa tertinggi pada Diabetes (delapan fitur) dengan seluruh konfigurasi RBF memiliki ROC-AUC di atas 0,80 dan G-Mean di atas 0,70, sementara kernel Linear hanya mencapai G-Mean 0,7229. Kernel Linear unggul pada Haberman (tiga fitur) dan Transfusion (empat fitur) dengan G-Mean 0,4778 dan 0,6977. Kernel Polynomial mencatat performa terendah di seluruh dataset, di mana pada Haberman ROC-AUC kernel Polynomial hanya 0,38--0,40 yang menunjukkan \textit{overfitting} pada data dengan tumpang tindih tinggi.
+    \end{enumerate}
+    \item Kinerja metode HOUM dalam menangani data tidak seimbang:
+    \begin{enumerate}[label=\alph*.]
+        \item HOUM meningkatkan \textit{recall} dan G-Mean pada seluruh dataset dibandingkan \textit{baseline}. Pada Haberman, \textit{recall} naik dari 0,1250 menjadi 0,3750; pada Transfusion, dari 0,4167 menjadi 0,7500. Pada Diabetes, seluruh metrik naik serempak karena rasio ketidakseimbangan rendah (1:1,87) dan delapan fitur memberikan ruang pemisahan cukup. Sebaliknya, pada Transfusion (rasio 1:3,20), kenaikan \textit{recall} disertai penurunan \textit{precision} dari 0,5000 ke 0,4030 dan ROC-AUC dari 0,7523 ke 0,7197. Semakin tinggi rasio ketidakseimbangan, semakin besar pergeseran batas keputusan yang diperlukan untuk menangkap kelas minoritas, dan semakin besar penurunan \textit{precision} sebagai konsekuensinya. Pemilihan konfigurasi HOUM perlu menyesuaikan tujuan: jika prioritas adalah mendeteksi sebanyak mungkin kelas minoritas, Safe-Level SMOTE dengan $C$ rendah lebih sesuai; jika keseimbangan \textit{recall} dan \textit{precision} diutamakan, ADASYN pada dataset dengan fitur memadai dapat dipertimbangkan.
+    \end{enumerate}
 \end{enumerate}
 
 \section{Saran} \label{V.Saran}
-Adapun saran yang dapat diberikan untuk penelitian lebih lanjut berdasarkan penelitian ini adalah sebagai berikut:\par
+Berdasarkan hasil penelitian yang telah dilakukan, terdapat beberapa saran untuk pengembangan penelitian selanjutnya:
 \begin{enumerate}
-    \item Pengembangan 
-    \item Tampilan 
+    \item Menggunakan dataset dengan dimensi fitur lebih tinggi dan kompleksitas lebih beragam untuk menguji konsistensi kernel RBF pada ruang fitur berdimensi tinggi.
+    \item Memperluas rentang nilai $C$ ke bawah 0,5 untuk menganalisis pengaruh \textit{margin} yang lebih longgar terhadap proses \textit{undersampling}.
+    \item Membandingkan teknik \textit{oversampling} lain seperti \textit{Borderline-SMOTE} dengan Safe-Level SMOTE dan ADASYN dalam kerangka HOUM.
+    \item Menguji HOUM dengan algoritma klasifikasi lain seperti \textit{Gradient Boosting} atau \textit{Neural Network} untuk mengukur konsistensi peningkatan performa di berbagai model.
+    \item Mengeksplorasi parameter tambahan SVM seperti \textit{gamma} pada kernel RBF untuk mengoptimalkan \textit{undersampling}.
+    \item Menambah jumlah dan variasi rasio ketidakseimbangan dataset untuk mengevaluasi generalisasi HOUM secara lebih menyeluruh.
 \end{enumerate}

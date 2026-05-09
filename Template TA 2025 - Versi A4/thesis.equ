@@ -1,9 +1,11 @@
 \contentsline {myequations}{\numberline {Rumus~2.1} Imbalance Ratio (IR) }{10}{equation.2.1}%
 \contentsline {myequations}{\numberline {Rumus~2.2} Pembentukan Sampel Sintetis SMOTE }{12}{equation.2.2}%
 \contentsline {myequations}{\numberline {Rumus~2.3} Distribusi Bobot ADASYN }{14}{equation.2.3}%
-\contentsline {myequations}{\numberline {Rumus~2.4} Fungsi Keputusan SVM }{18}{equation.2.4}%
-\contentsline {myequations}{\numberline {Rumus~2.5} Optimasi SVM Soft Margin }{19}{equation.2.5}%
-\contentsline {myequations}{\numberline {Rumus~2.6} Recall (Sensitivity) }{20}{equation.2.6}%
-\contentsline {myequations}{\numberline {Rumus~2.7} Precision }{21}{equation.2.7}%
-\contentsline {myequations}{\numberline {Rumus~2.8} G-mean (Geometric Mean) }{21}{equation.2.8}%
-\contentsline {myequations}{\numberline {Rumus~2.9} True Positive Rate dan False Positive Rate }{23}{equation.2.9}%
+\contentsline {myequations}{\numberline {Rumus~2.4} Fungsi Keputusan SVM }{19}{equation.2.4}%
+\contentsline {myequations}{\numberline {Rumus~2.5} Kernel Linear }{21}{equation.2.5}%
+\contentsline {myequations}{\numberline {Rumus~2.6} Kernel Polynomial }{21}{equation.2.6}%
+\contentsline {myequations}{\numberline {Rumus~2.7} Kernel RBF }{21}{equation.2.7}%
+\contentsline {myequations}{\numberline {Rumus~2.8} Recall (Sensitivity) }{24}{equation.2.8}%
+\contentsline {myequations}{\numberline {Rumus~2.9} Precision }{24}{equation.2.9}%
+\contentsline {myequations}{\numberline {Rumus~2.10} G-mean (Geometric Mean) }{25}{equation.2.10}%
+\contentsline {myequations}{\numberline {Rumus~2.11} True Positive Rate dan False Positive Rate }{26}{equation.2.11}%

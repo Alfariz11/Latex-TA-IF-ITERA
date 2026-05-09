@@ -10,10 +10,10 @@
 	\bigskip
 	
 	\normalsize \normalfont \justifying \singlespacing
-	\lipsum[1] % Menampilkan paragraf 1 sampai 2 dari lorem ipsumpar
+	Ketidakseimbangan distribusi kelas merupakan permasalahan yang sering dihadapi dalam klasifikasi \textit{machine learning}, menyebabkan model cenderung bias terhadap kelas mayoritas dan gagal mendeteksi kelas minoritas. HOUM (\textit{Hybrid Oversampling and Undersampling Method}) merupakan metode hibrida yang menggabungkan Safe-Level SMOTE untuk \textit{oversampling} dan SVM untuk \textit{undersampling} secara iteratif. Namun, penelitian sebelumnya belum mengeksplorasi pengaruh variasi parameter regularisasi $C$ dan jenis kernel SVM, serta belum membandingkan Safe-Level SMOTE dengan teknik \textit{oversampling} lain seperti ADASYN. Penelitian ini bertujuan untuk menganalisis pengaruh variasi teknik \textit{oversampling} (Safe-Level SMOTE vs ADASYN) dan konfigurasi SVM (parameter $C$: 0,5; 1; 1,5; 2; 2,5; 3 serta kernel Linear, RBF, Polynomial) pada metode HOUM terhadap kinerja klasifikasi data tidak seimbang. Tiga dataset \textit{benchmark} digunakan, yaitu Diabetes, Haberman, dan Blood Transfusion dengan variasi rasio ketidakseimbangan. Data dibagi 80:20 secara \textit{stratified}, diseimbangkan dengan 18 kombinasi konfigurasi HOUM, dan diklasifikasi menggunakan \textit{Random Forest}. Hasil menunjukkan HOUM-SLSMOTE konsisten menghasilkan \textit{recall} lebih tinggi (Diabetes: 0,6481; Haberman: 0,3750; Transfusion: 0,7500), sedangkan HOUM-ADASYN unggul pada \textit{precision} khususnya di Diabetes (0,7234). Nilai $C=0,5$ optimal pada Diabetes dan Haberman, sedangkan $C=2$ lebih sesuai pada Transfusion. Kernel RBF unggul pada dataset berdimensi tinggi (Diabetes), kernel Linear pada dimensi rendah (Haberman, Transfusion). Konfigurasi terbaik: HOUM-ADASYN RBF $C=0,5$ (Diabetes, G-Mean 0,7401), HOUM-SLSMOTE Linear $C=0,5$ (Haberman, G-Mean 0,4778), dan HOUM-SLSMOTE Linear $C=2$ (Transfusion, G-Mean 0,6977). Kesimpulannya, pemilihan teknik \textit{oversampling}, kernel SVM, dan nilai $C$ harus disesuaikan dengan karakteristik dataset karena terdapat \textit{trade-off} antara \textit{recall} dan \textit{precision}.
 
     \vspace{20pt}
-	\raggedright \textbf{Kata Kunci: kunci1, kunci2}
+	\raggedright \textbf{Kata Kunci:} HOUM, \textit{oversampling}, Safe-Level SMOTE, SVM, data tidak seimbang
 	
 	\vfill
 	

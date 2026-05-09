@@ -10,10 +10,10 @@
 	\bigskip
 	
 	\normalsize \normalfont \justifying \singlespacing
-	\lipsum[1]% Menampilkan paragraf 1 sampai 2 dari lorem ipsum\par
+	Class imbalance is a common problem in machine learning classification, causing models to be biased toward the majority class and fail to detect the minority class. HOUM (Hybrid Oversampling and Undersampling Method) is a hybrid method that combines Safe-Level SMOTE for oversampling and SVM for undersampling iteratively. However, previous research has not explored the effect of varying the regularization parameter $C$ and SVM kernel types, nor has it compared Safe-Level SMOTE with alternative oversampling techniques such as ADASYN. This study aims to analyze the effect of oversampling technique variation (Safe-Level SMOTE vs ADASYN) and SVM configuration (parameter $C$: 0.5; 1; 1.5; 2; 2.5; 3 and kernel types: Linear, RBF, Polynomial) within the HOUM method on imbalanced data classification performance. Three benchmark datasets were used, namely Diabetes, Haberman, and Blood Transfusion, with varying imbalance ratios. Data were split 80:20 using stratified split, balanced with 18 HOUM configuration combinations, and classified using Random Forest. Results show that HOUM-SLSMOTE consistently yields higher recall across all datasets (Diabetes: 0.6481; Haberman: 0.3750; Transfusion: 0.7500), while HOUM-ADASYN excels in precision particularly on Diabetes (0.7234). The $C=0.5$ value is optimal for Diabetes and Haberman, whereas $C=2$ is more suitable for Transfusion. The RBF kernel performs best on the higher-dimensional dataset (Diabetes), while the Linear kernel is more optimal on lower-dimensional datasets (Haberman, Transfusion). The best configurations are: HOUM-ADASYN with RBF $C=0.5$ (Diabetes, G-Mean 0.7401), HOUM-SLSMOTE with Linear $C=0.5$ (Haberman, G-Mean 0.4778), and HOUM-SLSMOTE with Linear $C=2$ (Transfusion, G-Mean 0.6977). In conclusion, the selection of oversampling technique, SVM kernel, and $C$ value must be tailored to dataset characteristics due to the trade-off between recall and precision.
     
     \vspace{20pt}
-	\raggedright\textbf{Keywords: keywords1, keywords2}
+	\raggedright\textbf{Keywords:} HOUM, oversampling, Safe-Level SMOTE, SVM, imbalanced data
 	
 	\vfill
 	
