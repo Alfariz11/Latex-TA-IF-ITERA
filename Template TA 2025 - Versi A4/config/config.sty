@@ -15,6 +15,12 @@
 \usepackage[utf8]{inputenc}
 \usepackage{subcaption} % Paket untuk mengatur gambar berdampingan
 \usepackage{graphicx}
+
+% Menambahkan frame/outline 1px pada semua gambar
+\let\origincludegraphics\includegraphics
+\renewcommand{\includegraphics}[2][]{%
+  {\setlength{\fboxsep}{0pt}\setlength{\fboxrule}{0.5pt}\fbox{\origincludegraphics[#1]{#2}}}%
+}
 \usepackage{titling}
 \usepackage{blindtext} % Untuk lorem ipsum
 \usepackage{sectsty} % Untuk header & judul
