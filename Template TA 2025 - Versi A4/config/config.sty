@@ -16,10 +16,14 @@
 \usepackage{subcaption} % Paket untuk mengatur gambar berdampingan
 \usepackage{graphicx}
 
-% Menambahkan frame/outline 1px pada semua gambar
+% Menambahkan frame/outline 1px pada semua gambar (untuk visualisasi di bab 1-5)
 \let\origincludegraphics\includegraphics
 \renewcommand{\includegraphics}[2][]{%
   {\setlength{\fboxsep}{0pt}\setlength{\fboxrule}{0.5pt}\fbox{\origincludegraphics[#1]{#2}}}%
+}
+% Command untuk gambar tanpa frame (untuk cover, logo, dll.)
+\newcommand{\plainincludegraphics}[2][]{%
+  \origincludegraphics[#1]{#2}%
 }
 \usepackage{titling}
 \usepackage{blindtext} % Untuk lorem ipsum

@@ -1,0 +1,17 @@
+# Core data science libraries
+numpy
+pandas
+
+# Machine Learning
+scikit-learn
+
+# Imbalanced data handling
+imbalanced-learn
+smote-variants
+
+# Visualization
+matplotlib
+seaborn
+
+# Jupyter support (optional, for running .ipynb)
+jupyter
