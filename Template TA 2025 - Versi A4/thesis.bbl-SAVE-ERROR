@@ -40,8 +40,8 @@
       \strng{authornamehash}{ba691069ad567ad30bf0c7593f57c8ae}
       \strng{authorfullhash}{ba691069ad567ad30bf0c7593f57c8ae}
       \strng{authorfullhashraw}{ba691069ad567ad30bf0c7593f57c8ae}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{IEEE Transactions on Knowledge and Data Engineering}
@@ -71,8 +71,8 @@
       \strng{authornamehash}{6af3e4eb31711d6d0f9bc2ca3437b91e}
       \strng{authorfullhash}{6af3e4eb31711d6d0f9bc2ca3437b91e}
       \strng{authorfullhashraw}{6af3e4eb31711d6d0f9bc2ca3437b91e}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Progress in Artificial Intelligence}
@@ -120,8 +120,8 @@
       \strng{authornamehash}{6adeb413237fd8e8a0f9fe8ec73d18d3}
       \strng{authorfullhash}{23f66b1d55ceb91fe06b717f0f0d96bd}
       \strng{authorfullhashraw}{23f66b1d55ceb91fe06b717f0f0d96bd}
-      \field{sortinit}{3}
-      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
+      \field{sortinit}{4}
+      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Mathematics}
@@ -171,8 +171,8 @@
       \strng{authornamehash}{7bc8e044e94a2de6171b4b9106a45996}
       \strng{authorfullhash}{979c08a250477a10133c97fa8526c1ac}
       \strng{authorfullhashraw}{979c08a250477a10133c97fa8526c1ac}
-      \field{sortinit}{4}
-      \field{sortinithash}{9381316451d1b9788675a07e972a12a7}
+      \field{sortinit}{5}
+      \field{sortinithash}{20e9b4b0b173788c5dace24730f47d8c}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{CogITo Smart Journal}
@@ -217,8 +217,8 @@
       \strng{authornamehash}{6bcc313fb25bc61f74b62ca709ae4b05}
       \strng{authorfullhash}{c8dfb87590a41f2f9294282b456dede4}
       \strng{authorfullhashraw}{c8dfb87590a41f2f9294282b456dede4}
-      \field{sortinit}{9}
-      \field{sortinithash}{0a5ebc79d83c96b6579069544c73c7d4}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Journal of Artificial Intelligence Research}
@@ -440,8 +440,8 @@
       \strng{authornamehash}{b4ed16e60fd5214f630e569279be9179}
       \strng{authorfullhash}{4065a0941b285448e16ce6dfd8465a0a}
       \strng{authorfullhashraw}{4065a0941b285448e16ce6dfd8465a0a}
-      \field{sortinit}{1}
-      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Scientific Reports}
@@ -558,8 +558,8 @@
       \strng{authornamehash}{c1e5849792f7262a3ef014c707f3e3ec}
       \strng{authorfullhash}{3fa2e056f269755f67e445aecb9bb031}
       \strng{authorfullhashraw}{3fa2e056f269755f67e445aecb9bb031}
-      \field{sortinit}{2}
-      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{sortinit}{3}
+      \field{sortinithash}{ad6fe7482ffbd7b9f99c9e8b5dccd3d7}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{booktitle}{Proceedings of the 11th International Conference on Information and Communication Systems (ICICS)}
@@ -966,8 +966,8 @@
       \strng{authornamehash}{929f2ef03ac6a3ed33522bb12de664a2}
       \strng{authorfullhash}{b47a426b9e4db0e3e86a96cfc6c05ae8}
       \strng{authorfullhashraw}{b47a426b9e4db0e3e86a96cfc6c05ae8}
-      \field{sortinit}{7}
-      \field{sortinithash}{108d0be1b1bee9773a1173443802c0a3}
+      \field{sortinit}{8}
+      \field{sortinithash}{a231b008ebf0ecbe0b4d96dcc159445f}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{ACM SIGKDD Explorations Newsletter}
@@ -979,6 +979,34 @@
       \range{pages}{10}
       \verb{doi}
       \verb 10.1145/1007730.1007735
+      \endverb
+    \endentry
+    \entry{ScikitLearnSVMKernels}{misc}{}{}
+      \name{author}{1}{}{%
+        {{hash=e033fba571eb5c80fe02f754d76bc675}{%
+           family={{Scikit-learn Developers}},
+           familyi={S\bibinitperiod}}}%
+      }
+      \strng{namehash}{e033fba571eb5c80fe02f754d76bc675}
+      \strng{fullhash}{e033fba571eb5c80fe02f754d76bc675}
+      \strng{fullhashraw}{e033fba571eb5c80fe02f754d76bc675}
+      \strng{bibnamehash}{e033fba571eb5c80fe02f754d76bc675}
+      \strng{authorbibnamehash}{e033fba571eb5c80fe02f754d76bc675}
+      \strng{authornamehash}{e033fba571eb5c80fe02f754d76bc675}
+      \strng{authorfullhash}{e033fba571eb5c80fe02f754d76bc675}
+      \strng{authorfullhashraw}{e033fba571eb5c80fe02f754d76bc675}
+      \field{sortinit}{1}
+      \field{sortinithash}{4f6aaa89bab872aa0999fec09ff8e98a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Diakses: 17 Mei 2026}
+      \field{title}{{SVM} Kernels}
+      \field{year}{2024}
+      \verb{urlraw}
+      \verb https://scikit-learn.org/stable/auto_examples/svm/plot_svm_kernels.html
+      \endverb
+      \verb{url}
+      \verb https://scikit-learn.org/stable/auto_examples/svm/plot_svm_kernels.html
       \endverb
     \endentry
     \entry{Rezvani2024SVMImbalanced}{article}{}{}
